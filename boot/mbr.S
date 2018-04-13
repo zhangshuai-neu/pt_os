@@ -1,59 +1,80 @@
-;主引导程序 
-;------------------------------------------------------------
-SECTION MBR vstart=0x7c00         
-   mov ax,cs      
-   mov ds,ax
-   mov es,ax
-   mov ss,ax
-   mov fs,ax
-   mov sp,0x7c00
+%include "boot_parameter.inc"
 
-; 清屏 利用0x06号功能，上卷全部行，则可清屏。
-; -----------------------------------------------------------
-;INT 0x10   功能号:0x06	   功能描述:上卷窗口
-;------------------------------------------------------
-;输入：
-;AH 功能号= 0x06
-;AL = 上卷的行数(如果为0,表示全部)
-;BH = 上卷行属性
-;(CL,CH) = 窗口左上角的(X,Y)位置
-;(DL,DH) = 窗口右下角的(X,Y)位置
-;无返回值：
-   mov     ax, 0x600
-   mov     bx, 0x700
-   mov     cx, 0           ; 左上角: (0, 0)
-   mov     dx, 0x184f	   ; 右下角: (80,25),
-			   ; VGA文本模式中,一行只能容纳80个字符,共25行。
-			   ; 下标从0开始,所以0x18=24,0x4f=79
-   int     0x10            ; int 0x10
+section MBR vstart=MBR_MEM_BASE_ADDR 	;工作在实模式，MBR
+init_registers: ;初始化寄存器
+	mov ax,cs 			;cs=0
+	mov ds,ax 			;ds=0
+	mov es,ax 			;es=0
+	mov ss,ax 			;ss=0
+	mov sp,STACK_TOP 	;实模式内存表中可知，0x500~0x7bff为空闲，可以作为堆栈
+	mov ax,VGA_BASE_ADDR
+	mov gs,ax 	  		;实模式内存表可知，0xb8000为显存基地址
 
-;;;;;;;;;    下面这三行代码是获取光标位置    ;;;;;;;;;
-;.get_cursor获取当前光标位置,在光标位置处打印字符.
-   mov ah, 3		; 输入: 3号子功能是获取光标位置,需要存入ah寄存器
-   mov bh, 0		; bh寄存器存储的是待获取光标的页号
+read_disk:							;读写磁盘，LBA方式
+	;1 设置要读取扇区数
+	mov dx,0x1f2 					;外部端口号
+	mov cx,MBR_READ_SECTOR_SIZE		;读取扇区数（低8位）
+	mov al,cl 						;
+	out dx,al 						;写入端口
+	
+	
+	;2 设置LBA地址(描述扇区的位置)
+	mov eax,LOADER_DISK_BASE_SECTOR	;读取起始扇区,1
+	mov cl,8
+	mov dx,0x1f3    ;LBA地址7~0位写入端口0x1f3       
+    out dx,al                          
+    shr eax,cl
+    mov dx,0x1f4					
+    out dx,al		;LBA地址15~8位写入端口0x1f4
+    shr eax,cl
+    mov dx,0x1f5					
+    out dx,al		;LBA地址23~16位写入端口0x1f5
+    shr eax,cl
+    and al,0x0f		;lba第24~27位
+    or al,0xe0		;设置7～4位为1110,表示lba模式
+    mov dx,0x1f6
+    out dx,al		;写入端口0x1f6
 
-   int 0x10		; 输出: ch=光标开始行,cl=光标结束行
-			; dh=光标所在行号,dl=光标所在列号
+	;3 向0x1f7端口写入读命令，0x20,硬盘开始读取(设置完就自动读取，不需要bios中断服务)
+	mov dx,0x1f7
+	mov al,0x20                        
+	out dx,al
 
-;;;;;;;;;    获取光标位置结束    ;;;;;;;;;;;;;;;;
+	;4 检测硬盘状态
+	not_ready:
+		nop				;等待一点时间，让磁盘进行工作
+		in al,dx		;
+		and al,0x88		;第4位为1表示硬盘控制器已准备好数据传输，第7位为1表示硬盘忙
+		cmp al,0x08
+		jnz not_ready	;若未准备好，继续等
+	
+	;5 从0x1f0端口读数据
+	mov ax,MBR_READ_SECTOR_SIZE
+	mov dx,256
+	mul dx			;结果存放在ax中
+	mov cx,ax		;di为要读取的扇区数，一个扇区有512字节，每次读一个字，需di*256次
+	mov dx, 0x1f0	;端口号
+	mov bx,LOADER_MEM_BASE_ADDR	;读到内存的位置，0x0
+	go_on_reading:
+		in  ax,dx
+		mov [bx],ax
+		add bx,2				;内存地址后移
+		loop go_on_reading		;循环次数为cx
 
-;;;;;;;;;     打印字符串    ;;;;;;;;;;;
-   ;还是用10h中断,不过这次是调用13号子功能打印字符串
-   mov ax, message 
-   mov bp, ax		; es:bp 为串首地址, es此时同cs一致，
-			; 开头时已经为sreg初始化
+end_mbr:
+	jmp LOADER_MEM_BASE_ADDR	;跳转到loader程序
 
-   ; 光标位置要用到dx寄存器中内容,cx中的光标位置可忽略
-   mov cx, 5		; cx 为串长度,不包括结束符0的字符个数
-   mov ax, 0x1301	; 子功能号13是显示字符及属性,要存入ah寄存器,
-			; al设置写字符方式 ah=01: 显示字符串,光标跟随移动
-   mov bx, 0x2		; bh存储要显示的页号,此处是第0页,
-			; bl中是字符属性, 属性黑底绿字(bl = 02h)
-   int 0x10		; 执行BIOS 0x10 号中断
-;;;;;;;;;      打字字符串结束	 ;;;;;;;;;;;;;;;
 
-   jmp $		; 使程序悬停在此
+define_data:					;定义一些数据
+	msg db "welcome to zs_os"	;定义要打印的meg
 
-   message db "1 MBR"
-   times 510-($-$$) db 0
-   db 0x55,0xaa
+	times 510-($-$$) db 0		;空余空间set 0
+	
+	
+	db 0x55,0xaa	;MBR标志
+	
+	
+	
+	
+	
+	
