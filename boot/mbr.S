@@ -64,13 +64,7 @@ read_disk:							;读写磁盘，LBA方式
 end_mbr:
 	jmp LOADER_MEM_BASE_ADDR	;跳转到loader程序
 
-
-define_data:					;定义一些数据
-	msg db "welcome to zs_os"	;定义要打印的meg
-
 	times 510-($-$$) db 0		;空余空间set 0
-	
-	
 	db 0x55,0xaa	;MBR标志
 	
 	

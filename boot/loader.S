@@ -41,6 +41,7 @@ define_data:
 get_memory_size:
 	ards_num dw	0						;用来存放ards的个数
 	jmp	get_mem_size					;跳转到读取内存大小的代码
+	
 	get_mem_size_err:					;内存大小读取错误会停止在这里
 		mov byte [gs:160],'m'
 		mov byte [gs:162],'e'
@@ -57,7 +58,7 @@ get_memory_size:
 		xor ebx,ebx						;ebx置0，第一次需设为0。以后每次调用返回后，BIOS会自动更新该值
 		mov	edx,0x534d4150				;'SMAP'的ASCII码，一个固定的签名
 		mov	di,MEM_SIZE_RECORD_ADDR		;BIOS会将ARDS存放到es:di指向的内存位置			
-	loop:
+	loop1:
 		mov eax,0x0000e820				;功能号
 		mov ecx,20						;ARDS(address range descriptor structure)的字节大小（该中断功能的返回值）
 		int 0x15
@@ -68,7 +69,7 @@ get_memory_size:
 		inc word [ards_num]				;记录ARDS的数量，inc指令(+1)
 		add di,cx						;di增加20，指向新的ARDS结构位置
 		cmp ebx,0						;若ebx==0，且cf不为1,说明ards全部返回
-		jnz loop						;读取下一个ards
+		jnz loop1						;读取下一个ards
 			
 	;找到可用内存，内存大小存放到MEM_SIZE_AVAI_ADDR指向的位置
 		mov cx,[ards_num]				;ARDS的数量为循环次数
@@ -88,14 +89,6 @@ get_memory_size:
 		mov byte [gs:160],'m'
 		mov byte [gs:162],'e'
 		mov byte [gs:164],'m'
-		mov byte [gs:166],' '
-		mov byte [gs:168],'s'
-		mov byte [gs:170],'i'
-		mov byte [gs:172],'z'
-		mov byte [gs:174],'e'
-		mov byte [gs:176],' '
-		mov byte [gs:178],'o'
-		mov byte [gs:180],'k'	
 		
 		jmp into_pro	;进入保护模式
 
@@ -146,6 +139,15 @@ protection_mode_start:
 	mov byte [gs:332],'c'
 	mov byte [gs:334],'t'
 
+;----------------读取kernel.bin-------------------------
+;loader程序读取内核代码
+;-------------------------------------------------------
+load_kernel_bin:
+	mov eax, KERNEL_BIN_BASE_SECTOR
+	mov ebx, KERNEL_BIN_BASE_ADDR
+	mov ecx, KERNEL_BIN_SECTOR_SIZE
+	call rd_disk_m_32
+	
 	
 ;-------------启用内存分页机制，页式管理内存------------
 ;采用 linux一样的做法，将0-3G作为虚拟的用户空间，3-4G位虚拟的系统空间
@@ -157,6 +159,7 @@ protection_mode_start:
 ;4 用新地址重新加载GDT
 ;-------------------------------------------------------		
 	;1 创建页目录和页表,初始化内存位图
+	;初始化的页表大小为1M
 	call setup_page
 	
 	;2 修改GDT
@@ -185,13 +188,25 @@ protection_mode_start:
 	mov byte [gs:484],'g'
 	mov byte [gs:486],'e'
 
-	jmp $				;进入页式管理
+
+	jmp SELECTOR_CODE:enter_kernel	  ;强制刷新流水线,更新gdt
+
+;----------------------进入内核-------------------------
+;
+;-------------------------------------------------------	
+enter_kernel:    
+	call kernel_init
+	mov esp, 0xc009f000
+	jmp KERNEL_ENTRY_POINT                 ;
+	
 		
 ;----------------一些用到的函数-------------------------
 ;1 rd_disk_m_32 功能：读取硬盘n个扇区（在32位模式） 
 ;2 mem_cpy 		功能：逐字节拷贝 mem_cpy(dst,src,size)
 ;3 setup_page 	功能：创建页目录及页表
-;-------------------------------------------------------------------------------
+;4 kernel_init  功能：将kernel.bin中的segment拷贝到编译的地址
+;------------------------------------------------------------------------------- 
+;-----------------  rd_disk_m_32    -----------  
 rd_disk_m_32:	  
 		; eax=LBA扇区号
 		; ebx=将数据写入的内存地址
@@ -255,25 +270,9 @@ rd_disk_m_32:
     in ax,dx		
     mov [ebx], ax
     add ebx, 2
-			  ; 由于在实模式下偏移地址为16位,所以用bx只会访问到0~FFFFh的偏移。
-			  ; loader的栈指针为0x900,bx为指向的数据输出缓冲区,且为16位，
-			  ; 超过0xffff后,bx部分会从0开始,所以当要读取的扇区数过大,待写入的地址超过bx的范围时，
-			  ; 从硬盘上读出的数据会把0x0000~0xffff的覆盖，
-			  ; 造成栈被破坏,所以ret返回时,返回地址被破坏了,已经不是之前正确的地址,
-			  ; 故程序出会错,不知道会跑到哪里去。
-			  ; 所以改为ebx代替bx指向缓冲区,这样生成的机器码前面会有0x66和0x67来反转。
-			  ; 0X66用于反转默认的操作数大小! 0X67用于反转默认的寻址方式.
-			  ; cpu处于16位模式时,会理所当然的认为操作数和寻址都是16位,处于32位模式时,
-			  ; 也会认为要执行的指令是32位.
-			  ; 当我们在其中任意模式下用了另外模式的寻址方式或操作数大小(姑且认为16位模式用16位字节操作数，
-			  ; 32位模式下用32字节的操作数)时,编译器会在指令前帮我们加上0x66或0x67，
-			  ; 临时改变当前cpu模式到另外的模式下.
-			  ; 假设当前运行在16位模式,遇到0X66时,操作数大小变为32位.
-			  ; 假设当前运行在32位模式,遇到0X66时,操作数大小变为16位.
-			  ; 假设当前运行在16位模式,遇到0X67时,寻址方式变为32位寻址
-			  ; 假设当前运行在32位模式,遇到0X67时,寻址方式变为16位寻址.
     loop .go_on_read
     ret
+
 	
 ;----------  逐字节拷贝 mem_cpy(dst,src,size) ------------
 ;输入:栈中三个参数(dst,src,size)
@@ -295,7 +294,7 @@ mem_cpy:
    ret
 
 ;-------------   创建页目录及页表   ---------------
-; 使用了4KB*2大小的空间（）
+; 使用了4KB*2大小的空间
 ; 起始地址	  功能
 ; 0x0010_0000 创建页目录
 ; 0x0010_1000 创建页表
@@ -319,13 +318,14 @@ setup_page:
 	or	eax, PG_US_U | PG_RW_W | PG_P		;页目录项的属性RW和P位为1,US为1,表示用户属性,所有特权级别都可以访问.
 	mov [PAGE_DIR_BASE_ADDR + 0x0], eax		;第1个目录项,在页目录表中的第1个目录项写入第一个页表的位置(0x101000)及属性(3)
 	mov [PAGE_DIR_BASE_ADDR + 0xc00], eax	;一个页表项占用4字节,0xc00表示第768个页表占用的目录项,0xc00以上的目录项用于内核空间,
-											;也就是页表的0xc0000000~0xffffffff共计1G属于内核,0x0~0xbfffffff共计3G属于用户进程.
+	;也就是页表的0xc0000000~0xffffffff共计1G属于内核,0x0~0xbfffffff共计3G属于用户进程.
 	sub eax, 0x1000
 	mov [PAGE_DIR_BASE_ADDR + 4092], eax	;使最后一个目录项指向页目录表自己的地址
 
 ;下面创建页表项(PTE)
-	mov ecx, 256				    	;1M低端内存 / 每页大小4k = 256
+	mov ecx, 512				    	;2M低端内存 / 每页大小4k = 512
 	mov esi, 0
+	mov edx, 0
 	mov edx, PG_US_U | PG_RW_W | PG_P	;属性为7,US=1,RW=1,P=1
 .create_pte:				     		;创建Page Table Entry
 	mov [ebx+esi*4],edx			     	;此时的ebx已经在上面通过eax赋值为0x0010_1000,也就是第一个页表的地址 
@@ -345,6 +345,36 @@ setup_page:
 	inc esi
 	add eax, 0x1000
 	loop .create_kernel_pde
+	ret
+	
+;-----------------  kernel_init    ----------- 
+kernel_init:
+	xor eax, eax
+	xor ebx, ebx		;ebx记录程序头表地址
+	xor ecx, ecx		;cx记录程序头表中的program header数量
+	xor edx, edx		;dx 记录program header尺寸,即e_phentsize
+
+	mov dx, [KERNEL_BIN_BASE_ADDR + 42]	  ; 偏移文件42字节处的属性是e_phentsize,表示program header大小
+	mov ebx, [KERNEL_BIN_BASE_ADDR + 28]  ; 偏移文件开始部分28字节的地方是e_phoff,表示第1 个program header在文件中的偏移量
+										  ; 其实该值是0x34,不过还是谨慎一点，这里来读取实际值
+	add ebx, KERNEL_BIN_BASE_ADDR
+	mov cx, [KERNEL_BIN_BASE_ADDR + 44]    ; 偏移文件开始部分44字节的地方是e_phnum,表示有几个program header
+.each_segment:
+	cmp byte [ebx + 0], PT_NULL		  ; 若p_type等于 PT_NULL,说明此program header未使用。
+	je .PTNULL
+
+	;为函数memcpy压入参数,参数是从右往左依然压入.函数原型类似于 memcpy(dst,src,size)
+	push dword [ebx + 16]		  	;program header中偏移16字节的地方是p_filesz,压入函数memcpy的第三个参数:size
+	mov eax, [ebx + 4]			  	;距程序头偏移量为4字节的位置是p_offset
+	add eax, KERNEL_BIN_BASE_ADDR	;加上kernel.bin被加载到的物理地址,eax为该段的物理地址
+	push eax				  		;压入函数memcpy的第二个参数:源地址
+	push dword [ebx + 8]			;压入函数memcpy的第一个参数:目的地址,偏移程序头8字节的位置是p_vaddr，这就是目的地址
+	
+	call mem_cpy				  	;调用mem_cpy完成段复制
+	add esp,12				  		;清理栈中压入的三个参数
+.PTNULL:
+	add ebx, edx				  	;edx为program header大小,即e_phentsize,在此ebx指向下一个program header 
+	loop .each_segment
 	ret
 		
 	times (GDTR_BASE_ADDR-LOADER_MEM_BASE_ADDR)-($-$$) db 0	;空余一段空间
@@ -370,9 +400,4 @@ section gdt vstart=GDTR_BASE_ADDR
 
 	;空余一段内容保存以后增加的GDT表项
 	times (GDTR_END_ADDR-GDTR_BASE_ADDR)-($-$$) db 0
-
-;----------------------内存大小记录-----------------------
-section mem_record vstart=MEM_SIZE_RECORD_ADDR
-	;预留一段空间，用来存放内存大小记录
-	times (MEM_SIZE_END_ADDR-MEM_SIZE_RECORD_ADDR)-($-$$) db 0
 	

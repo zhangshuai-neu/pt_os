@@ -1,9 +1,9 @@
-;----------------------------MBR程序：读取信息-------------------------------
+;--------------------------MBR程序：读取信息------------------------------------
 MBR_MEM_BASE_ADDR 			equ  0x7c00 	;MBR的内存起始地址，cs:ip = 0000:7c00
 MBR_DISK_BASE_SECTOR 		equ  0x0 		;MBR起始扇区
 ;结束内存地址LOADER_MEM_BASE_ADDR-1
 
-;---------------------------loader程序：（进入保护模式、内存大小、开启页式管理）---
+;--------------------------loader程序:(进入保护模式、内存大小、开启页式管理)----
 LOADER_MEM_BASE_ADDR 		equ  0x7e00 	;loader程序其实内存地址设置为0x7e00, cs:ip = 0000:7e00
 LOADER_DISK_BASE_SECTOR 	equ  0x1 		;loader程序从硬盘的1扇区开始（0扇区为MBR）
 LOADER_SECTOR_SIZE 			equ  0x9 		;loader程序的大小（扇区数）
@@ -11,7 +11,7 @@ VGA_BASE_ADDR 				equ  0xb800 	;显示内存位置,段基址
 
 ;结束内存位置GDTR_BASE_ADDR-1
 
-;--------------------------loader程序: gdt描述符  ---------------------------
+;--------------------------loader程序: gdt描述符  ------------------------------
 DESC_NUM 		  equ 		4						;自己添加的描述符表项个数，系统段
 GDTR_BASE_ADDR 	  equ 		0x00009000 				;GDT的基址，需要存放到GDTR中，32位
 													;希望GDT在0x9000到0xa000之间，一共有512个段描述符，支持512-4个进程
@@ -20,27 +20,25 @@ GDT_SECTOR_SIZE	  equ		0x8						;GDT表的大小
 GDTR_LIMIT 		  equ 		(DESC_NUM*8-1)			;GDT系统段上限，字节为单位，16位
 ;结束内存地址GDTR_END_ADDR-1
 
-;--------------------------loader程序: 内存大小记录---------------------------
-MEM_SIZE_RECORD_ADDR			equ 	0xa000			;记录内存大小的一段内存空间，起始地址
-MEM_SIZE_END_ADDR				equ		0xa200			;记录内存大小的一段内存空间，结束地址
-MEM_SIZE_RECORD_SECTOR_SIZE 	equ		0x1					;所用扇区数
-MEM_SIZE_AVAI_ADDR				equ		MEM_SIZE_END_ADDR-8	;可以内存大小，存放到该位置
+;--------------------------loader程序: 内存大小记录-----------------------------
+MEM_SIZE_RECORD_ADDR			equ 	0xa000				;记录内存大小的一段内存空间，起始地址
+MEM_SIZE_END_ADDR				equ		0xa200				;记录内存大小的一段内存空间，结束地址
+MEM_SIZE_AVAI_ADDR				equ		(MEM_SIZE_END_ADDR-8)	;可用内存大小，存放到该位置
 
-;--------------------------MBR程序: mbr要读取的总扇区数--------------------------------
-MBR_READ_SECTOR_SIZE	equ		(LOADER_SECTOR_SIZE+GDT_SECTOR_SIZE+MEM_SIZE_RECORD_SECTOR_SIZE)
+;--------------------------MBR程序: mbr要读取的总扇区数-------------------------
+MBR_READ_SECTOR_SIZE	equ		(LOADER_SECTOR_SIZE+GDT_SECTOR_SIZE)
 
-;--------------------------loader程序：内核代码-----------------
-KERNEL_BASE_ADDR	equ		0x00080000 	;内核加载到内存头1M的后一半
-KERNEL_SECTOR_SIZE	equ		1			;内核代码的长度（扇区）
+;--------------------------kernel程序：内核代码---------------------------------
+KERNEL_BASE_ADDR	equ		0x00100000 		;内核加载到内存的的位置(1M~1.5M)
+KERNEL_ENTRY_POINT	equ 	0x001
+KERNEL_BIN_BASE_SECTOR	equ		19			;kernel.bin的起始扇区号
+KERNEL_BIN_SECTOR_SIZE	equ		200			;kernel.bin的最大长度（100KB）
 
+;--------------------------loader程序：页表-------------------------------------
+PAGE_DIR_BASE_ADDR		equ		0x0010_0000	;页表所在的基地址(1M~)
 
-;--------------------------loader程序：页表-------------
-PAGE_DIR_BASE_ADDR		equ		0x0010_0000	;页表所在的基地址
-PAGE_SECTOR_SIZE		equ		0			;页表占据的扇区数
-
-;--------------------------loader程序：loader要读取的扇区数-----------
-KERNEL_PAGE_SECTOR_SIZE	equ		(KERNEL_SECTOR_SIZE+PAGE_SECTOR_SIZE)
-
+;--------------------------loader程序：loader要读取的扇区数---------------------
+LOADER_READ_SECTOR_SIZE	equ		KERNEL_BIN_SECTOR_SIZE
 
 ;GDT表项的属性
 DESC_G_4K   equ	  1_000_0000_0000_0000_0000_0000b   ;limit的单位为4K
@@ -99,11 +97,14 @@ STACK_TOP 	   equ  (MBR_MEM_BASE_ADDR-8)	;栈顶靠近0x7c00，x500到0x7c00为�
 SELECTOR_VIDEO equ (0x0003<<3) + TI_GDT + RPL0
 
 ;--------------------------loader程序：页表相关属性-----------------------------------
-PG_P  equ   1b
-PG_RW_R	 equ  00b 
-PG_RW_W	 equ  10b 
-PG_US_S	 equ  000b 
-PG_US_U	 equ  100b 
+PG_P  equ   1b			;存在位（是否在物理内存）
+PG_RW_R	 equ  00b 		;读写位，可读不可写
+PG_RW_W	 equ  10b 		;读写位，可读可写
+PG_US_S	 equ  000b 		;用户|特权位，特权
+PG_US_U	 equ  100b 		;用户|特权位，用户
+
+;-------------  program type 定义   --------------
+PT_NULL	 equ  0			;表示
 
 
 

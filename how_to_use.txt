@@ -1,0 +1,4 @@
+1.Make image file
+	You can use "bximage" to create an disk image. And I have write this in 
+Makefile.
+
