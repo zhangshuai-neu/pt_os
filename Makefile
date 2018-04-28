@@ -11,7 +11,7 @@ KERNEL_SECTOR_SIZE:=200
 #kernel不超过512KB
 
 run: boot_code kernel_code
-	/home/zs/Desktop/bochs-2.6.9/bochs -f bochsrc
+	/home/shuai_zhang/Desktop/bochs-2.6.9/bochs -f bochsrc
 	
 boot_code:./boot/1mbr.bin ./boot/2loader.bin
 	$(MAKE) -C ./boot
@@ -27,4 +27,4 @@ kernel_code:./kernel/kernel.bin
 
 #使用bochs自带的镜像制作程序
 image:
-	/home/zs/Desktop/bochs-2.6.9/bximage
+	/home/shuai_zhang/Desktop/bochs-2.6.9/bximage
