@@ -1,7 +1,8 @@
 ENTRY(main)
 SECTIONS{
-    .text 0x00100000:
+    .text 0x0:
     {
+		main.o(.text)
         *(.text)
     }
     .data :

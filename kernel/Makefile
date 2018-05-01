@@ -1,4 +1,4 @@
-default:
+default: main.c linker.ld
 	gcc -c -o main.o main.c	
 	ld  -T linker.ld main.o -e main -o kernel.bin
 

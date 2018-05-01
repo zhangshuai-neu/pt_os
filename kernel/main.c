@@ -1,5 +1,5 @@
 int main(){
-	int * addr=0x00180000;
+	int * addr=0x00280000;
 	*addr=0xff88;
 	
 	while(1){}

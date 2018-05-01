@@ -131,23 +131,24 @@ protection_mode_start:
 
 	;进入保护模式，寄存器也设置完成
 	mov byte [gs:320],'p'
-	mov byte [gs:322],'r'
-	mov byte [gs:324],'o'
-	mov byte [gs:326],'t'
-	mov byte [gs:328],'e'
-	mov byte [gs:330],'c'
-	mov byte [gs:332],'c'
-	mov byte [gs:334],'t'
+	mov byte [gs:322],' '
+	mov byte [gs:324],'m'
+	mov byte [gs:326],'o'
+	mov byte [gs:328],'d'
+	mov byte [gs:330],'e'
 
 ;----------------读取kernel.bin-------------------------
 ;loader程序读取内核代码
 ;-------------------------------------------------------
 load_kernel_bin:
 	mov eax, KERNEL_BIN_BASE_SECTOR
-	mov ebx, KERNEL_BIN_BASE_ADDR
+	mov ebx, KERNEL_BASE_ADDR 			;内存地址
 	mov ecx, KERNEL_BIN_SECTOR_SIZE
 	call rd_disk_m_32
 	
+	;debug
+	
+
 	
 ;-------------启用内存分页机制，页式管理内存------------
 ;采用 linux一样的做法，将0-3G作为虚拟的用户空间，3-4G位虚拟的系统空间
@@ -188,25 +189,23 @@ load_kernel_bin:
 	mov byte [gs:484],'g'
 	mov byte [gs:486],'e'
 
-
 	jmp SELECTOR_CODE:enter_kernel	  ;强制刷新流水线,更新gdt
 
 ;----------------------进入内核-------------------------
-;
+;内核初始化
 ;-------------------------------------------------------	
 enter_kernel:    
-	call kernel_init
-	mov esp, 0xc009f000
+	mov esp, 0xc0300000
 	jmp KERNEL_ENTRY_POINT                 ;
-	
-		
+
+
 ;----------------一些用到的函数-------------------------
 ;1 rd_disk_m_32 功能：读取硬盘n个扇区（在32位模式） 
 ;2 mem_cpy 		功能：逐字节拷贝 mem_cpy(dst,src,size)
 ;3 setup_page 	功能：创建页目录及页表
 ;4 kernel_init  功能：将kernel.bin中的segment拷贝到编译的地址
-;------------------------------------------------------------------------------- 
-;-----------------  rd_disk_m_32    -----------  
+;-----------------------------------------------------
+;-------------------rd_disk_m_32 ---------------------  
 rd_disk_m_32:	  
 		; eax=LBA扇区号
 		; ebx=将数据写入的内存地址
@@ -273,7 +272,6 @@ rd_disk_m_32:
     loop .go_on_read
     ret
 
-	
 ;----------  逐字节拷贝 mem_cpy(dst,src,size) ------------
 ;输入:栈中三个参数(dst,src,size)
 ;输出:无
@@ -323,7 +321,7 @@ setup_page:
 	mov [PAGE_DIR_BASE_ADDR + 4092], eax	;使最后一个目录项指向页目录表自己的地址
 
 ;下面创建页表项(PTE)
-	mov ecx, 512				    	;2M低端内存 / 每页大小4k = 512
+	mov ecx, 1024				    	;4M低端内存 / 每页大小4k = 1024
 	mov esi, 0
 	mov edx, 0
 	mov edx, PG_US_U | PG_RW_W | PG_P	;属性为7,US=1,RW=1,P=1
@@ -348,37 +346,10 @@ setup_page:
 	ret
 	
 ;-----------------  kernel_init    ----------- 
-kernel_init:
-	xor eax, eax
-	xor ebx, ebx		;ebx记录程序头表地址
-	xor ecx, ecx		;cx记录程序头表中的program header数量
-	xor edx, edx		;dx 记录program header尺寸,即e_phentsize
 
-	mov dx, [KERNEL_BIN_BASE_ADDR + 42]	  ; 偏移文件42字节处的属性是e_phentsize,表示program header大小
-	mov ebx, [KERNEL_BIN_BASE_ADDR + 28]  ; 偏移文件开始部分28字节的地方是e_phoff,表示第1 个program header在文件中的偏移量
-										  ; 其实该值是0x34,不过还是谨慎一点，这里来读取实际值
-	add ebx, KERNEL_BIN_BASE_ADDR
-	mov cx, [KERNEL_BIN_BASE_ADDR + 44]    ; 偏移文件开始部分44字节的地方是e_phnum,表示有几个program header
-.each_segment:
-	cmp byte [ebx + 0], PT_NULL		  ; 若p_type等于 PT_NULL,说明此program header未使用。
-	je .PTNULL
-
-	;为函数memcpy压入参数,参数是从右往左依然压入.函数原型类似于 memcpy(dst,src,size)
-	push dword [ebx + 16]		  	;program header中偏移16字节的地方是p_filesz,压入函数memcpy的第三个参数:size
-	mov eax, [ebx + 4]			  	;距程序头偏移量为4字节的位置是p_offset
-	add eax, KERNEL_BIN_BASE_ADDR	;加上kernel.bin被加载到的物理地址,eax为该段的物理地址
-	push eax				  		;压入函数memcpy的第二个参数:源地址
-	push dword [ebx + 8]			;压入函数memcpy的第一个参数:目的地址,偏移程序头8字节的位置是p_vaddr，这就是目的地址
-	
-	call mem_cpy				  	;调用mem_cpy完成段复制
-	add esp,12				  		;清理栈中压入的三个参数
-.PTNULL:
-	add ebx, edx				  	;edx为program header大小,即e_phentsize,在此ebx指向下一个program header 
-	loop .each_segment
-	ret
+		
 		
 	times (GDTR_BASE_ADDR-LOADER_MEM_BASE_ADDR)-($-$$) db 0	;空余一段空间
-
 ;----------定义一些GDT的内容，会被加载到内存GDTR_BASE_ADDR------
 section gdt vstart=GDTR_BASE_ADDR
 	;GDT的填充值
