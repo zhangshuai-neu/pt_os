@@ -12,7 +12,8 @@
  * Email: zhangshuaiisme@gmail.com
  */
 
-//1 ptsc_print_str 
+//1 ptsc_print_str
+	//函数声明
 	//宏定义
 	#define VIEW_MEM_BASE_ADDR	0xc00b8000 	//显示内存基地址
 	#define VIEW_ROW_SIZE		(80*2)		//80个字符一行,一个单位需要2 byte
@@ -21,8 +22,9 @@
 	#define VIEW_COLUMN			25			//25行
 	
 	//全局变量
-	unsigned int view_cr=0;		//current row	当前行
-	unsigned int view_cc=0；		//current column 当前列
+	unsigned int view_row=0;		//current row	当前行
+	unsigned int view_column=0;		//current column 当前列
+	
 	
 //2
 

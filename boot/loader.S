@@ -30,7 +30,7 @@ show_msg:
 		jmp get_memory_size		;获取内存大小
 
 define_data:
-	msg db "welcome to zs_os" 	;启动欢迎信息
+	msg db "welcome to pt_os" 	;启动欢迎信息
 		db 0					;表示字符串的末尾
 
 
@@ -195,7 +195,7 @@ load_kernel_bin:
 ;内核初始化
 ;-------------------------------------------------------	
 enter_kernel:    
-	mov esp, 0xc0300000
+	mov esp, 0xc02b0000
 	jmp KERNEL_ENTRY_POINT                 ;
 
 
@@ -203,7 +203,6 @@ enter_kernel:
 ;1 rd_disk_m_32 功能：读取硬盘n个扇区（在32位模式） 
 ;2 mem_cpy 		功能：逐字节拷贝 mem_cpy(dst,src,size)
 ;3 setup_page 	功能：创建页目录及页表
-;4 kernel_init  功能：将kernel.bin中的segment拷贝到编译的地址
 ;-----------------------------------------------------
 ;-------------------rd_disk_m_32 ---------------------  
 rd_disk_m_32:	  
@@ -272,24 +271,6 @@ rd_disk_m_32:
     loop .go_on_read
     ret
 
-;----------  逐字节拷贝 mem_cpy(dst,src,size) ------------
-;输入:栈中三个参数(dst,src,size)
-;输出:无
-;---------------------------------------------------------
-mem_cpy:		      
-   cld
-   push ebp
-   mov ebp, esp
-   push ecx		   ; rep指令用到了ecx，但ecx对于外层段的循环还有用，故先入栈备份
-   mov edi, [ebp + 8]	   ; dst
-   mov esi, [ebp + 12]	   ; src
-   mov ecx, [ebp + 16]	   ; size
-   rep movsb		   ; 逐字节拷贝
-
-   ;恢复环境
-   pop ecx		
-   pop ebp
-   ret
 
 ;-------------   创建页目录及页表   ---------------
 ; 使用了4KB*2大小的空间
@@ -344,9 +325,6 @@ setup_page:
 	add eax, 0x1000
 	loop .create_kernel_pde
 	ret
-	
-;-----------------  kernel_init    ----------- 
-
 		
 		
 	times (GDTR_BASE_ADDR-LOADER_MEM_BASE_ADDR)-($-$$) db 0	;空余一段空间

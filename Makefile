@@ -1,25 +1,25 @@
-#-----------------------------
-#各部分所占用扇区数
-#-----------------------------
-MBR_SECTOR_SIZE:=1			#1
 
-LOADER_SECTOR_START:=1
-LOADER_SECTOR_SIZE:=17		#2-18
+#kernel不超过1M
 
-KERNEL_SECTOR_START:=19		#19-219
-KERNEL_SECTOR_SIZE:=200
-#kernel不超过512KB
+#ld链接代码
+#-e 指明起始符号
+#-T 指定链接脚本
+#kernel.bin的内存起始位置(用readelf查看)
+LD_OBJECTS:=./kernel/main.o ./system_call/system_call.o
+LD_FLAGS:=-m elf_i386 -T kernel_link.ld -o kernel.elf
+
 
 all:
-	#compile boot
+	#boot
 	$(MAKE) -C ./boot
-	dd if=./boot/1mbr.bin 	 of=./pt_os.img bs=512 count=$(MBR_SECTOR_SIZE) conv=notrunc
-	dd if=./boot/2loader.bin of=./pt_os.img bs=512 count=$(LOADER_SECTOR_SIZE) seek=$(LOADER_SECTOR_START) conv=notrunc
-	
-	#compile kernel
+	#kernel
 	$(MAKE) -C ./kernel
-	dd if=./kernel/kernel.bin skip=2048 of=./pt_os.img bs=512 count=$(KERNEL_SECTOR_SIZE) seek=$(KERNEL_SECTOR_START) conv=notrunc
-
+	
+	#system_call
+	$(MAKE) -C ./system_call
+	
+	ld $(LD_FLAGS) $(LD_OBJECTS)
+	
 run:
 	/home/shuai_zhang/Desktop/bochs-2.6.9/bochs -f bochsrc
 
@@ -27,6 +27,7 @@ run:
 clean:
 	$(MAKE) -C ./boot clean
 	$(MAKE) -C ./kernel clean
+	$(MAKE) -C ./system_call clean
 
 #使用bochs自带的镜像制作程序
 image:

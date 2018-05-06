@@ -35,22 +35,8 @@ PAGE_DIR_BASE_ADDR		equ		0x0010_0000	;页表所在的基地址(1M~2M)
 KERNEL_BASE_ADDR	equ		0x0020_0000		;内核加载到内存的的位置(2M~3M)
 KERNEL_ENTRY_POINT	equ 	0x0020_0000		;可能会改变
 KERNEL_BIN_BASE_SECTOR	equ		19			;kernel.bin的起始扇区号
-KERNEL_BIN_SECTOR_SIZE	equ		200			;kernel.bin的最大长度（100KB）
+KERNEL_BIN_SECTOR_SIZE	equ		200			;kernel.bin的最大长度（1M 4096）
 
-;--------------------------mm程序：内存管理------------------------------------
-ITERRUPT_BASE_ADDR		equ		(0x0020_0000 + 0x2_0000 * 1)	;内存管理基地址
-
-;--------------------------tm程序：进程管理-------------------------------
-ITERRUPT_BASE_ADDR		equ		(0x0020_0000 + 0x2_0000 * 2)	;进程管理基地址
-
-;--------------------------fs程序：文件系统------------------------------------
-ITERRUPT_BASE_ADDR		equ		(0x0020_0000 + 0x2_0000 * 3)	;文件系统基地址
-
-;--------------------------interrupt程序：服务例程-----------------------------
-ITERRUPT_BASE_ADDR		equ		(0x0020_0000 + 0x2_0000 * 4)	;中断处理基地址
-
-;--------------------------system_call程序：系统调用---------------------------
-SYSTEM_CALL_BASE_ADDR	equ		(0x0020_0000 + 0x2_0000 * 5)	;系统调用基地址
 
 
 
