@@ -4,8 +4,8 @@
  * 实现系统调用需要的头文件，定义了需要的宏和全局变量，尽量避免使用汇编
  * 
  * 实现的系统调用列表:
- * 1.ptsc_print_str 打印字符串(字符模式)
- * 2.
+ * 1. ptsc_init_view 初始化亮度(字符模式)
+ * 2. ptsc_print_str 打印字符串(字符模式)
  * 3.
  * 
  * Author:Shuai Zhang
@@ -19,10 +19,10 @@
 	#define VIEW_ROW_SIZE		(80*2)		//80个字符一行,一个单位需要2 byte
 											//ascii 1 byte,color 1 byte
 											
-	#define VIEW_COLUMN			25			//25行
+	#define VIEW_COLUMN			24			//25行
 	
 	//全局变量
-	unsigned int view_row=0;		//current row	当前行
+	unsigned int view_row=1;		//current row	当前行
 	unsigned int view_column=0;		//current column 当前列
 	
 	

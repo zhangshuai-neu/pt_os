@@ -45,9 +45,11 @@
 
 /*
  * 6.system_call 必要的功能性重用函数
- *
+ * 	1)ptsc_init_view 初始化亮度
+ *	2)ptsc_print_str 打印字符串
  *
  * */
+void ptsc_init_view();
 void ptsc_print_str(char *str);
 
 

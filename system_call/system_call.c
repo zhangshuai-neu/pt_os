@@ -2,13 +2,14 @@
  * 系统调用
  *
  * 为了实现一些重复的内核功能，创建一些系统调用，用户程序可以通过中断进行访问。
- * 所有的系统调用以ptsc作为前缀，表示prototype_system_call
+ * 所有的系统调用以ptsc作为前缀，表示ProtoType_System_Call
  * 
  * 实现的系统调用列表:
- * 1.ptsc_print_str 打印字符串(字符模式)
- * 2.
+ * 1.ptsc_init_view 初始化亮度(字符模式)
+ * 2.ptsc_print_str 打印字符串(字符模式)
  * 3.
- * 
+ * 4.
+ *
  * Author:Shuai Zhang
  * Email: zhangshuaiisme@gmail.com
  */
@@ -17,21 +18,44 @@
 
 /*
  * ID: 			1
+ * Comment: 	初始化亮度(字符模式)
+ *				全为亮白色
+ *
+ * Name: 		ptsc_init_view
+ * Parameter: 	nothing	
+ * Return: 		nothing
+*/
+void ptsc_init_view(){
+	char *color_addr=VIEW_MEM_BASE_ADDR;
+	int i=0,j=0;
+	
+	for(i=0;i<VIEW_COLUMN;i++){
+		for(j=0;j<80;j++){
+			*(color_addr+j*2+1)=0x0f;
+		}
+		color_addr+=VIEW_ROW_SIZE;
+	}
+}
+
+/*
+ * ID: 			2
  * Comment: 	打印一个字符串
  * 				字符串以 \0 结尾，\n 换行
- *				在字符模式下，范围是80*25
+ *				在字符模式下，范围是80*24
  *
  * Name: 		print_str
  * Parameter: 	str_addr	
  * Return: 		nothing
 */
 	void up_line();
-	void print_char(char c);	
+	void print_char(char c);
+	
 
 	void ptsc_print_str(char *str){
 		char *c_addr=str;
 		while(*c_addr != 0){
 			print_char(*c_addr);
+			c_addr++;
 		}
 	}
 	
@@ -45,16 +69,16 @@
 		//复制
 		char *pre_line_addr=(char *)VIEW_MEM_BASE_ADDR;
 		char *next_line_addr=(char *)VIEW_MEM_BASE_ADDR+VIEW_ROW_SIZE;
-		for(i=1;i<25;i++){
-			for(j=0;j<=79*2;j++){
-				*(pre_line_addr+j)=*(next_line_addr+j);
+		for(i=0;i<VIEW_COLUMN;i++){
+			for(j=0;j<80;j++){
+				*(pre_line_addr+j*2)=*(next_line_addr+j*2);
 			}
 			pre_line_addr+=VIEW_ROW_SIZE;
 			next_line_addr+=VIEW_ROW_SIZE;
 		}
 		//清空底行
-		for(j=0;j<=79*2;j++){
-			*(next_line_addr+j)=0;
+		for(j=0;j<80;j++){
+			*(pre_line_addr+j*2)=0;
 		}
 	}
 
@@ -69,18 +93,19 @@
 		if(c == '\n'){
 			view_row++;
 			view_column=0;
+			return ;
 		}
 		
 		//列满？
-		if(view_column >=80){
+		if(view_column >= 80){
 			view_row++;
 			view_column=0;
 		}
 
 		//行满?
-		if(view_row >= 25){
+		if(view_row >= VIEW_COLUMN){
 			up_line();
-			view_row=24;
+			view_row=VIEW_COLUMN-1;
 			view_column=0;
 		}
 		
