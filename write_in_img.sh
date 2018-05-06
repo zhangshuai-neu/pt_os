@@ -12,4 +12,4 @@ KERNEL_SECTOR_SIZE=2048
 
 dd if=./boot/1mbr.bin 	 of=./pt_os.img bs=512 count=${MBR_SECTOR_SIZE} conv=notrunc
 dd if=./boot/2loader.bin of=./pt_os.img bs=512 count=${LOADER_SECTOR_SIZE} seek=${LOADER_SECTOR_START} conv=notrunc
-dd if=./kernel.elf skip=4096 of=./pt_os.img bs=512 count=${KERNEL_SECTOR_SIZE} seek=${KERNEL_SECTOR_START} conv=notrunc
+dd if=./kernel.elf skip=8 of=./pt_os.img bs=512 count=${KERNEL_SECTOR_SIZE} seek=${KERNEL_SECTOR_START} conv=notrunc

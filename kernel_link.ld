@@ -1,5 +1,11 @@
+/*
+notice:
+	1. .text和.data等段之后必须有一个空格，否则会报语法错误
+*/
+
 ENTRY(main)
 SECTIONS{
+
 	.text 0x200000:
     {
     	/*内核启动代码*/
@@ -9,16 +15,13 @@ SECTIONS{
 		./system_call/system_call.o(.text)
     }
     
-    /*未使用0x260000 ~ 0x2c0s000*/
-    
-
-    .data 0x2e0000:
+    .data :
     {
         ./kernel/main.o(.data)
         ./system_call/system_call.o(.data)
     }
     
-    .bss 0x2f0000:
+    .bss :
     {
         ./kernel/main.o(.bss)
         ./system_call/system_call.o(.bss)

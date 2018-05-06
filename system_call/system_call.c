@@ -88,7 +88,7 @@
 		view_addr+=VIEW_ROW_SIZE*view_row; 	//行
 		view_addr+=view_column * 2;			//列
 		*view_addr=c;						//写内存
-		view_column+=2;						//光标后移
+		view_column+=1;						//光标后移
 	}
 
 
