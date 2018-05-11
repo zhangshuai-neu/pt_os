@@ -86,9 +86,6 @@ get_memory_size:
 		loop find_max_area
 	mem_get_ok:
 		mov [MEM_SIZE_AVAI_ADDR],edx	;将内存容量，写入MEM_SIZE_AVAI_ADDR指向的内存
-		mov byte [gs:160],'m'
-		mov byte [gs:162],'e'
-		mov byte [gs:164],'m'
 		
 		jmp into_pro	;进入保护模式
 
@@ -130,12 +127,6 @@ protection_mode_start:
 	mov gs, ax				;新的显示段
 
 	;进入保护模式，寄存器也设置完成
-	mov byte [gs:320],'p'
-	mov byte [gs:322],' '
-	mov byte [gs:324],'m'
-	mov byte [gs:326],'o'
-	mov byte [gs:328],'d'
-	mov byte [gs:330],'e'
 
 ;----------------读取kernel.bin-------------------------
 ;loader程序读取内核代码
@@ -184,10 +175,6 @@ load_kernel_bin:
 	;4 用新地址重新加载GDT
 	lgdt [gdt_ptr]
 
-	mov byte [gs:480],'p'
-	mov byte [gs:482],'a'
-	mov byte [gs:484],'g'
-	mov byte [gs:486],'e'
 
 	jmp SELECTOR_CODE:enter_kernel	  ;强制刷新流水线,更新gdt
 

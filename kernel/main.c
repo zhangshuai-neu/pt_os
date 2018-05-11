@@ -22,6 +22,15 @@ int main(){
 	//1. 初始化显示亮度(字符模式)
 	ptsc_init_view();
 
+	// 完成的内容
+	ptsc_print_str("Get Memmory Size: OK\n");
+	ptsc_print_str("Get into Protection Mode: OK\n");
+	ptsc_print_str("Page Management: OK\n");
+	
+	
+	//5. 中断处理
+	//idt_init();
+
 
 
 	while(1){

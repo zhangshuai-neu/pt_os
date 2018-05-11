@@ -18,9 +18,13 @@
 #include "stdint.h"
 #include "system_call.h"
 
-//全局变量
-uint16_t view_row=1;		//current row	当前行
-uint16_t view_column=0;		//current column 当前列
+/*
+ * 全局变量(当前空白位置)
+ * 不能初始化为0，因为我没有写elf解释程序，所有bss段不会被分配内存
+ * 会造成变量不确定的情况(严重错误)
+ */
+uint16_t view_row=1;				//current row	当前行
+uint16_t view_column=1;			//current column 当前列
 
 /*
  * ID: 			1
@@ -35,12 +39,18 @@ void ptsc_init_view(){
 	char *color_addr=(char*)VIEW_MEM_BASE_ADDR;
 	int i=0,j=0;
 	
-	for(i=0;i<VIEW_COLUMN;i++){
-		for(j=0;j<80;j++){
+	for(i=0;i<=VIEW_ROW_MAX;i++){
+		for(j=0;j<=VIEW_COLUMN_MAX;j++){
 			*(color_addr+j*2+1)=0x0f;
 		}
 		color_addr+=VIEW_ROW_SIZE;
 	}
+	
+	/*
+	 * 真正的初始化
+	 */
+	view_row=2;
+	view_column=0;
 }
 
 /*
@@ -76,15 +86,15 @@ void ptsc_init_view(){
 		//复制
 		char *pre_line_addr=(char *)VIEW_MEM_BASE_ADDR;
 		char *next_line_addr=(char *)VIEW_MEM_BASE_ADDR+VIEW_ROW_SIZE;
-		for(i=0;i<VIEW_COLUMN;i++){
-			for(j=0;j<80;j++){
+		for(i=0;i<=VIEW_ROW_MAX;i++){
+			for(j=0;j<=VIEW_COLUMN_MAX;j++){
 				*(pre_line_addr+j*2)=*(next_line_addr+j*2);
 			}
 			pre_line_addr+=VIEW_ROW_SIZE;
 			next_line_addr+=VIEW_ROW_SIZE;
 		}
 		//清空底行
-		for(j=0;j<80;j++){
+		for(j=0;j<=VIEW_COLUMN_MAX;j++){
 			*(pre_line_addr+j*2)=0;
 		}
 	}
@@ -104,22 +114,23 @@ void ptsc_init_view(){
 		}
 		
 		//列满？
-		if(view_column >= 80){
+		if(view_column > VIEW_COLUMN_MAX){
 			view_row++;
 			view_column=0;
 		}
 
 		//行满?
-		if(view_row >= VIEW_COLUMN){
+		if(view_row > VIEW_ROW_MAX){
 			up_line();
-			view_row=VIEW_COLUMN-1;
+			view_row=VIEW_ROW_MAX;
 			view_column=0;
 		}
 		
 		//写内存（每个显示单元占2个字节）
 		view_addr+=VIEW_ROW_SIZE*view_row; 	//行
 		view_addr+=view_column * 2;			//列
-		*view_addr=c;						//写内存
+		*view_addr=c;						//写
+		
 		view_column+=1;						//光标后移
 	}
 

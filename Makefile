@@ -8,7 +8,7 @@ BUILD_DIR = ./build
 
 #编译选项
 LIB = -I sc -I lib -I it
-C_FLAGS = -Wall -m32 -c $(LIB) 
+C_FLAGS = -Wall -m32 -O0 -c $(LIB) 
 
 #链接选项
 LD_OBJECTS= $(BUILD_DIR)/main.o $(BUILD_DIR)/system_call.o
@@ -42,9 +42,8 @@ run:
 
 #清空所有.o
 clean:
-	rm $(LD_OBJECTS) $(BUILD_DIR)/kernel.elf
-	rm boot/*.bin
-
+	rm $(LD_OBJECTS) $(BUILD_DIR)/kernel.elf $(BUILD_DIR)/*.bin
+	
 #使用bochs自带的镜像制作程序
 image:
 	/home/$(USER)/Desktop/bochs-2.6.9/bximage

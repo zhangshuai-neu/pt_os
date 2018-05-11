@@ -64,7 +64,7 @@ static void idt_desc_init(void) {
 /* 通用的中断处理函数,一般用在异常出现时的处理 */
 static void general_intr_handler(uint8_t vec_nr) {
    if (vec_nr == 0x27 || vec_nr == 0x2f) {	// 0x2f是从片8259A上的最后一个irq引脚，保留
-      return;		//IRQ7和IRQ15会产生伪中断(spurious interrupt),无须处理。
+      return;								//IRQ7和IRQ15会产生伪中断(spurious interrupt),无须处理。
    }
    put_str("int vector: 0x");
    put_int(vec_nr);
@@ -72,15 +72,17 @@ static void general_intr_handler(uint8_t vec_nr) {
 }
 
 /* 完成一般中断处理函数注册及异常名称注册 */
-static void exception_init(void) {			    // 完成一般中断处理函数注册及异常名称注册
+static void exception_init(void) {			    //完成一般中断处理函数注册及异常名称注册
    int i;
    for (i = 0; i < IDT_DESC_CNT; i++) {
 
-/* idt_table数组中的函数是在进入中断后根据中断向量号调用的,
- * 见kernel/kernel.S的call [idt_table + %1*4] */
-      idt_table[i] = general_intr_handler;		    // 默认为general_intr_handler。
-							    // 以后会由register_handler来注册具体处理函数。
-      intr_name[i] = "unknown";				    // 先统一赋值为unknown 
+/* 
+ * idt_table数组中的函数是在进入中断后根据中断向量号调用的,
+ * 见kernel/kernel.S的call [idt_table + %1*4] 
+ */
+      idt_table[i] = general_intr_handler;		//默认为general_intr_handler
+							    				//以后会由register_handler来注册具体处理函数
+      intr_name[i] = "unknown";				    //先统一赋值为unknown 
    }
    intr_name[0] = "#DE Divide Error";
    intr_name[1] = "#DB Debug Exception";
