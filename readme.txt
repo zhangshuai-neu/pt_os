@@ -1,9 +1,6 @@
-This is a simple OS!
-
-
-Author:zhang shuai
 =======
 # pt_os
+
 ProtoType Operating System
 
 各目录内容：
