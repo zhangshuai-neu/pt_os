@@ -15,6 +15,7 @@
  */
 
 #include "system_call.h"
+#include "interrupt.h"
 
 int main(){
 
