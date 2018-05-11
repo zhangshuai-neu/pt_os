@@ -37,10 +37,6 @@ KERNEL_ENTRY_POINT	equ 	0x0020_0000		;可能会改变
 KERNEL_BIN_BASE_SECTOR	equ		19			;kernel.bin的起始扇区号
 KERNEL_BIN_SECTOR_SIZE	equ		200			;kernel.bin的最大长度（1M 4096）
 
-
-
-
-
 ;--------------------------loader程序：loader要读取的扇区数---------------------
 LOADER_READ_SECTOR_SIZE	equ		KERNEL_BIN_SECTOR_SIZE
 

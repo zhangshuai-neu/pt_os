@@ -9,22 +9,22 @@ SECTIONS{
 	.text 0x200000:
     {
     	/*内核启动代码*/
-    	./kernel/main.o(.text)
+    	./build/main.o(.text)
     	
 		/*系统调用代码|系统函数代码(非中断触发，内核直接使用)*/
-		./system_call/system_call.o(.text)
+		./build/system_call.o(.text)
     }
     
     .data :
     {
-        ./kernel/main.o(.data)
-        ./system_call/system_call.o(.data)
+        ./build/main.o(.data)
+        ./build/system_call.o(.data)
     }
     
     .bss :
     {
-        ./kernel/main.o(.bss)
-        ./system_call/system_call.o(.bss)
+        ./build/main.o(.bss)
+        ./build/system_call.o(.bss)
     }
     
 }

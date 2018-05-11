@@ -1,34 +1,46 @@
+#编译器、链接器
+CC = gcc
+LD = ld
 
-#kernel不超过1M
+#build目录
+BUILD_DIR = ./build
 
-#ld链接代码
-#-e 指明起始符号
-#-T 指定链接脚本
-#kernel.bin的内存起始位置(用readelf查看)
-LD_OBJECTS:=./kernel/main.o ./system_call/system_call.o
-LD_FLAGS:=-m elf_i386 -T kernel_link.ld -o kernel.elf
+#编译选项
+LIB = -I sc -I lib -I it
+C_FLAGS = -Wall -m32 -c $(LIB) 
 
+#链接选项
+LD_OBJECTS= $(BUILD_DIR)/main.o $(BUILD_DIR)/system_call.o
+LD_FLAGS:=-m elf_i386 -T $(BUILD_DIR)/kernel_link.ld 
 
-all:
-	#boot
-	$(MAKE) -C ./boot
-	#kernel
-	$(MAKE) -C ./kernel
+#启动代码
+boot:
+	$(MAKE) -C ./boot 
+
+#编译各个模块
+$(BUILD_DIR)/main.o: kernel/main.c sc/system_call.h
+	$(CC) $(C_FLAGS) $< -o $@
+
+$(BUILD_DIR)/system_call.o: sc/system_call.c sc/system_call.h lib/stdint.h
+	$(CC) $(C_FLAGS) $< -o $@
 	
-	#system_call
-	$(MAKE) -C ./system_call
-	
-	ld $(LD_FLAGS) $(LD_OBJECTS)
-	
+build: $(LD_OBJECTS)
+	ld $(LD_FLAGS) $(LD_OBJECTS) -o $(BUILD_DIR)/kernel.elf
+
+#写入disk
+hd:
+	./build/write_in_img.sh
+
+#bochs运行
 run:
-	/home/shuai_zhang/Desktop/bochs-2.6.9/bochs -f bochsrc
+	/home/shuai_zhang/Desktop/bochs-2.6.9/bochs -f ./bochs_conf/bochsrc
 
-
+#清空所有.o
 clean:
-	$(MAKE) -C ./boot clean
-	$(MAKE) -C ./kernel clean
-	$(MAKE) -C ./system_call clean
+	rm $(LD_OBJECTS) $(BUILD_DIR)/kernel.elf
 
 #使用bochs自带的镜像制作程序
 image:
 	/home/shuai_zhang/Desktop/bochs-2.6.9/bximage
+
+

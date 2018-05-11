@@ -14,7 +14,13 @@
  * Email: zhangshuaiisme@gmail.com
  */
 
+//头文件
+#include "stdint.h"
 #include "system_call.h"
+
+//全局变量
+uint16_t view_row=1;		//current row	当前行
+uint16_t view_column=0;		//current column 当前列
 
 /*
  * ID: 			1
@@ -26,7 +32,7 @@
  * Return: 		nothing
 */
 void ptsc_init_view(){
-	char *color_addr=VIEW_MEM_BASE_ADDR;
+	char *color_addr=(char*)VIEW_MEM_BASE_ADDR;
 	int i=0,j=0;
 	
 	for(i=0;i<VIEW_COLUMN;i++){
@@ -42,6 +48,7 @@ void ptsc_init_view(){
  * Comment: 	打印一个字符串
  * 				字符串以 \0 结尾，\n 换行
  *				在字符模式下，范围是80*24
+ *				c语言的字符串结尾自动添加\0，不需要手动添加
  *
  * Name: 		print_str
  * Parameter: 	str_addr	

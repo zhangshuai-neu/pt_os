@@ -19,4 +19,4 @@ ata0-master: type=disk, path="/home/shuai_zhang/Desktop/pt_os/pt_os.img", mode=f
 #gdbstub: enabled=1, port=1234, text_base=0, data_base=0, bss_base=0;
 
 #日志
-log: bochs.out
+log: bochs_conf/bochs.out
