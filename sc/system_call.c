@@ -45,10 +45,10 @@ void ptsc_init_view(){
 
 /*
  * ID: 			2
- * Comment: 	打印一个字符串
+ * Comment: 	打印一个字符串(在字符模式下，范围是80*24)
  * 				字符串以 \0 结尾，\n 换行
- *				在字符模式下，范围是80*24
  *				c语言的字符串结尾自动添加\0，不需要手动添加
+ *				
  *
  * Name: 		print_str
  * Parameter: 	str_addr	

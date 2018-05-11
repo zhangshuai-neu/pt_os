@@ -3,8 +3,8 @@ display_library: x
 
 megs: 32
 
-romimage: file=/home/shuai_zhang/Desktop/bochs-2.6.9/bios/BIOS-bochs-latest
-vgaromimage: file=/home/shuai_zhang/Desktop/bochs-2.6.9/bios/VGABIOS-lgpl-latest
+romimage: file=/home/zhangshuai/Desktop/bochs-2.6.9/bios/BIOS-bochs-latest
+vgaromimage: file=/home/zhangshuai/Desktop/bochs-2.6.9/bios/VGABIOS-lgpl-latest
 
 boot: disk
 
@@ -13,7 +13,7 @@ boot: disk
 mouse: enabled=0
 
 ata0: enabled=1, ioaddr1=0x1f0 ,ioaddr2=0x3f0 ,irq=14
-ata0-master: type=disk, path="/home/shuai_zhang/Desktop/pt_os/pt_os.img", mode=flat, cylinders=65, heads=16,spt=63
+ata0-master: type=disk, path="/home/zhangshuai/Desktop/pt_os/pt_os.img", mode=flat, cylinders=65, heads=16,spt=63
 
 #gdb debug
 #gdbstub: enabled=1, port=1234, text_base=0, data_base=0, bss_base=0;
