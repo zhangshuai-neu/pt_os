@@ -1,31 +1,38 @@
 #编译器、链接器
 CC = gcc
 LD = ld
+AS = nasm
 
 #目录
 USER=$(shell who |head -1 |cut -d' ' -f1)
 BUILD_DIR = ./build
 
 #编译选项
-LIB = -I sc -I lib -I it
-C_FLAGS = -Wall -m32 -O0 -c $(LIB) 
+LIB = -I sc -I lib -I it 
+C_FLAGS = -Wall -m32 -c -fno-zero-initialized-in-bss $(LIB) 
 
 #链接选项
-LD_OBJECTS= $(BUILD_DIR)/main.o $(BUILD_DIR)/system_call.o
-LD_FLAGS:=-m elf_i386 -T $(BUILD_DIR)/kernel_link.ld 
+LD_OBJECTS = $(BUILD_DIR)/main.o $(BUILD_DIR)/system_call.o \
+			$(BUILD_DIR)/asm_it.o $(BUILD_DIR)/interrupt.o
+			
+LD_FLAGS = -m elf_i386 -T $(BUILD_DIR)/kernel_link.ld 
 
 #汇编代码
 asm: boot/mbr.S boot/loader.S boot/boot_parameter.inc
 	#启动
-	nasm -I boot/ -o $(BUILD_DIR)/mbr.bin boot/mbr.S
-	nasm -I boot/ -o $(BUILD_DIR)/loader.bin boot/loader.S 
+	$(AS) -I boot/ -o $(BUILD_DIR)/mbr.bin boot/mbr.S
+	$(AS) -I boot/ -o $(BUILD_DIR)/loader.bin boot/loader.S 
 	#中断
+	$(AS) -f elf32 -o $(BUILD_DIR)/asm_it.o it/interrupt.s
 
 #模块
 $(BUILD_DIR)/main.o: kernel/main.c sc/system_call.h
 	$(CC) $(C_FLAGS) $< -o $@
 
 $(BUILD_DIR)/system_call.o: sc/system_call.c sc/system_call.h lib/stdint.h
+	$(CC) $(C_FLAGS) $< -o $@
+	
+$(BUILD_DIR)/interrupt.o: it/interrupt.c it/interrupt.h 
 	$(CC) $(C_FLAGS) $< -o $@
 	
 build: asm $(LD_OBJECTS)
@@ -37,8 +44,8 @@ hd:
 
 #bochs运行
 run:
-	sed -i s/USER/${USER}/g  bochs_conf/bochsrc
-	/home/$(USER)/Desktop/bochs-2.6.9/bochs -f bochs_conf/bochsrc
+	sed  s/USER/${USER}/g  bochs_conf/bochsrc > bochs_conf/${USER}_bochsrc
+	/home/$(USER)/Desktop/bochs-2.6.9/bochs -f bochs_conf/${USER}_bochsrc
 
 #清空所有.o
 clean:

@@ -4,7 +4,7 @@
 ProtoType Operating System
 
 代码注意：
-	初始化变量不要初始化为0，否则会被
+	初始化变量都初始化为0，gcc加入了-fno-zero-initialized-in-bss选项，会将其编入.data段
 
 使用注意：将pt_os和bochs目录全放到当前用户的Desktop目录下
 

@@ -26,6 +26,7 @@ int main(){
 	ptsc_print_str("Get Memmory Size: OK\n");
 	ptsc_print_str("Get into Protection Mode: OK\n");
 	ptsc_print_str("Page Management: OK\n");
+	ptsc_print_num16(0x00001234);
 	
 	
 	//5. 中断处理

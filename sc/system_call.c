@@ -23,8 +23,8 @@
  * 不能初始化为0，因为我没有写elf解释程序，所有bss段不会被分配内存
  * 会造成变量不确定的情况(严重错误)
  */
-uint16_t view_row=1;				//current row	当前行
-uint16_t view_column=1;			//current column 当前列
+uint16_t view_row=0;				//current row	当前行
+uint16_t view_column=0;			//current column 当前列
 
 /*
  * ID: 			1
@@ -47,7 +47,7 @@ void ptsc_init_view(){
 	}
 	
 	/*
-	 * 真正的初始化
+	 * 对当前位置，真正的初始化
 	 */
 	view_row=2;
 	view_column=0;
@@ -59,8 +59,7 @@ void ptsc_init_view(){
  * 				字符串以 \0 结尾，\n 换行
  *				c语言的字符串结尾自动添加\0，不需要手动添加
  *				
- *
- * Name: 		print_str
+ * Name: 		ptsc_print_str
  * Parameter: 	str_addr	
  * Return: 		nothing
 */
@@ -133,8 +132,35 @@ void ptsc_init_view(){
 		
 		view_column+=1;						//光标后移
 	}
+	
+/*
+ * ID: 			2
+ * Comment: 	打印16进制整数
+ *				
+ * Name: 		ptsc_print_int
+ * Parameter: 	uint32_t num	
+ * Return: 		nothing
+*/
 
+/*
+ * 用来获取数字对应字符，空间换时间，也简化编程
+ * 16进制数转字符
+ */
+char num16_to_char_array[16]={'0','1','2','3','4','5','6','7','8','9','a' \
+						,'b','c','d','e','f'};
 
+void ptsc_print_num16(uint32_t num){
+	char *out_str="00000000";
+	uint32_t i=8;
+	uint32_t num_low4bit=0;
+	for(;i>0;i--){
+		num_low4bit=num & 0x0000000f;
+		out_str[i-1]=num16_to_char_array[num_low4bit];
+		
+		num=num>>4;
+	}
+	ptsc_print_str(out_str);
+}
 
 
 
