@@ -5,7 +5,7 @@
 extern idt_table		;idt_table是C中注册的中断处理程序数组
 
 section .data
-global intr_entry_table
+global intr_entry_table	;定义intr_entry_table数组，具体项为dd intr%1entry
 intr_entry_table:
  
 %macro VECTOR 2

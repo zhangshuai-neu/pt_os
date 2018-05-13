@@ -21,11 +21,13 @@
 
 /*中断门描述符结构体*/
 struct gate_desc {
-   uint16_t    func_offset_low_word;
-   uint16_t    selector;
-   uint8_t     dcount;	//固定值为0
-   uint8_t     attribute;
-   uint16_t    func_offset_high_word;
+	//低32bit
+	uint16_t    func_offset_low_word;
+	uint16_t    selector;
+	//高32bit
+	uint8_t     dcount;			//固定为0
+	uint8_t     attribute;
+	uint16_t    func_offset_high_word;
 };
 //中断处理函数，函数指针
 typedef void* intr_handler;		

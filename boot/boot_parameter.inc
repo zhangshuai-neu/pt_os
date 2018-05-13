@@ -59,19 +59,19 @@ DESC_S_sys  equ		    	    0_0000_0000_0000b 	;系统段
 DESC_TYPE_CODE  equ	     	      1000_0000_0000b	;x=1,c=0,r=0,a=0 代码段是可执行的,非依从的,不可读的,已访问位a清0.  
 DESC_TYPE_DATA  equ	    	      0010_0000_0000b	;x=0,e=0,w=1,a=0 数据段是不可执行的,向上扩展的,可写的,已访问位a清0.
 
-;gdt第一段，默认为0
+;gdt第1段，默认为0
 DESC_FIRST_LOW4  equ 0x00000000
 DESC_FIRST_HIGH4 equ 0x00000000
 
-;代码段，段描述符，段基址为0
+;gdt第2段,内核代码段，段描述符，段基址为0
 DESC_CODE_LOW4  equ  0x0000FFFF
 DESC_CODE_HIGH4 equ (0x00 << 24) + DESC_G_4K + DESC_D_32 + DESC_L + DESC_AVL + DESC_LIMIT_CODE2 + DESC_P + DESC_DPL_0 + DESC_S_CODE + DESC_TYPE_CODE + 0x00
 
-;数据段，段描述符，段基址为0  堆栈段也是该段
+;gdt第3段,内核数据段，段描述符，段基址为0  堆栈段也是该段
 DESC_DATA_LOW4  equ  0x0000FFFF
 DESC_DATA_HIGH4 equ (0x00 << 24) + DESC_G_4K + DESC_D_32 + DESC_L + DESC_AVL + DESC_LIMIT_DATA2 + DESC_P + DESC_DPL_0 + DESC_S_DATA + DESC_TYPE_DATA + 0x00
 
-;显示段，段描述符，段基址为0xb8000
+;gdt第4段,内核显示段，段描述符，段基址为0xb8000
 DESC_VIDEO_LOW4  equ 0x80000007
 DESC_VIDEO_HIGH4 equ (0x00 << 24) + DESC_G_4K + DESC_D_32 + DESC_L + DESC_AVL + DESC_LIMIT_VIDEO2 + DESC_P + DESC_DPL_0 + DESC_S_DATA + DESC_TYPE_DATA + 0x0b
 

@@ -22,7 +22,7 @@ static struct gate_desc idt[IDT_DESC_CNT]={0};
 char* intr_name[IDT_DESC_CNT]={0};
 
 //定义中断处理程序数组.在kernel.S中定义的intrXXentry只是中断处理程序的入口	 	
-intr_handler idt_table[IDT_DESC_CNT]={0};	//最终调用的是ide_table中的处理程序
+intr_handler idt_table[IDT_DESC_CNT]={0};	//最终调用的是idt_table中的处理程序
 
 //声明引用定义在kernel.S中的中断处理函数入口数组		
 extern intr_handler intr_entry_table[IDT_DESC_CNT];	    
@@ -53,7 +53,7 @@ static void pic_init(void) {
 static void make_idt_desc(struct gate_desc* p_gdesc, uint8_t attr, intr_handler function) { 
    p_gdesc->func_offset_low_word = (uint32_t)function & 0x0000FFFF;
    p_gdesc->selector = SELECTOR_K_CODE;
-   p_gdesc->dcount = 0;
+   p_gdesc->dcount = 0;	
    p_gdesc->attribute = attr;
    p_gdesc->func_offset_high_word = ((uint32_t)function & 0xFFFF0000) >> 16;
 }
