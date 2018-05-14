@@ -1,5 +1,10 @@
 /*
  * 中断实现
+ * 
+ * 初始化8259A
+ * 初始化IDT和中断向量表
+ * 初始化中断处理函数
+ *
  *
  * author:Shuai Zhang
  * email:zhangshuaiisme@gmail.com
@@ -9,7 +14,7 @@
 #include "interrupt.h"
 #include "stdint.h"			
 #include "global.h"			//全局宏,如GDT,IDT
-#include "io.h"				//读写外部IO
+#include "io.h"				//读写外部IO(全为内联函数)
 #include "system_call.h"
 
 // 静态函数声明,非必须
@@ -27,7 +32,13 @@ intr_handler idt_table[IDT_DESC_CNT]={0};	//最终调用的是idt_table中的处
 //声明引用定义在kernel.S中的中断处理函数入口数组		
 extern intr_handler intr_entry_table[IDT_DESC_CNT];	    
 
-/* 初始化可编程中断控制器8259A */
+/* 
+ * 初始化可编程中断控制器8259A 
+ * 1)主从片的级联方式：
+ * 2)中断向量号：
+ * 3)工作模式
+ *
+ */
 static void pic_init(void) {
 
    /* 初始化主片 */
@@ -70,7 +81,7 @@ static void idt_desc_init(void) {
 /*通用的中断处理函数,一般用在异常出现时的处理*/
 static void general_intr_handler(uint8_t vec_nr) {
    if (vec_nr == 0x27 || vec_nr == 0x2f) {	//0x2f是从片8259A上的最后一个irq引脚，保留
-      return;								//IRQ7和IRQ15会产生伪中断(spurious interrupt),无须处理。
+      return;					//IRQ7和IRQ15会产生伪中断(spurious interrupt),无须处理。
    }
    ptsc_print_str("int vector: 0x");
    ptsc_print_num16(vec_nr);
@@ -87,8 +98,8 @@ static void exception_init(void) {			//完成一般中断处理函数注册及�
  * 见kernel/kernel.S的call [idt_table + %1*4] 
  */
       idt_table[i] = general_intr_handler;		//默认为general_intr_handler
-							    				//以后会由register_handler来注册具体处理函数
-      intr_name[i] = "unknown";				    //先统一赋值为unknown 
+							//以后会由register_handler来注册具体处理函数
+      intr_name[i] = "unknown";				//先统一赋值为unknown 
    }
    intr_name[0] = "#DE Divide Error";
    intr_name[1] = "#DB Debug Exception";

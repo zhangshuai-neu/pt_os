@@ -1,15 +1,25 @@
+/*
+ * IO输出
+ * 
+ * 向指定端口输出指定内容
+ * 
+ *
+ *
+ * author:Shuai Zhang
+ * email:zhangshuaiisme@gmail.com
+ */
+
 /**************	 机器模式   ***************
 	 b -- 输出寄存器QImode名称,即寄存器中的最低8位:[a-d]l。
 	 w -- 输出寄存器HImode名称,即寄存器中2个字节的部分,如[a-d]x。
 
-	 HImode
-	     “Half-Integer”模式，表示一个两字节的整数。 
-	 QImode
-	     “Quarter-Integer”模式，表示一个一字节的整数。 
+	 HImode “Half-Integer”模式，表示一个两字节的整数。 
+	 QImode “Quarter-Integer”模式，表示一个一字节的整数。 
 *******************************************/ 
 
 #ifndef __LIB_IO_H
 #define __LIB_IO_H
+
 #include "stdint.h"
 
 /* 向端口port写入一个字节*/
