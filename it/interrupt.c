@@ -12,6 +12,7 @@
 #include "io.h"				//读写外部IO
 #include "system_call.h"
 
+
 // 静态函数声明,非必须
 static void make_idt_desc(struct gate_desc* p_gdesc, uint8_t attr, intr_handler function);
 

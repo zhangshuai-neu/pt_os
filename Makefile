@@ -9,7 +9,7 @@ BUILD_DIR = ./build
 
 #编译选项
 LIB = -I sc -I lib -I it 
-C_FLAGS = -Wall -m32 -c -fno-zero-initialized-in-bss $(LIB) 
+C_FLAGS = -Wall -m32 -c -fno-zero-initialized-in-bss -fno-stack-protector $(LIB) 
 
 #链接选项
 LD_OBJECTS = $(BUILD_DIR)/main.o $(BUILD_DIR)/system_call.o \

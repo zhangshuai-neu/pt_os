@@ -15,7 +15,6 @@
  */
 
 //头文件
-#include "stdint.h"
 #include "system_call.h"
 
 /*

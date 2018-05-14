@@ -13,12 +13,17 @@ SECTIONS{
     	
 		/*系统调用代码|系统函数代码(非中断触发，内核直接使用)*/
 		./build/system_call.o(.text)
+        /*中断*/
+        ./build/interrupt.o(.text)
+        ./build/asm_it.o(.text)
     }
     
     .data :
     {
         ./build/main.o(.data)
         ./build/system_call.o(.data)
+        ./build/interrupt.o(.data)
+        ./build/asm_it.o(.data)
     }
     
 }

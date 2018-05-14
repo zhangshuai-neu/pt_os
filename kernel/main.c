@@ -17,12 +17,11 @@
 #include "system_call.h"
 #include "interrupt.h"
 
-int main(){
-
+int main(void){
 	//1. 初始化显示亮度(字符模式)
 	ptsc_init_view();
 
-	// 完成的内容
+	//完成的内容
 	ptsc_print_str("Get Memmory Size: OK\n");
 	ptsc_print_str("Get into Protection Mode: OK\n");
 	ptsc_print_str("Page Management: OK\n");

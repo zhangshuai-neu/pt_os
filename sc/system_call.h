@@ -18,11 +18,16 @@
 #define VIEW_COLUMN_MAX		79			//80列
 #define VIEW_ROW_MAX		24			//25行
 
+#include "stdint.h"
+
 //system_call id:1
 void ptsc_init_view();
 
 //system_call id:2
 void ptsc_print_str(char *str);
+
+//system_call id:3
+void ptsc_print_num16(uint32_t num);
 
 #endif /*__SYSTEM_CALL_H*/
 
