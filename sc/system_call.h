@@ -24,6 +24,9 @@ void ptsc_init_view();
 //system_call id:2
 void ptsc_print_str(char *str);
 
+//system_call id:3
+void ptsc_print_num16(uint32_t num);
+
 #endif /*__SYSTEM_CALL_H*/
 
 
