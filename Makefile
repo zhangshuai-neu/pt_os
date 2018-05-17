@@ -8,12 +8,13 @@ USER=$(shell who |head -1 |cut -d' ' -f1)
 BUILD_DIR = ./build
 
 #编译选项
-LIB = -I sc -I lib -I it 
+LIB = -I sc -I lib -I it -I dev
 C_FLAGS = -Wall -m32 -c -fno-zero-initialized-in-bss -fno-stack-protector $(LIB) 
 
 #链接选项
 LD_OBJECTS = $(BUILD_DIR)/main.o $(BUILD_DIR)/system_call.o \
-			$(BUILD_DIR)/asm_it.o $(BUILD_DIR)/interrupt.o
+			$(BUILD_DIR)/asm_it.o $(BUILD_DIR)/interrupt.o \
+			$(BUILD_DIR)/timer.o
 			
 LD_FLAGS = -m elf_i386 -T $(BUILD_DIR)/kernel_link.ld 
 
@@ -26,14 +27,16 @@ asm: boot/mbr.S boot/loader.S boot/boot_parameter.inc
 	$(AS) -f elf32 -o $(BUILD_DIR)/asm_it.o it/interrupt.s
 
 #模块
-$(BUILD_DIR)/main.o: kernel/main.c sc/system_call.h
+$(BUILD_DIR)/main.o: kernel/main.c
 	$(CC) $(C_FLAGS) $< -o $@
 
-$(BUILD_DIR)/system_call.o: sc/system_call.c sc/system_call.h lib/stdint.h
+$(BUILD_DIR)/system_call.o: sc/system_call.c sc/system_call.h
 	$(CC) $(C_FLAGS) $< -o $@
 	
 $(BUILD_DIR)/interrupt.o: it/interrupt.c it/interrupt.h 
 	$(CC) $(C_FLAGS) $< -o $@
+
+$(BUILD_DIR)/timer.o: dev/timer.c dev/timer.h
 	
 build: asm $(LD_OBJECTS)
 	ld $(LD_FLAGS) $(LD_OBJECTS) -o $(BUILD_DIR)/kernel.elf
