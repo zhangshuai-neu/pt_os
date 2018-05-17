@@ -32,5 +32,9 @@ static void frequency_set(uint8_t counter_port, \
 void timer_init() {
    /* 设置8253的定时周期,也就是发中断的周期 */
    frequency_set(CONTRER0_PORT, COUNTER0_NO, READ_WRITE_LATCH, COUNTER_MODE, COUNTER0_VALUE);
+<<<<<<< HEAD
    ptsc_print_str("timer_init done\n");
+=======
+   ptsc_print_str("timer_init:OK\n");
+>>>>>>> c03d12ac5e3bf229d45d2330d147a128837104ea
 }
