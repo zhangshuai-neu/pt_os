@@ -10,19 +10,24 @@ SECTIONS{
     {
     	/*内核启动代码*/
     	./build/main.o(.text)
-    	
+    	 . = ALIGN(4);
 		/*系统调用代码|系统函数代码(非中断触发，内核直接使用)*/
 		./build/system_call.o(.text)
+		 . = ALIGN(4);
         /*中断*/
         ./build/interrupt.o(.text)
+         . = ALIGN(4);
         ./build/asm_it.o(.text)
     }
     
     .data :
     {
         ./build/main.o(.data)
+         . = ALIGN(4);
         ./build/system_call.o(.data)
+         . = ALIGN(4);
         ./build/interrupt.o(.data)
+         . = ALIGN(4);
         ./build/asm_it.o(.data)
     }
     

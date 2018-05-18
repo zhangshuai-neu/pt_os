@@ -37,6 +37,7 @@ $(BUILD_DIR)/interrupt.o: it/interrupt.c it/interrupt.h
 	$(CC) $(C_FLAGS) $< -o $@
 
 $(BUILD_DIR)/timer.o: dev/timer.c dev/timer.h
+	$(CC) $(C_FLAGS) $< -o $@
 	
 build: asm $(LD_OBJECTS)
 	ld $(LD_FLAGS) $(LD_OBJECTS) -o $(BUILD_DIR)/kernel.elf

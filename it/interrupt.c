@@ -5,7 +5,6 @@
  * 初始化IDT和中断向量表
  * 初始化中断处理函数
  *
- *
  * author:Shuai Zhang
  * email:zhangshuaiisme@gmail.com
  */
@@ -17,12 +16,11 @@
 #include "io.h"				//读写外部IO(全为内联函数)
 #include "system_call.h"
 
-
 // 静态函数声明,非必须
 static void make_idt_desc(struct gate_desc* p_gdesc, uint8_t attr, intr_handler function);
 
 // idt是中断描述符表,本质上就是个中断门描述符数组
-static struct gate_desc idt[IDT_DESC_CNT]={0};
+static struct gate_desc idt[IDT_DESC_CNT]={{0}};
 
 //用于保存异常的名字
 char* intr_name[IDT_DESC_CNT]={0};
@@ -59,7 +57,7 @@ static void pic_init(void) {
     outb (PIC_M_DATA, 0xfe);
     outb (PIC_S_DATA, 0xff);
 
-    ptsc_print_str("   pic_init done\n");
+    ptsc_print_str("   pic_init:OK\n");
 }
 
 /* 创建中断门描述符 */
@@ -77,7 +75,7 @@ static void idt_desc_init(void) {
     for (i = 0; i < IDT_DESC_CNT; i++) {
         make_idt_desc(&idt[i], IDT_DESC_ATTR_DPL0, intr_entry_table[i]); 
     }
-    ptsc_print_str("   idt_desc_init done\n");
+    ptsc_print_str("   idt_desc_init:OK\n");
 }
 
 /*通用的中断处理函数,一般用在异常出现时的处理*/
@@ -125,19 +123,18 @@ static void exception_init(void) {
     intr_name[17] = "#AC Alignment Check Exception";
     intr_name[18] = "#MC Machine-Check Exception";
     intr_name[19] = "#XF SIMD Floating-Point Exception";
-
 }
 
 /*完成有关中断的所有初始化工作*/
 void idt_init() {
-    ptsc_print_str("idt_init start\n");
-    idt_desc_init();		//初始化中断描述符表
+	ptsc_print_str("idt_init start\n");
+    idt_desc_init();	//初始化中断描述符表
     exception_init();	//异常名初始化并注册通常的中断处理函数
     pic_init();			//初始化8259A
 
     /* 加载idt */
     uint64_t idt_operand = ((sizeof(idt) - 1) | ((uint64_t)(uint32_t)idt << 16));
     asm volatile("lidt %0" : : "m" (idt_operand));
-    ptsc_print_str("idt_init done\n");
+    
 }
 
