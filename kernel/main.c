@@ -32,8 +32,6 @@ int main(void){
 	ptsc_print_str("Get Memmory Size: OK\n");
 	ptsc_print_str("Get into Protection Mode: OK\n");
 	ptsc_print_str("Page Management: OK\n");	//完成部页表
-	
-	
 		
 	//2. 中断初始化
 	idt_init();
@@ -43,6 +41,8 @@ int main(void){
 	timer_init();
 	ptsc_print_str("Timer Init: OK\n");
 	
+    //打开中断
+    asm volatile("sti");
 
 	//4. ##初始化
 

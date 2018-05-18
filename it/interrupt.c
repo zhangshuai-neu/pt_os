@@ -83,7 +83,7 @@ static void idt_desc_init(void) {
 /*
  * 用来初始化的通用中断处理函数
  * 
- * 可以用在异常是处理
+ * 可以用在异常处理
  */
 static void general_intr_handler(uint8_t vec_nr) {
     if (vec_nr == 0x27 || vec_nr == 0x2f) {
@@ -97,7 +97,7 @@ static void general_intr_handler(uint8_t vec_nr) {
 }
 
 /* 
- * 初始化所有终端初始化函数
+ * 初始化所有异常初始化函数
  *
  * 默认全部初始化为general_intr_handler
  */
