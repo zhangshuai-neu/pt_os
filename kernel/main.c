@@ -24,14 +24,16 @@
 
 int main(void){
 	
+	//1. 初始化显示亮度(字符模式)
+	ptsc_init_view();
+	ptsc_print_str("Init View: OK\n");
+	
 	//0.汇编完成的前期工作
 	ptsc_print_str("Get Memmory Size: OK\n");
 	ptsc_print_str("Get into Protection Mode: OK\n");
 	ptsc_print_str("Page Management: OK\n");	//完成部页表
 	
-	//1. 初始化显示亮度(字符模式)
-	ptsc_init_view();
-	ptsc_print_str("Init View: OK\n");
+	
 		
 	//2. 中断初始化
 	idt_init();
