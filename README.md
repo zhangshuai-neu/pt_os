@@ -60,16 +60,16 @@ Developing Environment
 Fisrt step, you should download "bochs-2.6.9.tar.gz" from 
 [Bochs Website](https://sourceforge.net/projects/bochs/files/bochs/2.6.9/)
 
-Second step, you should install some package to solve dependency. \<br>
-**command:** sudo apt-get install gcc g++ build-essential xorg-xdev xserver-xorg-dev
-libgtk2.0-dev bochs-sdl
+Second step, you should install some package to solve dependency. 
+	**command:** sudo apt-get install gcc g++ build-essential xorg-xdev 
+	xserver-xorg-dev libgtk2.0-dev bochs-sdl
 
-Third step, you should configure bochs. \<br>
-**command:** ./configure --enable-debugger --enable-disasm --enable-iodebug 
---enable-x86-debugger --with-x --with-x11
+Third step, you should configure bochs.
+	**command:** ./configure --enable-debugger --enable-disasm --enable-iodebug 
+	--enable-x86-debugger --with-x --with-x11
 
-Final step, you should compile bochs. \<br>
-**command:** make -j8
+Final step, you should compile bochs.
+	**command:** make -j8
 
 ---------------------------------
 
