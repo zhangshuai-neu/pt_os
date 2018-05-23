@@ -1,4 +1,4 @@
-#ProtoType Operating System(PT-OS)
+ProtoType Operating System(PT-OS)
 ====
 
 This is a simple Operating System, Which implements some useful component.
@@ -7,16 +7,17 @@ All componnet of PT-OS is just ProtoType, and that is origin of its name.
 When you have some intersting ideas, and you can implement them in PT-OS.
 And I think it will reduce the waste of time. 
 
-##PTOS target:
+PTOS target:
+----
 1)Multi-Core 
-        a)single intel core
-        b)two same intel cores (It's not ok)
-        c)two intel cores with different frequency (It's not ok)
-        d)
+		a)single intel core
+		b)two same intel cores (It's not ok)
+		c)two intel cores with different frequency (It's not ok)
+		d)
 
 2)内存管理
-        a)简化的slab page
-    
+		a)简化的slab page
+
 3)
 
 
