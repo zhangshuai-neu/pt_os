@@ -55,6 +55,8 @@ Developing Environment
 - GNU Make	4.1
 - bochs 	2.6.9
 
+If I build the RISC-V SOC successfully, and the "vivado" will be added in tools. 
+
 #### Compile Bochs
 
 Fisrt step, you should download "bochs-2.6.9.tar.gz" from 
@@ -76,26 +78,39 @@ Final step, you should compile bochs in bochs_dir.
 
 ---------------------------------
 
-Source Code Directory
+Source Code
 ----
+**bochs_conf:** It include the bochs's base configure file "bochsrc" and log 
+file "bochsrc". When you use Makefile, a new bochsrc file will be created
+according to you pc's user name.
 
-	bochs_conf: bochs的配置、日志
-	boot: 启动
-	build: 编译
-	dev: 设备
-	doc: 文档
-	it: 中断
-	kernel: 内核初始化
-	lib: 库函数
-	sc: 系统调用
+**boot:** 
+
+**build:**
+
+**dev:** 
+
+**doc:** 
+
+**it:** 
+
+**kernel:**
+
+**lib:**
+
+**sc:**
+	
 
 #### Code Notice
 
-初始化变量都初始化为0，gcc加入了-fno-zero-initialized-in-bss选项，会将其编入.data段
+The variable in code will be initialized by 0, and I add the option of 
+-fno-zero-initialized-in-bss in gcc C_FLAGS. Therefore the variable will be put
+in .data segment.
 
 #### User Notice
 
-将pt_os和bochs目录全放到当前用户的Desktop目录下
+You should put "pt_os" dir and "bochs" dir in current user's Desktop, 
+otherwise you need to modify "bochsrc" and "Makefile".
 
 
 
