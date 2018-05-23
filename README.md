@@ -47,14 +47,26 @@ based on RISC-V ISA, so this maybe a new direction.
 Developing Environment
 ----
 
+#### Platform and ToolChain
 
+- Linuxmint 17.3/18.3
+- GNU gcc 	5.4
+- GNU ld 	2.26.1
+- GNU Make	4.1
+- bochs 	2.6.9
 
+#### Compile Bochs
 
+	1) Download "bochs-2.6.9.tar.gz" from [Bochs Website](https://sourceforge.net/projects/bochs/files/bochs/2.6.9/)
+	2) sudo apt-get install gcc g++ build-essential xorg-xdev xserver-xorg-dev libgtk2.0-dev bochs-sdl
+	3) ./configure --enable-debugger --enable-disasm --enable-iodebug --enable-x86-debugger --with-x --with-x11
+	4) make -j8
 
 ---------------------------------
 
 Source Code Directory
 ----
+
 	bochs_conf: bochs的配置、日志
 	boot: 启动
 	build: 编译
@@ -65,8 +77,34 @@ Source Code Directory
 	lib: 库函数
 	sc: 系统调用
 
-代码注意：
-	初始化变量都初始化为0，gcc加入了-fno-zero-initialized-in-bss选项，会将其编入.data段
+#### Code Notice
 
-使用注意：将pt_os和bochs目录全放到当前用户的Desktop目录下
+初始化变量都初始化为0，gcc加入了-fno-zero-initialized-in-bss选项，会将其编入.data段
+
+#### User Notice
+
+将pt_os和bochs目录全放到当前用户的Desktop目录下
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
