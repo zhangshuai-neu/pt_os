@@ -29,7 +29,7 @@ struct gate_desc {
 	uint8_t     attribute;
 	uint16_t    func_offset_high_word;
 };
-//中断处理函数，函数指针
+//w函数指针，中断处理函数
 typedef void* intr_handler;		
 
 void idt_init(void);	//中断初始化

@@ -44,7 +44,7 @@ int main(void){
     //打开中断
     asm volatile("sti");
 
-	//4. ##初始化
+	//
 
 	while(1){
 	
