@@ -9,16 +9,17 @@ And I think it will reduce the waste of time.
 
 ## PTOS target:
 
-### 1)Multi-Core 
-		a)single intel core
-		b)two same intel cores (It's not ok)
-		c)two intel cores with different frequency (It's not ok)
-		d)
+### Multi-Core 
 
-### 2)内存管理
-		a)简化的slab page
+a)single intel core
+b)two same intel cores (It's not ok)
+)two intel cores with different frequency (It's not ok)
+)
 
-### 3)
+### Memory Management
+a)简化的slab page
+
+### Task Management
 
 
 
