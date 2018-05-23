@@ -6,7 +6,8 @@ All componnet of PT-OS is just ProtoType, and that is origin of its name.
 When you have some intersting ideas, and you can implement them in PT-OS.
 And I think it will reduce the waste of time. 
 
-### PTOS target
+PTOS target
+----
 
 These are the target that I want to do. 
 
@@ -43,7 +44,8 @@ based on RISC-V ISA, so this maybe a new direction.
 
 ---------------------------------
 
-### Developing Environment
+Developing Environment
+----
 
 
 
@@ -51,25 +53,18 @@ based on RISC-V ISA, so this maybe a new direction.
 
 ---------------------------------
 
-### Source Code Directory
-	* bochs_conf: bochs的配置、日志
+Source Code Directory
+----
+	bochs_conf: bochs的配置、日志
+	boot: 启动
+	build: 编译
+	dev: 设备
+	doc: 文档
+	it: 中断
+	kernel: 内核初始化
+	lib: 库函数
+	sc: 系统调用
 
-	boot:
-		启动
-	build:
-		编译
-	dev:
-		设备
-	doc:
-		文档
-	it:
-		中断
-	kernel:
-		内核初始化
-	lib:
-		库函数
-	sc:
-		系统调用
 代码注意：
 	初始化变量都初始化为0，gcc加入了-fno-zero-initialized-in-bss选项，会将其编入.data段
 
