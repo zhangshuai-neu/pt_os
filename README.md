@@ -61,15 +61,15 @@ Fisrt step, you should download "bochs-2.6.9.tar.gz" from
 [Bochs Website](https://sourceforge.net/projects/bochs/files/bochs/2.6.9/)
 
 Second step, you should install some package to solve dependency.
-sudo apt-get install gcc g++ build-essential xorg-xdev xserver-xorg-dev 
+command: sudo apt-get install gcc g++ build-essential xorg-xdev xserver-xorg-dev 
 libgtk2.0-dev bochs-sdl
 
 Third step, you should configure bochs.
-./configure --enable-debugger --enable-disasm --enable-iodebug 
+command: ./configure --enable-debugger --enable-disasm --enable-iodebug 
 --enable-x86-debugger --with-x --with-x11
 
 Final step, you should compile bochs.
-make -j8
+command: make -j8
 
 ---------------------------------
 
