@@ -29,6 +29,16 @@ void ptsc_print_str(char *str);
 //system_call id:3
 void ptsc_print_num16(uint32_t num);
 
+//system_call id:4
+void ptsc_memcpy(void* src_addr,void* dest_addr,uint32_t size);
+
+//system_call id:5
+void ptsc_memset(void* dest_addr,uint8_t val,uint32_t size);
+
+//system_call id:6
+
+//system_call id:7
+
 #endif /*__SYSTEM_CALL_H*/
 
 

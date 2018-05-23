@@ -5,10 +5,21 @@
  * 所有的系统调用以ptsc作为前缀，表示ProtoType_System_Call
  * 
  * 实现的系统调用列表:
+ * 
+ * 打印操作
  * 1.ptsc_init_view 初始化亮度(字符模式)
  * 2.ptsc_print_str 打印字符串(字符模式)
- * 3.
- * 4.
+ * 3 ptsc_print_num16 打印16进制整数
+ * 
+ * 内存操作
+ * 4.ptsc_memcpy 内存复制
+ * 5.ptsc_memset 内存置位
+ * 
+ * 字符串操作
+ * 6.ptsc_strlen
+ * 7.ptsc_strcmp
+ * 8.ptsc_strcpy
+ * 
  *
  * Author:Shuai Zhang
  * Email: zhangshuaiisme@gmail.com
@@ -141,9 +152,18 @@ void ptsc_init_view(){
  * Return: 		nothing
 */
 
+
 /*
- * 用来获取数字对应字符，空间换时间，也简化编程
- * 16进制数转字符
+ * ID: 			3
+ * Comment: 	用来获取数字对应字符，空间换时间
+ * 				16进制数转字符
+ *				
+ * Name: 		ptsc_print_num16
+ * Parameter: 	num
+ * Return: 		nothing
+*/
+/*
+
  */
 char num16_to_char_array[16]={'0','1','2','3','4','5','6','7','8','9','a' \
 						,'b','c','d','e','f'};
@@ -161,6 +181,43 @@ void ptsc_print_num16(uint32_t num){
 	ptsc_print_str(out_str);
 }
 
+/*
+ * ID: 			4
+ * Comment: 	内存拷贝
+ * 				以字节为单位
+ *				
+ * Name: 		ptsc_memcpy
+ * Parameter: 	src_addr,dest_addr,size	
+ * Return: 		nothing
+*/
+
+void ptsc_memcpy(void* src_addr,void* dest_addr,uint32_t size){
+	if(src_addr != NULL && dest_addr != NULL  && size > 0){
+		while(size>0){
+			*(uint8_t*)src_addr = *(uint8_t*)dest_addr;
+			size--;
+		}
+	}
+	//error处理
+}
 
 
+/*
+ * ID: 			5
+ * Comment: 	内存设置
+ * 				字节为单位
+ *				
+ * Name: 		ptsc_memset
+ * Parameter: 	dest_addr,val,size
+ * Return: 		nothing
+*/
+void ptsc_memset(void* dest_addr,uint8_t val,uint32_t size){
+	if(dest_addr != NULL  && size > 0){
+		while(size>0){
+			*(uint8_t*)dest_addr = val;
+			size--;
+		}
+	}
+	//error处理
+}
 

@@ -6,6 +6,9 @@ All componnet of PT-OS is just ProtoType, and that is origin of its name.
 When you have some intersting ideas, and you can implement them in PT-OS.
 And I think it will reduce the waste of time. 
 
+I gave detailed comments in code and design ideas in /doc/ dir. And all of them
+is wrote in **chinese**.
+
 PTOS target
 ----
 
@@ -24,9 +27,10 @@ based on RISC-V ISA, so this maybe a new direction.
 
 #### Memory Management
 
-- virtual and physical Memory Pool (It's doing)
-- simple SLAB page management (It's doing)
-- simple Fine-grained Memory Management (It's doing)
+- physical page management (It's doing)
+- Fine-grained memory management (It's doing)
+
+The detailed information about memory  will be showed
 
 #### Task Management
 
@@ -41,6 +45,11 @@ based on RISC-V ISA, so this maybe a new direction.
 
 - Interrupt controler based on 8258A (It's working)
 - Timer based on 8253 (It's working)
+
+#### Debug and Error Handling
+
+- Debug port
+- Error Handling module
 
 ---------------------------------
 
@@ -111,24 +120,6 @@ in .data segment.
 
 You should put "pt_os" dir and "bochs" dir in current user's Desktop, 
 otherwise you need to modify "bochsrc" and "Makefile".
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
