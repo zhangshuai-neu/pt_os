@@ -29,7 +29,7 @@ MEM_SIZE_AVAI_ADDR				equ		(MEM_SIZE_END_ADDR-8)	;可用内存大小，存放到
 MBR_READ_SECTOR_SIZE	equ		(LOADER_SECTOR_SIZE+GDT_SECTOR_SIZE)
 
 ;--------------------------loader程序：页表-----------------------------------
-PAGE_DIR_BASE_ADDR		equ		0x0010_0000	;页表所在的基地址(1M~2M)
+PAGE_DIR_BASE_ADDR		equ		0x0010_0000	;页表所在的基地址(1M~1.5M)
 
 ;--------------------------kernel程序：内核代码--------------------------------
 KERNEL_BASE_ADDR	equ		0x0020_0000		;内核加载到内存的的位置(2M~3M)
