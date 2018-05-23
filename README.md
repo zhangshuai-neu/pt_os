@@ -6,31 +6,54 @@ All componnet of PT-OS is just ProtoType, and that is origin of its name.
 When you have some intersting ideas, and you can implement them in PT-OS.
 And I think it will reduce the waste of time. 
 
-## PTOS target:
+### PTOS target
 
-### Multi-Core 
+These are the target that I want to do. 
 
-- a)single intel core
-- b)two same intel cores (It's not ok)
-- c)two intel cores with different frequency (It's not ok)
-- d)
+#### Multi-Core 
 
-### Memory Management
-a)简化的slab page
+- single Intel core (It's working)
+- two same Intel cores (In the future)
+- two Intel cores with different frequency (In the future)
+- single RISC-V 32 core (In the future)
 
-### Task Management
+There is a problems that the Hardware-Platform is based on Intel, and I want to
+transplant it to other platforms in the future. Recently I am building a SOC 
+based on RISC-V ISA, so this maybe a new direction. 
+
+#### Memory Management
+
+- virtual and physical Memory Pool (It's doing)
+- simple SLAB page management (It's doing)
+- simple Fine-grained Memory Management (It's doing)
+
+#### Task Management
+
+- ELF program load (In the future)
+- Kernel process and thread (In the future)
+- User process and thread (In the future)
+- Simple priority scheduling (In the future)
+- CFS scheduling (In the future, and it needs a long time)
+- EAS scheduling (In the future, and it needs a long time)
+
+#### Interrupt and Timer Management
+
+- Interrupt controler based on 8258A (It's working)
+- Timer based on 8253 (It's working)
+
+---------------------------------
+
+### Developing Environment
 
 
 
 
-代码注意：
-	初始化变量都初始化为0，gcc加入了-fno-zero-initialized-in-bss选项，会将其编入.data段
 
-使用注意：将pt_os和bochs目录全放到当前用户的Desktop目录下
+---------------------------------
 
-源码目录：
-	bochs_conf:
-		bochs的配置、日志
+### Source Code Directory
+	* bochs_conf: bochs的配置、日志
+
 	boot:
 		启动
 	build:
@@ -47,4 +70,8 @@ a)简化的slab page
 		库函数
 	sc:
 		系统调用
+代码注意：
+	初始化变量都初始化为0，gcc加入了-fno-zero-initialized-in-bss选项，会将其编入.data段
+
+使用注意：将pt_os和bochs目录全放到当前用户的Desktop目录下
 
