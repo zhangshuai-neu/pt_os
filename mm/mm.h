@@ -34,15 +34,14 @@
  * 每个物理页都有一个page结构,这个结构要尽可能的小
  * 128MB内存需要32K个page结构
  * 
-
+ * 每一个page只能由一个进程使用
  * 
  * */
 typedef struct page{
 	uint16_t flags;				//page状态
-	uint16_t count;				//
 	//虚拟地址范围0-32K页面
 	uint16_t virt_page_addr;	//物理页对应的虚拟页地址
-	
+	list_node free_list_node;	//buddy system free_list的节点
 }
 
 
@@ -56,7 +55,7 @@ typedef struct page{
 
 //10 byte
 struct free_area{
-	list_head free_list;	//
+	list_node *free_list;	//
 	uint16_t node_num;		//free_list中节点的数量
 };
 

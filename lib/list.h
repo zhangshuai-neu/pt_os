@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 /*
  * 双向循环链表
  * 
@@ -10,19 +8,16 @@
  * email:zhangshuaiisme@gmail.com
  */
 
->>>>>>> e571545b52d0c3fd036a1ef366299783522f611c
 #ifndef LIST_H
 #define LIST_H
 
 #include "stdint.h"
 
-<<<<<<< HEAD
 typedef struct list_node{
 	struct list_node * prev;
 	struct list_node * next;
 }list_head;
 
-=======
 //链表节点
 typedef struct list_node{
 	struct list_node *next, *prev;
@@ -34,6 +29,5 @@ typedef struct list_node{
  * */
 #define list_entry(link, type, member) \
 	((type *)((char *)(link)-(unsigned long)(&((type *)0)->member)))
->>>>>>> e571545b52d0c3fd036a1ef366299783522f611c
 
 #endif

@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-
 #include "list.h"
 #include "stdint.h"
 
@@ -7,7 +5,6 @@ void list_init(list_head *list){
 	list->next = list->prev = list;
 }
 
-=======
 /*
  * 双向循环链表
  *
@@ -48,6 +45,3 @@ void list_remove(list_node *old_node)
 	old_node->prev->next = old_node->next;
 	old_node->next->prev = old_node->prev;
 }
-
-
->>>>>>> e571545b52d0c3fd036a1ef366299783522f611c
