@@ -10,5 +10,18 @@
  * Author:Shuai Zhang
  * Email: zhangshuaiisme@gmail.com
  */
+#include "mm.h"
 
+// 页式管理
+void 
+
+
+// 1)物理页面管理 伙伴系统
+buddy * buddy_array = BUDDY_BASE_ADDR;
+
+void buddy_init(){
+	
+}
+
+// 2)细粒度管理
 

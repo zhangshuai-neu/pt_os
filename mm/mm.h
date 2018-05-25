@@ -2,6 +2,7 @@
  * 内存管理
  * 
  * 管理方式 —— 页式内存管理
+ * 	0)页式管理 结构
  * 	1)物理页面管理 伙伴系统
  * 	2)细粒度管理
  * 	3)虚拟地址管理
@@ -17,20 +18,56 @@
 #ifndef MM_H
 #define MM_H
 
-//头文件
+#include "stdint.h"
+#include "list.h"
+#include "system_call.h"
 
-//宏
+#define SIZE_4K	((uint32_t)4*1024)			//4K大小
+#define SIZE_1M	((uint32_t)1024*1024)		//1M大小
 
-#define MEM_MAX_SIZE ((uint32_t)128*1024*1024)	//内存最大128MB
-#define BUDDY_BASE_ADDR	((void *))				//伙伴系统起始地址
-
+// 0)页式管理
+#define PGD_ADDR	SIZE_1M					//页目录地址
+#define PT_ADDR		(SIZE_1M + SIZE_4K)		//页表地址
+#define PT_MAX_NUM	32	//页表最大数量
 
 /*
- * 物理页面管理
- * buddy结构
+ * 每个物理页都有一个page结构,这个结构要尽可能的小
+ * 128MB内存需要32K个page结构
+ * 
+
  * 
  * */
+typedef struct page{
+	uint16_t flags;				//page状态
+	uint16_t count;				//
+	//虚拟地址范围0-32K页面
+	uint16_t virt_page_addr;	//物理页对应的虚拟页地址
+	
+}
 
+
+//1) 物理页面管理
+#define US_START_ADDR	(4*SIZE_1M)		//user space起始地址 4MB
+#define US_END_ADDR 	(128*SIZE_1M)	//user space结束地址 128M
+
+#define BUDDY_BASE_ADDR	(SIZE_1M + SIZE_4K + SIZE_4K*32) //buddy结构的基址	
+#define MAX_ORDER		11	//伙伴最大级别 2^10 * 4K = 4MB
+#define BUDDY_MAX_NUM	32	//buddy_node最大数量
+
+//10 byte
+struct free_area{
+	list_head free_list;	//
+	uint16_t node_num;		//free_list中节点的数量
+};
+
+//110 byte
+typedef struct buddy_node{
+	struct free_area[MAX_ORDER];
+}buddy;
+
+
+
+//2) 细粒度管理
 
 
 #endif
