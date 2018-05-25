@@ -40,10 +40,6 @@ uint16_t view_column=0;			//current column 当前列
  * ID: 			1
  * Comment: 	初始化亮度(字符模式)
  *				全为亮白色
- *
- * Name: 		ptsc_init_view
- * Parameter: 	nothing	
- * Return: 		nothing
 */
 void ptsc_init_view(){
 	char *color_addr=(char*)VIEW_MEM_BASE_ADDR;
@@ -68,103 +64,76 @@ void ptsc_init_view(){
  * Comment: 	打印一个字符串(在字符模式下，范围是80*24)
  * 				字符串以 \0 结尾，\n 换行
  *				c语言的字符串结尾自动添加\0，不需要手动添加
- *				
- * Name: 		ptsc_print_str
- * Parameter: 	str_addr	
- * Return: 		nothing
 */
-	void up_line();
-	void print_char(char c);
-	
 
-	void ptsc_print_str(char *str){
-		char *c_addr=str;
-		while(*c_addr != 0){
-			print_char(*c_addr);
-			c_addr++;
-		}
-	}
+//所有内容上移一行,底行内存清空
+void up_line(){
+	int i=0; 	//line 遍历
+	int j=0;	//column 遍历
 	
-	//所有内容上移一行,底行内存清空
-	void up_line(){
-		int i=0; 	//line 遍历
-		int j=0;	//column 遍历
-		
-		//顶行之后可以保存到日志中
-		
-		//复制
-		char *pre_line_addr=(char *)VIEW_MEM_BASE_ADDR;
-		char *next_line_addr=(char *)VIEW_MEM_BASE_ADDR+VIEW_ROW_SIZE;
-		for(i=0;i<=VIEW_ROW_MAX;i++){
-			for(j=0;j<=VIEW_COLUMN_MAX;j++){
-				*(pre_line_addr+j*2)=*(next_line_addr+j*2);
-			}
-			pre_line_addr+=VIEW_ROW_SIZE;
-			next_line_addr+=VIEW_ROW_SIZE;
-		}
-		//清空底行
+	//顶行之后可以保存到日志中
+	
+	//复制
+	char *pre_line_addr=(char *)VIEW_MEM_BASE_ADDR;
+	char *next_line_addr=(char *)VIEW_MEM_BASE_ADDR+VIEW_ROW_SIZE;
+	for(i=0;i<=VIEW_ROW_MAX;i++){
 		for(j=0;j<=VIEW_COLUMN_MAX;j++){
-			*(pre_line_addr+j*2)=0;
+			*(pre_line_addr+j*2)=*(next_line_addr+j*2);
 		}
+		pre_line_addr+=VIEW_ROW_SIZE;
+		next_line_addr+=VIEW_ROW_SIZE;
 	}
+	//清空底行
+	for(j=0;j<=VIEW_COLUMN_MAX;j++){
+		*(pre_line_addr+j*2)=0;
+	}
+}
 
-	/*
-	 * 在当前光标处显示一个字符
-	 * 如果字符是\n 则换行
-	 * 
-	 */
-	void print_char(char c){
-		char *view_addr=(char *)VIEW_MEM_BASE_ADDR;
-		//换行
-		if(c == '\n'){
-			view_row++;
-			view_column=0;
-			return ;
-		}
-		
-		//列满？
-		if(view_column > VIEW_COLUMN_MAX){
-			view_row++;
-			view_column=0;
-		}
-
-		//行满?
-		if(view_row > VIEW_ROW_MAX){
-			up_line();
-			view_row=VIEW_ROW_MAX;
-			view_column=0;
-		}
-		
-		//写内存（每个显示单元占2个字节）
-		view_addr+=VIEW_ROW_SIZE*view_row; 	//行
-		view_addr+=view_column * 2;			//列
-		*view_addr=c;						//写
-		
-		view_column+=1;						//光标后移
+// 在当前光标处显示一个字符，如果字符是\n 则换行
+void print_char(char c){
+	char *view_addr=(char *)VIEW_MEM_BASE_ADDR;
+	//换行
+	if(c == '\n'){
+		view_row++;
+		view_column=0;
+		return ;
 	}
 	
-/*
- * ID: 			2
- * Comment: 	打印16进制整数
- *				
- * Name: 		ptsc_print_int
- * Parameter: 	uint32_t num	
- * Return: 		nothing
-*/
+	//列满？
+	if(view_column > VIEW_COLUMN_MAX){
+		view_row++;
+		view_column=0;
+	}
 
+	//行满?
+	if(view_row > VIEW_ROW_MAX){
+		up_line();
+		view_row=VIEW_ROW_MAX;
+		view_column=0;
+	}
+		
+	//写内存（每个显示单元占2个字节）
+	view_addr+=VIEW_ROW_SIZE*view_row; 	//行
+	view_addr+=view_column * 2;			//列
+	*view_addr=c;						//写
+	
+	view_column+=1;						//光标后移
+}
 
+//打印字符串
+void ptsc_print_str(char *str){
+	char *c_addr=str;
+	while(*c_addr != 0){
+		print_char(*c_addr);
+		c_addr++;
+	}
+}
+	
 /*
  * ID: 			3
  * Comment: 	用来获取数字对应字符，空间换时间
  * 				16进制数转字符
- *				
- * Name: 		ptsc_print_num16
- * Parameter: 	num
- * Return: 		nothing
 */
-/*
-
- */
 char num16_to_char_array[16]={'0','1','2','3','4','5','6','7','8','9','a' \
 						,'b','c','d','e','f'};
 
@@ -185,12 +154,7 @@ void ptsc_print_num16(uint32_t num){
  * ID: 			4
  * Comment: 	内存拷贝
  * 				以字节为单位
- *				
- * Name: 		ptsc_memcpy
- * Parameter: 	src_addr,dest_addr,size	
- * Return: 		nothing
-*/
-
+ */
 void ptsc_memcpy(void* src_addr,void* dest_addr,uint32_t size){
 	if(src_addr != NULL && dest_addr != NULL  && size > 0){
 		while(size>0){
@@ -206,11 +170,7 @@ void ptsc_memcpy(void* src_addr,void* dest_addr,uint32_t size){
  * ID: 			5
  * Comment: 	内存设置
  * 				字节为单位
- *				
- * Name: 		ptsc_memset
- * Parameter: 	dest_addr,val,size
- * Return: 		nothing
-*/
+ */
 void ptsc_memset(void* dest_addr,uint8_t val,uint32_t size){
 	if(dest_addr != NULL  && size > 0){
 		while(size>0){
