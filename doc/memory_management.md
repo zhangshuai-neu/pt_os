@@ -23,7 +23,7 @@
 	页目录:	1MB ~ 1MB+4K
 	页表:	1MB+4K ~ 1MB+4K+4K*32 = 1MB+132KB
 	buddy结构:	1MB+132KB ~ 1MB+132KB+4KB = 1MB+136K
-	page结构:
+	page结构:	1MB+512KB ~ 2MB
 	
 **2-3MB:** 内核程序
 	

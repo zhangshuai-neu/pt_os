@@ -13,15 +13,15 @@
 
 #include "stdint.h"
 
-typedef struct list_node{
+
+/*	
+ * 链表节点
+ * 大小：8 byte
+ */
+struct list_node{
 	struct list_node * prev;
 	struct list_node * next;
-}list_head;
-
-//链表节点
-typedef struct list_node{
-	struct list_node *next, *prev;
-}list_node;
+};
 
 /*
  * 

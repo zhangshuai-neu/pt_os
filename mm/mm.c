@@ -12,12 +12,15 @@
  */
 #include "mm.h"
 
-// 页式管理
-void 
+// 0)页式管理
+struct page * page_array = PAGE_STRUCT_BASE_ADDR;
+void page_struct_init(){
+	
+}
 
 
 // 1)物理页面管理 伙伴系统
-buddy * buddy_array = BUDDY_BASE_ADDR;
+struct buddy_node * buddy_array = BUDDY_BASE_ADDR;
 
 void buddy_init(){
 	

@@ -30,19 +30,27 @@
 #define PT_ADDR		(SIZE_1M + SIZE_4K)		//页表地址
 #define PT_MAX_NUM	32	//页表最大数量
 
+
+
 /*
  * 每个物理页都有一个page结构,这个结构要尽可能的小
  * 128MB内存需要32K个page结构
  * 
- * 每一个page只能由一个进程使用
+ * 使用限制：每一个page只能由一个进程使用
+ * 大小限制：结构大小不能超过16 byte
  * 
  * */
-typedef struct page{
-	uint16_t flags;				//page状态
-	//虚拟地址范围0-32K页面
-	uint16_t virt_page_addr;	//物理页对应的虚拟页地址
-	list_node free_list_node;	//buddy system free_list的节点
-}
+struct page{
+	uint8_t flags;				//1		page状态，状态号0-255	
+	uint16_t virt_page_addr;	//2-3	物理页对应的虚拟页地址，虚拟地址范围0-32K页面
+	uint8_t freelist_id;		//4		表明是buddy中的那个free_list，0-10
+								//		所在buddy是直接获取的（设计隐含的）
+	uint8_t process_id;			//5		进程id，进程数最大为128
+};
+
+#define PAGE_BASE_ADDR	(SIZE_1M + SIZE_1M/2)			//page结构基地址,1MB+512KB
+#define PAGE_MAX_NUM	(SIZE_4K * 8)					//32Kpage结构
+#define PAGE_SIZE		((uint32_t)sizeof(struct page))	//page结构大小
 
 
 //1) 物理页面管理
@@ -50,19 +58,19 @@ typedef struct page{
 #define US_END_ADDR 	(128*SIZE_1M)	//user space结束地址 128M
 
 #define BUDDY_BASE_ADDR	(SIZE_1M + SIZE_4K + SIZE_4K*32) //buddy结构的基址	
-#define MAX_ORDER		11	//伙伴最大级别 2^10 * 4K = 4MB
-#define BUDDY_MAX_NUM	32	//buddy_node最大数量
+#define MAX_ORDER		11		//伙伴最大级别 2^10 * 4K = 4MB
+#define BUDDY_MAX_NUM	32		//buddy_node最大数量
+#define BUDDY_PAGE_NUM	1024	//一个buddy中最大页面数
 
-//10 byte
+//2 byte
 struct free_area{
-	list_node *free_list;	//
-	uint16_t node_num;		//free_list中节点的数量
+	uint16_t free_page_num;
 };
 
-//110 byte
+//22 byte
 typedef struct buddy_node{
 	struct free_area[MAX_ORDER];
-}buddy;
+};
 
 
 
