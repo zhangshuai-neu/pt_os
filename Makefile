@@ -8,8 +8,9 @@ USER=$(shell who |head -1 |cut -d' ' -f1)
 BUILD_DIR = ./build
 
 #编译选项
-LIB = -I sc -I lib -I it -I dev
-C_FLAGS = -Wall -m32 -c -fno-zero-initialized-in-bss -fno-stack-protector $(LIB) 
+LIB = -I sc -I lib -I it -I dev -I kernel
+C_FLAGS = -Wall -m32 -c -fno-zero-initialized-in-bss -fno-stack-protector \
+			$(LIB) -nostdinc
 
 #链接选项
 LD_OBJECTS = $(BUILD_DIR)/main.o $(BUILD_DIR)/system_call.o \
