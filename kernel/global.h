@@ -1,7 +1,7 @@
 #ifndef __KERNEL_GLOBAL_H
 #define __KERNEL_GLOBAL_H
 
-#include "stdint.h"
+#include "std_type_define.h"
 
 
 // ----------------  GDT描述符属性  ----------------

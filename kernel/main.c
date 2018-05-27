@@ -14,10 +14,8 @@
  * 
  * 6.system_call 必要的功能性重用函数
  *
- * author:Shuai Zhang
- * email:zhangshuaiisme@gmail.com
+ * author:Shuai Zhang (zhangshuaiisme@gmail.com)
  */
-
 #include "system_call.h"
 #include "interrupt.h"
 #include "timer.h"
@@ -38,11 +36,11 @@ int main(void){
 	ptsc_print_str("Idt Init: OK\n");
 	
 	//3. 时钟初始化
-	timer_init();
+	//timer_init();		//测试ok
 	ptsc_print_str("Timer Init: OK\n");
 	
     //打开中断
-    asm volatile("sti");
+    //asm volatile("sti");
 
 	//
 

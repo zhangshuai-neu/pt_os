@@ -5,13 +5,12 @@
  * 初始化IDT和中断向量表
  * 初始化中断处理函数
  *
- * author:Shuai Zhang
- * email:zhangshuaiisme@gmail.com
+ * author:Shuai Zhang (zhangshuaiisme@gmail.com)
  */
 
 //头文件
 #include "interrupt.h"
-#include "stdint.h"			
+#include "std_type_define.h"		
 #include "global.h"			//全局宏,如GDT,IDT
 #include "io.h"				//读写外部IO(全为内联函数)
 #include "system_call.h"

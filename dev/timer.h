@@ -10,7 +10,7 @@
 #ifndef __DEVICE_TIME_H
 #define __DEVICE_TIME_H
 
-#include "stdint.h"
+#include "std_type_define.h"
 
 void timer_init(void);
 

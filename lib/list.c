@@ -1,18 +1,10 @@
-#include "list.h"
-#include "stdint.h"
-
-void list_init(list_head *list){
-	list->next = list->prev = list;
-}
-
 /*
  * 双向循环链表
  *
- * author:Shuai Zhang
- * email:zhangshuaiisme@gmail.com
+ author:Shuai Zhang (zhangshuaiisme@gmail.com)
  */
- 
-#include "stdbool.h"
+
+#include "std_type_define.h"
 #include "list.h"
 
 //初始化

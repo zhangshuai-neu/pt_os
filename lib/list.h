@@ -4,15 +4,13 @@
  * list_node应当放入需要的管理的new_struct内部
  * 在管理list_node时，new_struct自然的被串联起来
  *
- * author:Shuai Zhang
- * email:zhangshuaiisme@gmail.com
+ * author:Shuai Zhang (zhangshuaiisme@gmail.com)
  */
 
 #ifndef LIST_H
 #define LIST_H
 
-#include "stdint.h"
-
+#include "std_type_define.h"
 
 /*	
  * 链表节点
