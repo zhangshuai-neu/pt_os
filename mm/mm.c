@@ -18,12 +18,20 @@
 // 0)页式管理
 struct page * page_array = PAGE_STRUCT_BASE_ADDR;
 void page_struct_init(){
-	uint16_t i=0;
-	for(i=0; i<PAGE_MAX_NUM; i++){
-			page_array[i].flags=0
-			page_array[i].freelist_id=0;
-			page_array[i].virt_page_addr=0;
-			page_array[i].process_id=0;
+	//页号
+	uint16_t i=0;	
+	//内核空间
+	for(i=PHY_KERNEL_PAGE_START;i<PHY_USER_PAGE_START;i++){
+		page_array[i].flags = INIT_FLAGS | FLAGS_PAGE_LOCK | FLAGS_PAGE_ACTIVE ;
+		//内核的虚拟和物理地址一致
+		page_array[i].virt_page = i;
+		list_init(page_array[i].page_node);
+	}
+	
+	//用户空间
+	for(i=PHY_USER_PAGE_START; i<PAGE_MAX_NUM; i++){
+		page_array[i].flags = INIT_FLAGS
+		page_array[i].virt_page = 0;
 	}
 }
 

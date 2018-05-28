@@ -28,9 +28,21 @@
 // 0)页式管理
 #define PGD_ADDR	SIZE_1M					//页目录地址
 #define PT_ADDR		(SIZE_1M + SIZE_4K)		//页表地址
-#define PT_MAX_NUM	32	//页表最大数量
+#define PT_MAX_NUM	32						//页表最大数量
 
+#define PHY_KERNEL_BASE_ADDR	((uint32_t)0)	//内核物理基地址
+#define PHY_KERNEL_PAGE_START	(0)				//内核起始页号
 
+#define PHY_USER_BASE_ADDR		(SIZE_1M * 4)	//用户空间物理基地址
+#define PHY_USER_PAGE_START		(1024)			//用户起始页号
+
+#define PAGE_BASE_ADDR	(SIZE_1M + SIZE_1M/2)			//page结构基地址,1MB+512KB
+#define PAGE_MAX_NUM	(SIZE_4K * 8)					//32Kpage结构
+
+//flag状态
+#define	INIT_FLAGS			(uint8_t)0x00	//无标记，初始化
+#define FLAGS_PAGE_LOCK		(uint8_t)1		//内核部分直接初始化为次值，不可分配
+#define FLAGS_PAGE_ACTIVE	(uint8_t)2		//正在使用
 
 /*
  * 每个物理页都有一个page结构,这个结构要尽可能的小
@@ -43,42 +55,39 @@
  * */
 struct page{
 	uint8_t flags;				//1		page状态，状态号0x01 0x02 0x04 ...
-	uint16_t virt_page;			//2-3	物理页对应的虚拟页地址，虚拟地址范围0-256MB
-	struct list_node page_node;	//4-12	连接到buddy中的某个free_list
+	uint16_t virt_page;			//2-3	物理页对应的虚拟页号，虚拟地址范围0-256MB
+	struct list_node page_node;	//4-12	连接到buddy中的某个list
 								//		所在buddy是直接获取的（设计隐含的）
 };
 
-#define PAGE_BASE_ADDR	(SIZE_1M + SIZE_1M/2)			//page结构基地址,1MB+512KB
-#define PAGE_MAX_NUM	(SIZE_4K * 8)					//32Kpage结构
-#define PAGE_SIZE		((uint32_t)sizeof(struct page))	//page结构大小
-
-//flag状态
-#define	INIT_FLAGS	0x00		//
-#define FLAGS_PAGE_LOCK		1	//内核部分直接初始化为次值，不可分配，已被使用
-#define FLAGS_PAGE_ACTIVE	2	//
-
-#define INIT_KERNEL_VIRT_PAGE	0x0000		//
-
-
 //1) 物理页面管理
-#define US_START_ADDR	(4*SIZE_1M)		//user space起始地址 4MB
-#define US_END_ADDR 	(128*SIZE_1M)	//user space结束地址 128M
-
 #define BUDDY_BASE_ADDR	(SIZE_1M + SIZE_4K + SIZE_4K*32) //buddy结构的基址	
 #define MAX_ORDER		11		//伙伴最大级别 2^10 * 4K = 4MB
 #define BUDDY_MAX_NUM	32		//buddy_node最大数量
 #define BUDDY_PAGE_NUM	1024	//一个buddy中最大页面数
 
-//2 byte
+//6 byte
 struct free_area{
-	uint16_t free_node_num;		//可分配页块数
+	struct list_node *pb_head;	//page block list head，将每个page block的头page链接起来
+	uint16_t pb_num;			//page block num
 };
 
-//22 byte
+//66 byte
 typedef struct buddy_node{
 	struct free_area[MAX_ORDER];	//0,1,2 ... 10 order范围
 };
 
+//根据 buddy 结构获取 buddy_id
+#define get_buddy_id(buddy) (((uint32_t)&(buddy) - BUDDY_BASE_ADDR)/sizeof(struct buddy_node))
+
+//根据 buddy_id，获取对应 page block 的起始 page 结构指针
+#define buddy_to_page(buddy_id)	((struct page*)PAGE_BASE_ADDR + buddy_id)
+
+//根据 page 结构获取 page_id
+#define get_page_id(p)	(((uint32_t)&(p) - PAGE_BASE_ADDR)/sizeof(struct page))
+
+//根据 page 结构id，获取对应 buddy 结构指针
+#define page_to_buddy	(page_id)	((struct buddy_node*)BUDDY_BASE_ADDR + (page_id/1024))
 
 
 //2) 细粒度管理
