@@ -66,25 +66,25 @@ struct page{
 #define BUDDY_MAX_NUM	32		//buddy_node最大数量
 #define BUDDY_PAGE_NUM	1024	//一个buddy中最大页面数
 
-//6 byte
+//10 byte
 struct free_area{
-	struct list_node *pb_head;	//page block list head，将每个page block的头page链接起来
+	struct list_node pb_list_head;	//page block list head，将每个page block的头page链接起来
 	uint16_t pb_num;			//page block num
 };
 
-//66 byte
+//110 byte
 typedef struct buddy_node{
 	struct free_area[MAX_ORDER];	//0,1,2 ... 10 order范围
 };
 
-//根据 buddy 结构获取 buddy_id
-#define get_buddy_id(buddy) (((uint32_t)&(buddy) - BUDDY_BASE_ADDR)/sizeof(struct buddy_node))
+//根据 buddy 结构指针获取 buddy_id
+#define get_buddy_id(buddy) (((uint32_t)buddy - BUDDY_BASE_ADDR)/sizeof(struct buddy_node))
 
 //根据 buddy_id，获取对应 page block 的起始 page 结构指针
 #define buddy_to_page(buddy_id)	((struct page*)PAGE_BASE_ADDR + buddy_id)
 
-//根据 page 结构获取 page_id
-#define get_page_id(p)	(((uint32_t)&(p) - PAGE_BASE_ADDR)/sizeof(struct page))
+//根据 page 结构指针获取 page_id
+#define get_page_id(p)	(((uint32_t)p - PAGE_BASE_ADDR)/sizeof(struct page))
 
 //根据 page 结构id，获取对应 buddy 结构指针
 #define page_to_buddy	(page_id)	((struct buddy_node*)BUDDY_BASE_ADDR + (page_id/1024))

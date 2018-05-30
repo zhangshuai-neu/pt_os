@@ -22,10 +22,19 @@ struct list_node{
 };
 
 /*
- * 
+ * list所在结构的及地址
  * 用法：list_entry(&list_node,struct page,list_node)
  * */
 #define list_entry(link, type, member) \
 	((type *)((char *)(link)-(unsigned long)(&((type *)0)->member)))
+
+
+
+void list_init(struct list_node *list_head);
+bool list_empty(struct list_node *list_head);
+void list_insert(struct list_node *list_head, struct list_node *new_node);
+void list_remove(struct list_node *old_node);
+
+
 
 #endif
