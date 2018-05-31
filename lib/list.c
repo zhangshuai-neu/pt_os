@@ -14,12 +14,6 @@ void list_init(struct list_node *list_head)
 	list_head->prev = list_head;
 }
 
-//list为空
-bool list_empty(struct list_node *list_head)
-{
-	return list_head->next == list_head;
-}
-
 //在list_head之前插入新节点
 void list_insert(struct list_node *list_head, struct list_node *new_node)
 {

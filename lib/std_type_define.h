@@ -14,7 +14,7 @@
 
 //布尔类型
 typedef enum boolean {  
-	FALSE,TRUE
+	FALSE=0,TRUE
 }bool;
 
 //整数

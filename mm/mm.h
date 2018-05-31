@@ -68,8 +68,8 @@ struct page{
 
 //10 byte
 struct free_area{
-	struct list_node pb_list_head;	//page block list head，将每个page block的头page链接起来
-	uint16_t pb_num;			//page block num
+	struct list_node *pb_list_head;	//page block list head，将每个page block的头page链接起来
+	uint16_t pb_num;				//page block num
 };
 
 //110 byte

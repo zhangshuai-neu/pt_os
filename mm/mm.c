@@ -59,9 +59,7 @@ void buddy_init(){
 	uint8_t i=0;
 	struct list_node * head;
 	for(i=0; i<BUDDY_MAX_NUM; i++){
-		head = &(buddy_array[i].free_area[MAX_ORDER-1].pb_list_head);
-		list_init(head);
-		list_insert(head,&(buddy_to_page(i)->page_node));
+		buddy_array[i].free_area[MAX_ORDER-1].pb_list_head = buddy_to_page(i)->page_node)
 		buddy_array[i].free_area[MAX_ORDER-1].pb_num = 1;
 	}
 }
@@ -70,51 +68,74 @@ void buddy_init(){
  * 将一个大的pb_list拆解成两个小的
  * sp_order 要拆分order，拆解该order的头部page block
  * 
+ * notice: 可行性判断，由调用者解决
+ * 
  * */
-
-bool pb_list_separation(uint8_t buddy_id, uint8_t sp_order){
-	if(sp_order >= MAX_ORDER || sp_order == 0){
-		return FALSE;
-	}
+bool pb_list_separation(struct buddy_node *bp, uint8_t sp_order){
+	//高order的list
+	struct list_node *high_list_head = bp->free_area[sp_order].pb_list_head;
+	//第order的list
+	struct list_node *low_list_head = bp->free_area[sp_order-1].pb_list_head;
 	
-	struct buddy_node *bp = buddy_array+buddy_id;
-	struct list_node *high_list = bp.free_area[sp_order].pb_head;
-	struct list_node *low_list = bp.free_area[sp_order-1].pb_head;
-	uint32_t new_block_size = (uint32_t(1))<<(sp_order-1);
+	//新的两的page_block的间隔
+	uint32_t page_interval = (uint32_t(1))<<(sp_order-1);
 	
-	//高order 修改
+	//找到两个新的page block的头page指针
+	struct page *node1 = high_list;
+	struct page *node2 = *(page_array[ get_page_id(node1) + page_interval ]);
 	
+	//高order 删除一个pb
+	list_remove(high_list_head);
+	bp->free_area[sp_order].pb_num -= 1;
 	
-	
-	//低order 修改
-	
-
+	//低order 添加两个pb
+	list_insert(low_list_head,head2);
+	list_insert(low_list_head,head1);
+	bp->free_area[sp_order-1].pb_num += 2;
 }
 
 /*
  * 从buddy中申请order级别的page block
  * buddy_id 
  * order
- * page_id 为返回值
+ * ret_p 为返回page结构指针
+ * 
  * */
-bool buddy_alloc(uint8_t buddy_id, uint8_t order, uint16_t *page_id){
-	if(order >= MAX_ORDER){
-		//order 不合法
-		return FALSE;
+bool buddy_pb_alloc(uint8_t buddy_id, uint8_t app_order, struct page *ret_p){
+	struct buddy_node *bp = buddy_array + buddy_id;
+	bool result=FALSE;
+	
+	if(app_order < MAX_ORDER && bp->free_area[app_order].pb_num > 0){
+		result = TRUE;
+	}
+	else {
+		uint8_t i_order = MAX_ORDER-1;
+		for(; i_order > app_order; i_order--){
+			//该级没有空闲pb，则一直跳出
+			if(bp->free_area[i_order].pb_num == 0) continue;
+			
+			result = pb_list_separation(bp,i_order);
+		}
+	}
+	//page_id赋值
+	if(result){
+		ret_p = bp->free_area[app_order].pb_list_head;	//pb_list的头部
+		list_remove(ret_p);								//从pb_list中删除
+	}
+	else{
+		ret_p = NULL;
 	}
 	
-	struct buddy_node *bp = buddy_array+buddy_id;
-	uint8_t i_order = MAX_ORDER-1;
-	//
-	for(){
-		
-		
-	}
-	return TRUE;
+	return result;
+}
+
+//将低order的连续pb
+void pb_list_recycle(){
+	
 }
 
 //自动回收所有能回收的 page block
-bool buddy_recycle(){
+bool buddy_pb_recycle(){
 	
 }
 
