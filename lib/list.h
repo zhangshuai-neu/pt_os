@@ -22,7 +22,7 @@ struct list_node{
 };
 
 /*
- * list所在结构的及地址
+ * list所在结构的基地址
  * 用法：list_entry(&list_node,struct page,list_node)
  * */
 #define list_entry(link, type, member) \

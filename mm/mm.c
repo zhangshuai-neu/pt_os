@@ -64,6 +64,11 @@ void buddy_init(){
 	}
 }
 
+//将pb_list，变成有序的
+void sort_pb_list(){
+	
+}
+
 /*
  * 将一个大的pb_list拆解成两个小的
  * sp_order 要拆分order，拆解该order的头部page block
@@ -88,7 +93,7 @@ bool pb_list_separation(struct buddy_node *bp, uint8_t sp_order){
 	list_remove(high_list_head);
 	bp->free_area[sp_order].pb_num -= 1;
 	
-	//低order 添加两个pb
+	//低order 添加两个pb, 保持顺序
 	list_insert(low_list_head,head2);
 	list_insert(low_list_head,head1);
 	bp->free_area[sp_order-1].pb_num += 2;
@@ -129,13 +134,17 @@ bool buddy_pb_alloc(uint8_t buddy_id, uint8_t app_order, struct page *ret_p){
 	return result;
 }
 
-//将低order的连续pb
-void pb_list_recycle(){
+//将低order的连续pb合并成一个高order的pb
+void pb_list_combination(struct buddy_node *bp, uint8_t cb_order){
+	struct page* list_head = bp->free_area[cb_order].pb_list_head;
+	
+	
 	
 }
 
 //自动回收所有能回收的 page block
-bool buddy_pb_recycle(){
+bool buddy_pb_recycle(uint8_t buddy_id){
+	
 	
 }
 

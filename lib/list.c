@@ -31,3 +31,11 @@ void list_remove(struct list_node *old_node)
 	old_node->prev->next = old_node->next;
 	old_node->next->prev = old_node->prev;
 }
+
+
+
+
+
+
+
+
