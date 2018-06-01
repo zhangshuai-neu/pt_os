@@ -11,8 +11,7 @@
  * 管理地址范围：
  * 	物理地址 4MB-128MB
  *
- * Author:Shuai Zhang
- * Email: zhangshuaiisme@gmail.com
+ * Author:Shuai Zhang <zhangshuaiisme@gmail.com>
  */
 
 #ifndef MM_H

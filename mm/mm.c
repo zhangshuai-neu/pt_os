@@ -7,8 +7,7 @@
  * 	3)虚拟地址管理
  * 	4)维护物理页面和虚拟页面映射
  *
- * Author:Shuai Zhang
- * Email: zhangshuaiisme@gmail.com
+ * Author:Shuai Zhang <zhangshuaiisme@gmail.com>
  */
  
 #include "std_type_define.h"
@@ -64,13 +63,53 @@ void buddy_init(){
 	}
 }
 
-//将pb_list，变成有序的
-void sort_pb_list(){
+
+
+static inline uint16_t get_pb_key(struct list_node * node){
+	return get_page_id(list_entry(node,struct page,page_node));
+}
+
+//将pb_list，变成有序的(从小到大)
+//使用插入排序，因为始终在维持，所以只要修改少次，效率比较高
+void sort_pb_list(struct list_node* list_head){
+	//未排序list
+	struct list_node * unsort_list_head = list_head->next;
+	struct list_node * move_node = NULL;
 	
+	//排序list
+	struct list_node * sort_list_head  = list_head;
+	struct list_node * sort_list_tail  = list_head;
+	
+	//move_node 要插入到 insert_location之前	
+	struct list_node * insert_location = NULL;
+	
+	list_remove(list_head);
+	list_init(sort_list_head);
+	
+	//判断条件
+	while(move_node != ){
+		move_node = unsort_list_head;
+		unsort_list_head = unsort_list_head->next;
+		
+		
+		insert_location = sort_list_head;
+		while(insert_location =! sort_list_head){
+			if(get_pb_key(insert_location)  > get_pb_key(move_node)) break;
+			insert_location = insert_location->next;
+		}
+		//插入到和啊的
+		list_remove(move_node);
+		list_insert(insert_location,move_node);
+		
+		
+		
+	}
+	
+
 }
 
 /*
- * 将一个大的pb_list拆解成两个小的
+ * 将一个大的pb_list拆解成两个小的                                                                                        
  * sp_order 要拆分order，拆解该order的头部page block
  * 
  * notice: 可行性判断，由调用者解决

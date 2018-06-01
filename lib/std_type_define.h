@@ -1,7 +1,7 @@
 /*
  * 标准类型和宏定义
  *
- * author:Shuai Zhang (zhangshuaiisme@gmail.com)
+ * author:Shuai Zhang <zhangshuaiisme@gmail.com>
  */
 
 #ifndef STD_TYPE_DEFINE_H
