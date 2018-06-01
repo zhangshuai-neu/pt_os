@@ -43,69 +43,16 @@ void page_struct_init(){
 	}
 }
 
-
-/* 提示
-//6 byte
-struct free_area{
-	struct list_node *pb_head;	//page block list head，将每个page block的头page链接起来
-	uint16_t pb_num;			//page block num
-};
-*/
-
 // 1)物理页面管理 伙伴系统
 struct buddy_node * buddy_array = BUDDY_BASE_ADDR;
 void buddy_init(){
 	uint8_t i=0;
 	struct list_node * head;
 	for(i=0; i<BUDDY_MAX_NUM; i++){
+		ptsc_memset(&(buddy_array[i].free_area[0]),0,10);
 		buddy_array[i].free_area[MAX_ORDER-1].pb_list_head = buddy_to_page(i)->page_node)
 		buddy_array[i].free_area[MAX_ORDER-1].pb_num = 1;
 	}
-}
-
-
-
-static inline uint16_t get_pb_key(struct list_node * node){
-	return get_page_id(list_entry(node,struct page,page_node));
-}
-
-//将pb_list，变成有序的(从小到大)
-//使用插入排序，因为始终在维持，所以只要修改少次，效率比较高
-void sort_pb_list(struct list_node* list_head){
-	//未排序list
-	struct list_node * unsort_list_head = list_head->next;
-	struct list_node * move_node = NULL;
-	
-	//排序list
-	struct list_node * sort_list_head  = list_head;
-	struct list_node * sort_list_tail  = list_head;
-	
-	//move_node 要插入到 insert_location之前	
-	struct list_node * insert_location = NULL;
-	
-	list_remove(list_head);
-	list_init(sort_list_head);
-	
-	//判断条件
-	while(move_node != ){
-		move_node = unsort_list_head;
-		unsort_list_head = unsort_list_head->next;
-		
-		
-		insert_location = sort_list_head;
-		while(insert_location =! sort_list_head){
-			if(get_pb_key(insert_location)  > get_pb_key(move_node)) break;
-			insert_location = insert_location->next;
-		}
-		//插入到和啊的
-		list_remove(move_node);
-		list_insert(insert_location,move_node);
-		
-		
-		
-	}
-	
-
 }
 
 /*
@@ -173,20 +120,112 @@ bool buddy_pb_alloc(uint8_t buddy_id, uint8_t app_order, struct page *ret_p){
 	return result;
 }
 
+static inline uint32_t get_pb_key(struct list_node * node){
+	return (uint32_t)get_page_id(list_entry(node,struct page,page_node));
+}
+
+//将pb_list，变成有序的(从小到大)
+//使用插入排序，因为始终在维持，所以只要修改少次，效率比较高
+struct list_node* sort_pb_list(struct list_node* list_head){
+	//未排序list
+	struct list_node * unsort_list_head = list_head->next;
+	struct list_node * move_node = NULL;
+	struct list_node end_node;	//只是结束标志
+	
+	//排序list
+	struct list_node * sort_list_head  = list_head;
+	struct list_node * sort_list_tail  = list_head;
+	
+	//move_node 要插入到 insert_location之前	
+	struct list_node * insert_location = NULL;
+	
+	//初始化unsort_list
+	list_remove(list_head);
+	list_insert(unsort_list_head,&end_node);	
+	//初始化sort_list
+	list_init(sort_list_head);
+	
+	while(move_node != &end_node){
+		move_node = unsort_list_head;
+		unsort_list_head = unsort_list_head->next;
+		
+		//比head小
+		if( get_pb_key(move_node) < get_pb_key(sort_list_head) ){
+			list_remove(move_node);
+			list_insert(sort_list_head,move_node);
+			sort_list_head = sort_list_head->prev;
+			break;
+		}
+		//比tail大
+		if( get_pb_key(sort_list_tail) < get_pb_key(move_node) ){
+			list_remove(move_node);
+			list_insert(sort_list_head,move_node);
+			sort_list_tail = sort_list_tail->next;
+			break;
+		}
+		//在head和tail之间
+		insert_location = sort_list_head->next;
+		while(insert_location != sort_list_tail){
+			if(get_pb_key(insert_location) > get_pb_key(move_node)) break;
+			insert_location = insert_location->next;
+		}
+		/* 删除和插入
+		 * 比tail小也在此处处理，因为到此处时move_node一定小于sort_list_tail
+		 */
+		list_remove(move_node);
+		list_insert(insert_location,move_node);
+	}
+	
+	return sort_list_head;
+}
+
+//至少有两个pb才能合并
 //将低order的连续pb合并成一个高order的pb
 void pb_list_combination(struct buddy_node *bp, uint8_t cb_order){
-	struct page* list_head = bp->free_area[cb_order].pb_list_head;
+	//pb size
+	uint32_t bs = (uint32_t)1 << cb_order;	
+	//有序 pb list
+	struct list_node* new_list_head = bp->free_area[cb_order].pb_list_head;
+	new_list_head = sort_pb_list(new_list_head);
+	//pb 数量
+	new_pb_num = bp->free_area[cb_order].pb_num;
 	
 	
 	
+	struct list_node* cb1 = new_list_head;
+	struct list_node* cb2 = new_list_head->next;
+	
+	while(new_pb_num >= 2 && cb1 != new_list_head->prev ){
+		if( get_pb_key(cb2) - get_pb_key(cb1) == bs ){	
+			//相邻，应该合并
+			cb2 = cb2->next;
+			list_remove(cb1);
+			list_remove(cb1->next);
+			list_insert(bp->free_area[cb_order+1].pb_list_head,cb1);
+			new_pb_num-=2;
+			if(cb1 == new_list_head)
+				new_list_head = cb2;
+		}
+		cb1 = cb2;
+		cb2 = cb2->next;
+	}
+	
+	if(new_pb_num == 0)
+		bp->free_area[cb_order].pb_list_head = NULL;
+	else
+		bp->free_area[cb_order].pb_list_head = new_list_head;
+		
+	bp->free_area[cb_order].pb_num = new_pb_num;
 }
 
-//自动回收所有能回收的 page block
+//自动指定buddy回收所有能回收的 page block
 bool buddy_pb_recycle(uint8_t buddy_id){
-	
-	
+	uint8_t i=0;
+	for(i=0; i < MAX_ORDER-1w ;i++){
+		if(buddy_array[buddy_id].pb_num > 2)
+			pb_list_combination(&(buddy_array[buddy_id]),i);
+	}
 }
-
 
 
 // 2)细粒度管理
