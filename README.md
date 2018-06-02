@@ -27,14 +27,14 @@ based on RISC-V ISA, so this maybe a new direction.
 
 #### Memory Management
 
-- physical page management (It's doing)
-- Fine-grained memory management (It's doing)
+- physical page management (It's testing)
+- Fine-grained memory management (In the future)
 
 The detailed information about memory  will be showed
 
 #### Task Management
 
-- ELF program load (In the future)
+- ELF program load (It's doing)
 - Kernel process and thread (In the future)
 - User process and thread (In the future)
 - Simple priority scheduling (In the future)

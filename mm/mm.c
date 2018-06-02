@@ -89,7 +89,7 @@ bool pb_list_separation(struct buddy_node *bp, uint8_t sp_order){
  * 从buddy中申请order级别的page block
  * buddy_id 
  * order
- * ret_p 为返回page结构指针
+ * ret_p 为返回page结构指针,page block的head
  * 
  * */
 bool buddy_pb_alloc(uint8_t buddy_id, uint8_t app_order, struct page *ret_p){
@@ -199,10 +199,17 @@ void pb_list_combination(struct buddy_node *bp, uint8_t cb_order){
 		if( get_pb_key(cb2) - get_pb_key(cb1) == bs ){	
 			//相邻，应该合并
 			cb2 = cb2->next;
+			
+			//修改本级
 			list_remove(cb1);
 			list_remove(cb1->next);
-			list_insert(bp->free_area[cb_order+1].pb_list_head,cb1);
 			new_pb_num-=2;
+			
+			//修改高级
+			bp->free_area[cb_order+1].pb_num += 1;
+			list_insert(bp->free_area[cb_order+1].pb_list_head,cb1);
+			
+			
 			if(cb1 == new_list_head)
 				new_list_head = cb2;
 		}
@@ -210,12 +217,15 @@ void pb_list_combination(struct buddy_node *bp, uint8_t cb_order){
 		cb2 = cb2->next;
 	}
 	
+	//修改本级free_area
 	if(new_pb_num == 0)
 		bp->free_area[cb_order].pb_list_head = NULL;
 	else
 		bp->free_area[cb_order].pb_list_head = new_list_head;
 		
 	bp->free_area[cb_order].pb_num = new_pb_num;
+	
+	
 }
 
 //自动指定buddy回收所有能回收的 page block

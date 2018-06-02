@@ -1,3 +1,5 @@
-1.修改loader，内核使用的内存为0-4M，不为0xc000_0000
-2.初始化page结构
-3.初始化buddy结构
+1.测试现在所有功能
+	mem_op
+	list
+	page
+	buddy
