@@ -125,7 +125,7 @@ static inline uint32_t get_pb_key(struct list_node * node){
 }
 
 //将pb_list，变成有序的(从小到大)
-//使用插入排序，因为始终在维持，所以只要修改少次，效率比较高
+//使用插入排序
 struct list_node* sort_pb_list(struct list_node* list_head){
 	//未排序list
 	struct list_node * unsort_list_head = list_head->next;
