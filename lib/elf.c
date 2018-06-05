@@ -10,11 +10,20 @@
 #include "std_type_define.h"
 #include "elf.h"
 
-uint32_t get_bss_addr(Elf32_Ehdr * elf_header){
+
+/*
+ * 假设elf文件已经加载到内存
+ * 但是尚未按照期望布局进行安排
+ * 需要对elf文件进行解析，找到.text .data .bss 等段的位置
+ * 然后创建进程，部署进程的内存空间
+ * 
+ * */
+
+uint32_t get_bss_addr(elf_header * eh){
 	
 }
 
-uint32_t get_data_addr(Elf32_Ehdr * elf_header){
+uint32_t get_data_addr(elf_header * eh){
 	
 }
 
