@@ -17,10 +17,12 @@ typedef uint32_t elf_word;		//字
 typedef uint32_t elf_addr;		//地址
 typedef uint32_t elf_off;		//偏移
 
+#define IDENT_NUM ((uint32_t)16)
+
 /* elf 文件头 */
 typedef struct
 {
-  uint8_t	elf_ident[16];		/* 魔数和一些信息 */
+  uint8_t	elf_ident[IDENT_NUM];	/* 魔数和一些信息 */
   elf_half	elf_type;			/* ELF文件类型 */
   elf_half	elf_machine;		/* 体系结构 */
   elf_word	elf_version;		/* ELF版本号 */
@@ -65,7 +67,6 @@ typedef struct
   elf_word	sec_addralign;	/* Section alignment */
   elf_word	sec_entsize;	/* Entry size if section holds table */
 } elf_sec_header;
-
 
 
 #endif
