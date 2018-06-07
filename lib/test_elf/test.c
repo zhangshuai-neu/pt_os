@@ -23,6 +23,9 @@ void show_elf_header(elf_header *eh_p){
 	printf("\n  Start of section headers:  ");
 	printf("%d bytes ",eh_p->elf_shoff);
 	
+	printf("\n  Number of program headers:  ");
+	printf("%d  ",eh_p->elf_phnum);
+	
 	printf("\n");
 }
 
@@ -38,10 +41,19 @@ int main(){
 	
 	//读取 elf 文件头
 	elf_header * eh_p = (elf_header *)malloc(sizeof(elf_header));
-	
 	fread(eh_p,sizeof(elf_header),1,example_fp);
-	
 	show_elf_header(eh_p);
+	
+	//读取 segment header
+	fseek(example_fp,,SEEK_SET)
+	int seg_h_num = eh_p->elf_phnum;
+	
+	elf_seg_header * seg_h_array = \
+		(elf_seg_header *)malloc(seg_h_num*sizeof(elf_seg_header));
+	
+	
+	//
+	
 	
 	fclose(example_fp);
 	
