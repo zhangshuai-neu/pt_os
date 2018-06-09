@@ -39,9 +39,34 @@ void show_seg_header(elf_seg_header * seg_h_array, int seg_num){
 		
 		
 		printf("    Type:  ");
-		printf("%x\n",seg_h_array[i].seg_type);
-		switch(){
-			
+		printf("%x",seg_h_array[i].seg_type);
+		switch(seg_h_array[i].seg_type){
+			case SEG_T_NULL:
+				printf("  SEG_T_NULL\n");
+				break;
+			case SEG_T_LOAD:
+				printf("  SEG_T_LOAD\n");
+				break;
+			case SEG_T_DYNAMIC:
+				printf("  SEG_T_DYNAMIC\n");
+				break;
+			case SEG_T_INTERP:
+				printf("  SEG_T_INTERP\n");
+				break;
+			case SEG_T_NOTE:
+				printf("  SEG_T_NOTE\n");
+				break;
+			case SEG_T_PHDR:
+				printf("  SEG_T_PHDR\n");
+				break;
+			case SEG_T_TLS:
+				printf("  SEG_T_TLS\n");
+				break;
+			case SEG_T_NUM:
+				printf("  SEG_T_NUM\n");
+				break;
+			default: 
+				printf("  The segment type is others!\n");
 		}
 		
 		printf("    Offset:  ");
