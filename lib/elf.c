@@ -12,6 +12,7 @@
 
 
 /*
+ * 
  * 假设elf文件已经加载到内存
  * 但是尚未按照期望布局进行安排
  * 需要对elf文件进行解析，找到.text .data .bss 等段的位置
@@ -20,6 +21,9 @@
  * */
  
 
+//读取elf header
+
+//读取 program header
 
 uint32_t get_bss_addr(elf_header * eh){
 	
