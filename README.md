@@ -122,6 +122,33 @@ You should put "pt_os" dir and "bochs" dir in current user's Desktop,
 otherwise you need to modify "bochsrc" and "Makefile".
 
 
+#### Book Reference
+
+30天自己操作系统
+操作系统真相还原
+linux内核完全注释
+深入理解linux内核
+深入理解linux内核架构
+奔跑吧Linux内核
+一个64位操作系统的设计与实现
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
