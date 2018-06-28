@@ -19,7 +19,7 @@ void list_init(struct list_node *list_head)
 	list_head->prev = list_head;
 }
 
-//在list_head之前插入新节点
+//在list_head之前插入新节点，成为新末尾
 void list_insert(struct list_node *list_head, struct list_node *new_node)
 {
 	if(list_head==NULL || new_node==NULL) return ;
