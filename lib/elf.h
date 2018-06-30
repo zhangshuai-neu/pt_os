@@ -4,6 +4,9 @@
  * 获取ELF文件各段的地址
  * 为加载到内存做准备
  * 
+ * 我只添加了elf文件头和program段头，其他的部分与加载无关
+ * 其他内容可以在 /usr/include/elf.h 中查看（如果你感兴趣）
+ * 
  * author:Shuai Zhang <zhangshuaiisme@gmail.com>
  */
 
@@ -39,7 +42,7 @@ typedef struct
 } elf_header;
 
 
-/* 段头 */
+/* program 段头 */
 typedef struct
 {
   elf_word	seg_type;		/* 段类型 */
@@ -74,22 +77,6 @@ typedef struct
 #define SEG_T_HIOS		0x6fffffff		/* End of OS-specific */
 #define SEG_T_LOPROC	0x70000000		/* SEG_Tart of processor-specific */
 #define SEG_T_HIPROC	0x7fffffff		/* End of processor-specific */
-
-
-/* 节头  */
-typedef struct
-{
-  elf_word	sec_name;		/* Section name (string tbl index) */
-  elf_word	sec_type;		/* Section type */
-  elf_word	sec_flags;		/* Section flags */
-  elf_addr	sec_addr;		/* Section virtual addr at execution */
-  elf_off	sec_offset;		/* Section file offset */
-  elf_word	sec_size;		/* Section size in bytes */
-  elf_word	sec_link;		/* Link to another section */
-  elf_word	sec_info;		/* Additional section information */
-  elf_word	sec_addralign;	/* Section alignment */
-  elf_word	sec_entsize;	/* Entry size if section holds table */
-} elf_sec_header;
 
 
 #endif

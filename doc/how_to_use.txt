@@ -1,4 +1,12 @@
 1.Make image file
 	You can use "bximage" to create an disk image. And I have write this in 
-Makefile.
+	Makefile.
 
+2.Test Dir
+	There are several "test something" directory, which is used to show how to 
+	use this module. For example, in lib dir, you can find the "test_list", 
+	the code in this dir will tell you how to use "list" struct.
+	
+	
+	
+	

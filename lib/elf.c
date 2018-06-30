@@ -4,12 +4,13 @@
  * 获取ELF文件各段的地址
  * 为加载到内存做准备
  * 
+ * NOT OK!
+ * 
  * author:Shuai Zhang <zhangshuaiisme@gmail.com>
  */
 
 #include "std_type_define.h"
 #include "elf.h"
-
 
 /*
  * 
