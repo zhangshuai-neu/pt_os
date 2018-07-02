@@ -11,7 +11,7 @@
 #include "io.h"
 #include "system_call.h"
 
-#define IRQ0_FREQUENCY	   100      //中断频率
+#define IRQ0_FREQUENCY	   100      //中断频率,1秒100次
 #define INPUT_FREQUENCY	   1193180  
 #define COUNTER0_VALUE	   INPUT_FREQUENCY / IRQ0_FREQUENCY
 
