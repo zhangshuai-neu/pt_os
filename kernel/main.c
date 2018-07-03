@@ -42,7 +42,10 @@ int main(void){
     //打开中断
     //asm volatile("sti");
 
-	//
+	/*
+     * 测试程序
+     * 测试disk interface
+     */
 
 	while(1){
 	
