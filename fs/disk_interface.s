@@ -1,9 +1,6 @@
 [bits 32]
-
-extern rd_disk_m_32
-
 ;-------------------rd_disk_m_32 ---------------------  
-rd_disk_m_32:	  
+rd_disk_m_32:
 		; eax=LBA扇区号
 		; ebx=将数据写入的内存地址
 		; ecx=读入的扇区数

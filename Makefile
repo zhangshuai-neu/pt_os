@@ -20,12 +20,14 @@ LD_OBJECTS = $(BUILD_DIR)/main.o $(BUILD_DIR)/system_call.o \
 LD_FLAGS = -m elf_i386 -T $(BUILD_DIR)/kernel_link.ld 
 
 #汇编代码
-asm: boot/mbr.S boot/loader.S boot/boot_parameter.inc
+asm: boot/mbr.S boot/loader.S boot/boot_parameter.inc fs/disk_interface.s
 	#启动
 	$(AS) -I boot/ -o $(BUILD_DIR)/mbr.bin boot/mbr.S
 	$(AS) -I boot/ -o $(BUILD_DIR)/loader.bin boot/loader.S 
 	#中断
 	$(AS) -f elf32 -o $(BUILD_DIR)/asm_it.o it/interrupt.s
+	#硬盘接口
+	$(AS) -f elf32 -0 $(BUILD_DIR)/asm_disk_interface.o	fs/disk_interface.s
 
 #模块
 $(BUILD_DIR)/main.o: kernel/main.c
