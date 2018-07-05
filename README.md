@@ -89,25 +89,37 @@ Final step, you should compile bochs in bochs_dir.
 
 Source Code
 ----
-**bochs_conf:** It include the bochs's base configure file "bochsrc" and log 
+**bochs_conf:** It includes the bochs's base configure file "bochsrc" and log 
 file "bochsrc". When you use Makefile, a new bochsrc file will be created
 according to you pc's user name.
 
-**boot:** 
+**boot:** It includes some boot code, such as the MBR and loader program.
 
-**build:**
+**build:** The obj file and elf file will be built here.
 
-**dev:** 
+**dev:** The device's hardware interface.
 
-**doc:** 
+**doc:** Some design document which useful for understanding these code.
 
-**it:** 
+**it:** It includes some interrupt controler and some handling program.
 
-**kernel:**
+**kernel:** It includes the code which are used to start all init and configure.
 
-**lib:**
+**lib:** There are some general program and struct, which is helpful for our 
+development.
 
-**sc:**
+**mm_v1:** This the simplest memory management system, which uses a Bitmap to 
+manage the physical memory's usage.(Low Level)
+
+**mm_v2:**	This the more complex memory management system, which uses a Buddy 
+system to manage the physical memory's usage .(Middle Level)
+
+**mm_v3:**	This the most complex memory management system, which uses a Buddy 
+system and SLAB mechanism. (High Level)
+
+**sc:** It has some system call. However, these function can only be used by 
+kernel, because our OS is not completed. In the future , these sys_call will be
+occured by system_call handle function and interrupt.
 	
 
 #### Code Notice

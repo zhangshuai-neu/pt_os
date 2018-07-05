@@ -27,7 +27,7 @@ asm: boot/mbr.S boot/loader.S boot/boot_parameter.inc fs/disk_interface.s
 	#中断
 	$(AS) -f elf32 -o $(BUILD_DIR)/asm_it.o it/interrupt.s
 	#硬盘接口
-	$(AS) -f elf32 -0 $(BUILD_DIR)/asm_disk_interface.o	fs/disk_interface.s
+	$(AS) -f elf32 -o $(BUILD_DIR)/asm_disk_interface.o	fs/disk_interface.s
 
 #模块
 $(BUILD_DIR)/main.o: kernel/main.c

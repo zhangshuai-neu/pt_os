@@ -1,5 +1,6 @@
 1.测试现在所有功能
+	list : test ok
+	disk_interface : testing 
 	mem_op
-	list
-	page
+	page 
 	buddy
