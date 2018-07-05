@@ -1,6 +1,12 @@
 1.测试现在所有功能
 	list : test ok
+	
 	disk_interface : testing 
-	mem_op
-	page 
-	buddy
+	
+	mem_v1 : writing
+		mem_op : 
+	
+	mem_v2: 
+		page : write ok
+		buddy : write ok
+		mem_op : 

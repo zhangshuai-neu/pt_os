@@ -10,9 +10,6 @@
 //空指针
 #define NULL ((void*)0)
 
-//
-
-
 //布尔类型
 typedef enum boolean {  
 	FALSE=0,TRUE
