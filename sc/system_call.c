@@ -181,3 +181,72 @@ void ptsc_memset(void* dest_addr,uint8_t val,uint32_t size){
 	//error处理
 }
 
+
+/*
+ * ID: 			6
+ * Comment: 	字符串长度
+ */
+uint32_t ptsc_strlen(char * str_addr){
+	uint32_t len=0;
+	if(str_addr!=NULL){
+		while(*str_addr != '\0'){
+			len++;
+			str_addr=str_addr++;
+		}
+	}
+	//error处理
+}
+
+/*
+ * ID: 			7
+ * Comment: 	字符串比较
+ * 
+ * str_addr_a > str_addr_b： 1
+ * str_addr_a = str_addr_b： 0
+ * str_addr_a < str_addr_b： -1
+ * 
+ */
+int8_t ptsc_strcmp(char * str_addr_a,char * str_addr_b){
+	int8_t result=0;
+	if(str_addr_a!=NULL &&  str_addr_b!=NULL){
+		while(*str_addr_a!='\0' && *str_addr_b!= '\0'){
+			if(*str_addr_a == *str_addr_b){
+				str_addr_a++;
+				str_addr_b++;
+			} else if(*str_addr_a > *str_addr_b){
+				result=1;
+				return result;
+			} else {
+				result=-1;
+				return result;
+			}
+		}
+		if(*str_addr_a=='\0' && *str_addr_b=='\0'){
+			result=0;
+		}else if(*str_addr_b=='\0'){
+			result=1;
+		} else{
+			result=-1;
+		}
+		
+		return result;
+	}
+	//error处理
+}
+
+/*
+ * ID: 			8
+ * Comment: 	字符串复制
+ * 会复制 \0
+ */
+void ptsc_strcmp(char * src_addr,char * dest_addr){
+	if(dest_addr!=NULL && src_addr!=NULL){
+		while(src_addr!='\0'){
+			*dest_addr=*src_addr;
+			dest_addr++;
+			src_addr++;
+		}
+		*dest_addr='\0'
+	}
+	//error处理
+}
