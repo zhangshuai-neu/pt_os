@@ -8,7 +8,7 @@ USER=$(shell who |head -1 |cut -d' ' -f1)
 BUILD_DIR = ./build
 
 #编译选项
-LIB = -I sc -I lib -I it -I dev -I kernel
+LIB = -I sc -I lib -I it -I dev -I kernel -I fs
 C_FLAGS = -Wall -m32 -c -fno-zero-initialized-in-bss -fno-stack-protector \
 			$(LIB) -nostdinc
 
@@ -20,14 +20,12 @@ LD_OBJECTS = $(BUILD_DIR)/main.o $(BUILD_DIR)/system_call.o \
 LD_FLAGS = -m elf_i386 -T $(BUILD_DIR)/kernel_link.ld 
 
 #汇编代码
-asm: boot/mbr.S boot/loader.S boot/boot_parameter.inc fs/disk_interface.s
+asm: boot/mbr.S boot/loader.S boot/boot_parameter.inc
 	#启动
 	$(AS) -I boot/ -o $(BUILD_DIR)/mbr.bin boot/mbr.S
 	$(AS) -I boot/ -o $(BUILD_DIR)/loader.bin boot/loader.S 
 	#中断
 	$(AS) -f elf32 -o $(BUILD_DIR)/asm_it.o it/interrupt.s
-	#硬盘接口
-	$(AS) -f elf32 -o $(BUILD_DIR)/asm_disk_interface.o	fs/disk_interface.s
 
 #模块
 $(BUILD_DIR)/main.o: kernel/main.c
@@ -40,6 +38,9 @@ $(BUILD_DIR)/interrupt.o: it/interrupt.c it/interrupt.h
 	$(CC) $(C_FLAGS) $< -o $@
 
 $(BUILD_DIR)/timer.o: dev/timer.c dev/timer.h
+	$(CC) $(C_FLAGS) $< -o $@
+    
+$(BUILD_DIR)/disk_interface.o: fs/disk_interface.c fs/disk_interface.h
 	$(CC) $(C_FLAGS) $< -o $@
 	
 build: asm $(LD_OBJECTS)

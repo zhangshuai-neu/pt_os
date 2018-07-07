@@ -6,7 +6,7 @@
 #ifndef DISK_INFO
 #define DISK_INFO
 
-//disk size 为 256MB
+//disk size 为 256MB（默认使用256MB disk）
 #define DISK_SIZE ((uint32_t)1024*1024*256)
 
 /* 定义硬盘各寄存器的端口号 */

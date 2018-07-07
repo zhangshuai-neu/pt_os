@@ -8,10 +8,9 @@
 #include "io.h"
 #include "sc.h"
 
-
 //全局结构
-uint8_t channel_cnt;	   			// 按硬盘数计算的通道数，只使用1个
-struct ide_channel channels[2];		// 有两个ide通道，只使用1个
+uint8_t * channel_cnt = CHANNEL_COUNT_ADDR;	   			// 按硬盘数计算的通道数，只使用1个
+struct ide_channel * channel = CHANNEL_STRUCT_ADDR;		// 有两个ide通道，只使用1个
 
 /*
  * 从磁盘读取连续的block到指定内存
@@ -22,8 +21,7 @@ struct ide_channel channels[2];		// 有两个ide通道，只使用1个
  * 
  * */
 void disk_read_block(void * mem_base_addr,uint32_t block_id, uint32_t block_num){
-
-
+		
 }
 
 /*
@@ -51,26 +49,21 @@ void disk_write_block(void * mem_base_addr,uint32_t mem_length, uint32_t block_i
 
 }
 
+
 /* 
  * 硬盘数据结构初始化 
- * 
  * 使用一个ide接口连接一个主硬盘
- * 
  * */
-void ide_init() {
-	uint8_t hd_cnt = 1;	 	//硬盘的数量, 默认为1     
-	channel_cnt = 1			//通道数量，默认为1
-   
-	//channel指针
-	struct ide_channel* channel = &channels[0];	/* 处理通道上的硬盘 */
+void ide_init() { 
+	*channel_cnt = 1	//通道数量，默认为1
 
+	ptsc_memset(channel,0,sizeof(struct ide_channel));
 	ptsc_strcpy(channel->name,"ide0");
-
+	
 	//为ide通道初始化端口基址及中断向量
 	channel->port_base	 = 0x1f0;	   // ide0通道的起始端口号是0x1f0
-	channel->irq_no	 = 0x20 + 14;	   // 从片8259a上倒数第二的中断引脚,温盘,也就是ide0通道的的中断向量号
+	channel->irq_no	 = 0x20 + 14;	   // 从片8259a上倒数第二的中断引脚,也就是ide0通道的的中断向量号
 		
 	channel->expecting_intr = false;		   // 未向硬盘写入指令时不期待硬盘的中断
-	ptsc_print_str("ide_init done\n");
 }
 

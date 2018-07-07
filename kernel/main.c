@@ -19,6 +19,8 @@
 #include "system_call.h"
 #include "interrupt.h"
 #include "timer.h"
+#include "disk_interface.h"
+
 
 int main(void){
 	
@@ -38,6 +40,10 @@ int main(void){
 	//3. 时钟初始化
 	//timer_init();		//测试ok
 	ptsc_print_str("Timer Init: OK\n");
+
+	//4. disk接口初始化
+	ide_init();
+	ptsc_print_str("Ide_init： OK\n");
 	
     //打开中断
     //asm volatile("sti");

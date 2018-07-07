@@ -41,6 +41,11 @@ build/ 目录下的kernel.elf被映射到该位置
 
 **4MB-8MB:** 文件系统及其buffer
 
+	一些管理结构和变量的位置：
+		channel_cnt: 4MB
+		ide_channel： 4MB + 1B
+
+
 **8MB-128MB:** 用户使用部分
 
 

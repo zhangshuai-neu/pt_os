@@ -10,10 +10,11 @@
 //空指针
 #define NULL ((void*)0)
 
-//布尔类型
+// 布尔类型
+// size: 4 byte
 typedef enum boolean {  
 	FALSE=0,TRUE
-}bool;
+} bool;
 
 //整数
 typedef signed 	char 			int8_t;
