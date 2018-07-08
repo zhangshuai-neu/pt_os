@@ -6,7 +6,8 @@
 
 #include "disk_interface.h"
 #include "io.h"
-#include "sc.h"
+#include "system_call.h"
+#include "mm.h"
 
 //全局结构
 uint8_t * channel_cnt = CHANNEL_COUNT_ADDR;	   			// 按硬盘数计算的通道数，只使用1个
@@ -50,11 +51,16 @@ void disk_write_block(void * mem_base_addr,uint32_t mem_length, uint32_t block_i
 }
 
 
+
 /* 
  * 硬盘数据结构初始化 
  * 使用一个ide接口连接一个主硬盘
  * */
 void ide_init() { 
+	
+
+
+
 	*channel_cnt = 1	//通道数量，默认为1
 
 	ptsc_memset(channel,0,sizeof(struct ide_channel));

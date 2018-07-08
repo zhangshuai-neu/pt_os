@@ -42,7 +42,7 @@ void set_pde(uint32_t pde_id, uint32_t pde_val){
  * pte_val：条目值(页物理地址)
  * type：指明页表类型 "kc":kernel code, "kd":kernel data, "uc":user code, "ud":user data
  */
-void set_kd_pde(uint32_t pt_id, uint32_t pte_id,uint32_t pte_val, char* type){
+void set_pte(uint32_t pt_id, uint32_t pte_id,uint32_t pte_val, char* type){
 	uint32_t * pte_addr =  PAGE_TAB_BASE_ADDR + pt_id*SIZE_4K + pte_id*PTE_SIZE;
 
 	if(ptsc_strcmp(type,"kd") == 0){
@@ -50,11 +50,11 @@ void set_kd_pde(uint32_t pt_id, uint32_t pte_id,uint32_t pte_val, char* type){
 		SET_RW_BIT(pte_val);
 	} else if(ptsc_strcmp(type,"kc") == 0){
 		SET_PRESENT_BIT(pte_val);
-	} else if(ptsc_strcmp(type,"ud"){
+	} else if(ptsc_strcmp(type,"ud" == 0){
 		SET_PRESENT_BIT(pte_val);
 		SET_RW_BIT(pte_val);
 		SET_US_BIT(pte_val);
-	} else if(ptsc_strcmp(type,"uc"){
+	} else if(ptsc_strcmp(type,"uc" == 0){
 		SET_PRESENT_BIT(pte_val);
 		SET_US_BIT(pte_val);
 	} else {
@@ -63,6 +63,22 @@ void set_kd_pde(uint32_t pt_id, uint32_t pte_id,uint32_t pte_val, char* type){
 	}
 	
 	*pte_addr = pte_val;
+}
+
+
+//配置内核使用的内存区域(0-8M)
+void set_kernel_mmap(){
+	//0-4M已经在 boot/loader.s中配置完成
+
+	//4-8M配置文件系统使用的内存
+	set_pde(1,0x102000);
+
+	int i;
+	uint32_t pte_val = FS_ADDR;
+	for(i=0;i<1024;i++){
+		set_pte(1,i,pte_val,"kd");
+		pte_val += SIZE_4K;
+	}
 }
 
 

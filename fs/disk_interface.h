@@ -32,7 +32,7 @@ struct disk {
 
 //--------------------------------------全局宏定义---------------------------------------------------
 
-#define SIZE_4M ((uint32_t)1024*1024*4)
+
 #define CHANNEL_COUNT_ADDR 	SIZE_4M		//channel_cnt 只使用一个字节
 #define CHANNEL_STRUCT_ADDR	(CHANNEL_COUNT_ADDR+1)	//channel 结构使用32byte(前28个)
 

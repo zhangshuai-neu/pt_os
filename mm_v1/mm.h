@@ -12,10 +12,12 @@
 #include "std_type_define.h"
 #include "bitmap.h"
 
-//宏定义
-#define SIZE_1M ((uint32_t)1024*1024)
-#define SIZE_4K ((uint32_t)1024*4)
-#define SIZE_1K ((uint32_t)1024)
+// 内存大小 boot/boot_parameter.inc 下有说明
+#define MEM_SIZE_RECORD_ADDR	0xa000
+#define PAGE_OFFSET		(12)	//偏移量
+
+//内存位置
+#define FS_ADDR	SIZE_4M
 
 //配置pde和pte
 #define PAGE_DIR_BASE_ADDR SIZE_1M							//页目录地址
@@ -35,11 +37,12 @@
 #define SET_US_BIT(var) 		var = (var | PAGE_US_BIT)
 #define CLEAR_US_BIT(var)		var = (var & (~PAGE_US_BIT))
 
-
-// boot/boot_parameter.inc 下有说明
-#define MEM_SIZE_RECORD_ADDR	0xa000
-
-
-
+//--------------------------------函数声明--------------------------------------
+//设置页目录-表项
+void set_pde(uint32_t pde_id, uint32_t pde_val);
+//设置页表-表项
+void set_kd_pde(uint32_t pt_id, uint32_t pte_id,uint32_t pte_val, char* type);
+//设置内核使用的内存区域
+void set_kernel_mmap();
 
 

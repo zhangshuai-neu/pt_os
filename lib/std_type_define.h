@@ -7,6 +7,12 @@
 #ifndef STD_TYPE_DEFINE_H
 #define STD_TYPE_DEFINE_H
 
+//size 常用宏
+#define SIZE_4M ((uint32_t)1024*1024*4)
+#define SIZE_1M ((uint32_t)1024*1024)
+#define SIZE_4K ((uint32_t)1024*4)
+#define SIZE_1K ((uint32_t)1024)
+
 //空指针
 #define NULL ((void*)0)
 
