@@ -47,12 +47,19 @@ void ide_init() {
 	*channel_cnt = 1;	//通道数量，默认为1
 
 	ptsc_memset(channel,0,sizeof(struct ide_channel));
-	ptsc_strcpy(channel->name,"ide0");
+	
+	ptsc_print_str("debug1\n");
+	
+	ptsc_strcpy(channel->name,"ide0\0");
+	
+	ptsc_print_str("debug2\n");
 	
 	//为ide通道初始化端口基址及中断向量
 	channel->port_base	 = 0x1f0;	   // ide0通道的起始端口号是0x1f0
 	channel->irq_no	 = 0x20 + 14;	   // 从片8259a上倒数第二的中断引脚,也就是ide0通道的的中断向量号
 		
 	channel->expecting_intr = FALSE;   // 未向硬盘写入指令时不期待硬盘的中断
+	
+	return ;
 }
 

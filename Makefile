@@ -1,3 +1,6 @@
+#notice:
+# ifeq 之前不能为tab，只能用空格
+
 #自己修改
 MM_VERSION=1
 
@@ -23,7 +26,7 @@ LD_OBJECTS = $(BUILD_DIR)/main.o $(BUILD_DIR)/system_call.o \
 			
 LD_FLAGS = -m elf_i386 -T $(BUILD_DIR)/kernel_link.ld 
 
-# ifeq 之前不能为tab，只能用空格
+
 
 
 #汇编代码

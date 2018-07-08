@@ -38,7 +38,7 @@ struct ide_channel {
 
 
 #define CHANNEL_COUNT_ADDR 	SIZE_4M		//channel_cnt 只使用一个字节
-#define CHANNEL_STRUCT_ADDR	(CHANNEL_COUNT_ADDR+1)	//channel 结构使用32byte(前28个)
+#define CHANNEL_STRUCT_ADDR	(CHANNEL_COUNT_ADDR+4)	//channel 结构使用32byte(前28个)
 
 
 //--------------------------------------函数声明-----------------------------------------------------

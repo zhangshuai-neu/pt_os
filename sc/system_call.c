@@ -251,4 +251,5 @@ void ptsc_strcpy(char * src_addr,char * dest_addr){
 		*dest_addr='\0';
 	}
 	//error处理
+	return ;
 }

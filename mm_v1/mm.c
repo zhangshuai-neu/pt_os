@@ -29,6 +29,7 @@ void set_pde(uint32_t pde_id, uint32_t pde_val){
 	uint32_t * pde_addr = (uint32_t *)(pde_id*PDE_SIZE + PAGE_DIR_BASE_ADDR);
 
 	//页目录表项设置为所有权限，在页表处进行限制
+	//结尾为7
 	SET_PRESENT_BIT(pde_val);
 	SET_RW_BIT(pde_val);
 	SET_US_BIT(pde_val);
@@ -47,6 +48,7 @@ void set_pte(uint32_t pt_id, uint32_t pte_id,uint32_t pte_val, char* type){
 	uint32_t * pte_addr =  (uint32_t *)(PAGE_TAB_BASE_ADDR + pt_id*SIZE_4K + pte_id*PTE_SIZE);
 
 	if(ptsc_strcmp(type,"kd") == 0){
+		//结尾为3
 		SET_PRESENT_BIT(pte_val);
 		SET_RW_BIT(pte_val);
 	} else if(ptsc_strcmp(type,"kc") == 0){

@@ -42,6 +42,7 @@ int main(void){
 	timer_init();		//测试ok
 	ptsc_print_str("Timer Init: OK\n");
 
+
 	//4.设置内核内存区
 	set_kernel_mmap();
 	ptsc_print_str("Kernel Mmap Init: OK\n");
@@ -49,7 +50,7 @@ int main(void){
 	//4. disk接口初始化
 	ide_init();
 	ptsc_print_str("Ide_init： OK\n");
-	
+
     //打开中断
     //asm volatile("sti");
 
