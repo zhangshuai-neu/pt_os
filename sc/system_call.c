@@ -33,7 +33,7 @@
  * 不能初始化为0，因为我没有写elf解释程序，所有bss段不会被分配内存
  * 会造成变量不确定的情况(严重错误)
  */
-uint16_t view_row=0;				//current row	当前行
+uint16_t view_row=0;			//current row	当前行
 uint16_t view_column=0;			//current column 当前列
 
 /*

@@ -46,6 +46,9 @@ build/ 目录下的kernel.elf被映射到该位置
 		ide_channel： 4MB + 1B
 
 
+		8MB-4KB ~ 8MB 为buffer
+
+
 **8MB-128MB:** 用户使用部分
 
 

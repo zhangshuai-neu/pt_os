@@ -11,7 +11,13 @@
 
 #include "std_type_define.h"
 
+//------------------------------宏定义-----------------------------------
+#define FS_BUFFER_ADDR  (SIZE_4M*2-SIZE_4K)
+#define FS_BUFFER_SIZE  (SIZE_4K)
 
+
+
+//------------------------------数据结构-----------------------------------
 struct inode{
     uint32_t inode_id;    //文件最多有2^32个
     uint32_t start_block; //起始磁盘块
