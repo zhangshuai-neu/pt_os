@@ -38,7 +38,7 @@ int main(void){
 	ptsc_print_str("Idt Init: OK\n");
 	
 	//3. 时钟初始化
-	//timer_init();		//测试ok
+	timer_init();		//测试ok
 	ptsc_print_str("Timer Init: OK\n");
 
 	//4. disk接口初始化

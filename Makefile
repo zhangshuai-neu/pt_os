@@ -15,7 +15,7 @@ C_FLAGS = -Wall -m32 -c -fno-zero-initialized-in-bss -fno-stack-protector \
 #链接选项
 LD_OBJECTS = $(BUILD_DIR)/main.o $(BUILD_DIR)/system_call.o \
 			$(BUILD_DIR)/asm_it.o $(BUILD_DIR)/interrupt.o \
-			$(BUILD_DIR)/timer.o
+			$(BUILD_DIR)/timer.o $(BUILD_DIR)/disk_interface.o
 			
 LD_FLAGS = -m elf_i386 -T $(BUILD_DIR)/kernel_link.ld 
 

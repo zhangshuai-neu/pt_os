@@ -191,7 +191,7 @@ uint32_t ptsc_strlen(char * str_addr){
 	if(str_addr!=NULL){
 		while(*str_addr != '\0'){
 			len++;
-			str_addr=str_addr++;
+			str_addr++;
 		}
 	}
 	//error处理
@@ -239,14 +239,14 @@ int8_t ptsc_strcmp(char * str_addr_a,char * str_addr_b){
  * Comment: 	字符串复制
  * 会复制 \0
  */
-void ptsc_strcmp(char * src_addr,char * dest_addr){
+void ptsc_strcpy(char * src_addr,char * dest_addr){
 	if(dest_addr!=NULL && src_addr!=NULL){
 		while(src_addr!='\0'){
 			*dest_addr=*src_addr;
 			dest_addr++;
 			src_addr++;
 		}
-		*dest_addr='\0'
+		*dest_addr='\0';
 	}
 	//error处理
 }

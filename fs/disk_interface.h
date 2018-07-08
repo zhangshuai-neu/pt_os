@@ -8,8 +8,17 @@
 
 #include "std_type_define.h"
 #include "disk_info.h"
+#include "io.h"
+#include "system_call.h"
 
 //--------------------------------------结构定义-----------------------------------------------------
+
+/* 硬盘结构 */
+struct disk {
+	char name[8];			   		   // 本硬盘的名称，如sda等
+	struct ide_channel* my_channel;	   // 此块硬盘归属于哪个ide通道
+	uint8_t dev_no;			   		   // 本硬盘是主0还是从1
+};
 
 /* ata通道结构 
  * size: 8 + 2 + 1 + 4 + (8+4+1) = 28 byte < 32 byte
@@ -22,12 +31,7 @@ struct ide_channel {
 	struct disk devices;	 	// 一个通道上连接两个硬盘，一主一从
 };
 
-/* 硬盘结构 */
-struct disk {
-	char name[8];			   		   // 本硬盘的名称，如sda等
-	struct ide_channel* my_channel;	   // 此块硬盘归属于哪个ide通道
-	uint8_t dev_no;			   		   // 本硬盘是主0还是从1
-};
+
 
 
 //--------------------------------------全局宏定义---------------------------------------------------
