@@ -5,16 +5,15 @@
  */
 
 #include "disk_interface.h"
-<<<<<<< HEAD
-=======
 #include "io.h"
 #include "system_call.h"
 #include "mm.h"
->>>>>>> 1e369e3177d2bc3409f23aaefcfa473dca96a3cb
 
 //全局结构
-uint8_t * channel_cnt = CHANNEL_COUNT_ADDR;	   			// 按硬盘数计算的通道数，只使用1个
-struct ide_channel * channel = CHANNEL_STRUCT_ADDR;		// 有两个ide通道，只使用1个
+// 按硬盘数计算的通道数，只使用1个
+uint8_t * channel_cnt = (uint8_t *)CHANNEL_COUNT_ADDR;	   		
+// 有两个ide通道，只使用1个	
+struct ide_channel * channel = (struct ide_channel *)CHANNEL_STRUCT_ADDR;		
 
 /*
  * 从磁盘读取连续的block到指定内存
@@ -40,22 +39,12 @@ void disk_write_block(void * mem_base_addr,uint32_t mem_length, uint32_t block_i
 
 }
 
-
-
 /* 
  * 硬盘数据结构初始化 
  * 使用一个ide接口连接一个主硬盘
  * */
 void ide_init() { 
-<<<<<<< HEAD
 	*channel_cnt = 1;	//通道数量，默认为1
-=======
-	
-
-
-
-	*channel_cnt = 1	//通道数量，默认为1
->>>>>>> 1e369e3177d2bc3409f23aaefcfa473dca96a3cb
 
 	ptsc_memset(channel,0,sizeof(struct ide_channel));
 	ptsc_strcpy(channel->name,"ide0");

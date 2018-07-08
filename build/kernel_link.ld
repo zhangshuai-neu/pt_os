@@ -24,6 +24,9 @@ SECTIONS{
         /*硬盘接口*/
         ./build/disk_interface.o(.text)
         
+        /*内存管理*/
+        ./build/mm.o(.text)
+        
     }
     
     .data :
@@ -39,6 +42,8 @@ SECTIONS{
         ./build/asm_it.o(.data)
         
         ./build/disk_interface.o(.data)
+        
+        ./build/mm.o(.data)
         
     }
     

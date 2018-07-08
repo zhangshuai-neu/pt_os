@@ -44,6 +44,7 @@ int main(void){
 
 	//4.设置内核内存区
 	set_kernel_mmap();
+	ptsc_print_str("Kernel Mmap Init: OK\n");
 
 	//4. disk接口初始化
 	ide_init();

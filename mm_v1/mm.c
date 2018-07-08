@@ -17,6 +17,7 @@
 	
 */
 #include "mm.h"
+#include "system_call.h"
 
 //--------------------------------配置pde和pte--------------------------------------
 /*
@@ -43,18 +44,18 @@ void set_pde(uint32_t pde_id, uint32_t pde_val){
  * type：指明页表类型 "kc":kernel code, "kd":kernel data, "uc":user code, "ud":user data
  */
 void set_pte(uint32_t pt_id, uint32_t pte_id,uint32_t pte_val, char* type){
-	uint32_t * pte_addr =  PAGE_TAB_BASE_ADDR + pt_id*SIZE_4K + pte_id*PTE_SIZE;
+	uint32_t * pte_addr =  (uint32_t *)(PAGE_TAB_BASE_ADDR + pt_id*SIZE_4K + pte_id*PTE_SIZE);
 
 	if(ptsc_strcmp(type,"kd") == 0){
 		SET_PRESENT_BIT(pte_val);
 		SET_RW_BIT(pte_val);
 	} else if(ptsc_strcmp(type,"kc") == 0){
 		SET_PRESENT_BIT(pte_val);
-	} else if(ptsc_strcmp(type,"ud" == 0){
+	} else if(ptsc_strcmp(type,"ud") == 0){
 		SET_PRESENT_BIT(pte_val);
 		SET_RW_BIT(pte_val);
 		SET_US_BIT(pte_val);
-	} else if(ptsc_strcmp(type,"uc" == 0){
+	} else if(ptsc_strcmp(type,"uc") == 0){
 		SET_PRESENT_BIT(pte_val);
 		SET_US_BIT(pte_val);
 	} else {
@@ -84,7 +85,7 @@ void set_kernel_mmap(){
 
 //--------------------------------位示图-----------------------------------------
 //全局变量
-struct bitmap * page_bit_map_p = SIZE_1Ms + SIZE_4K + SIZE_4K*32;
+struct bitmap * page_bit_map_p = (struct bitmap *)(SIZE_1M + SIZE_4K + SIZE_4K*32);
 
 //函数
 void bitmap_init(){

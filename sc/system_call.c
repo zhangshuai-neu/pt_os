@@ -194,6 +194,7 @@ uint32_t ptsc_strlen(char * str_addr){
 			str_addr++;
 		}
 	}
+	return len;
 	//error处理
 }
 
@@ -231,6 +232,7 @@ int8_t ptsc_strcmp(char * str_addr_a,char * str_addr_b){
 		
 		return result;
 	}
+	return result;
 	//error处理
 }
 
