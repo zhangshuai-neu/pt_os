@@ -136,13 +136,19 @@ otherwise you need to modify "bochsrc" and "Makefile".
 
 #### Book Reference
 
-30天自己操作系统
-操作系统真相还原
-linux内核完全注释
-深入理解linux内核
-深入理解linux内核架构
-奔跑吧Linux内核
-一个64位操作系统的设计与实现
+[1] 30天自己操作系统
+
+[2] 操作系统真相还原
+
+[3] linux内核完全注释
+
+[4] 深入理解linux内核
+
+[5] 深入理解linux内核架构
+
+[6] 奔跑吧Linux内核
+
+[7] 一个64位操作系统的设计与实现
 
 
 
