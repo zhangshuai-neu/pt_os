@@ -49,7 +49,7 @@ int main(void){
 
 	//4. disk接口初始化
 	ide_init();
-	ptsc_print_str("Ide_init： OK\n");
+	ptsc_print_str("Ide_init: OK\n");
 
     //打开中断
     //asm volatile("sti");

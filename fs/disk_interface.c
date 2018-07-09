@@ -48,11 +48,7 @@ void ide_init() {
 
 	ptsc_memset(channel,0,sizeof(struct ide_channel));
 	
-	ptsc_print_str("debug1\n");
-	
-	ptsc_strcpy(channel->name,"ide0\0");
-	
-	ptsc_print_str("debug2\n");
+	ptsc_strcpy(channel->name,"ide0");
 	
 	//为ide通道初始化端口基址及中断向量
 	channel->port_base	 = 0x1f0;	   // ide0通道的起始端口号是0x1f0

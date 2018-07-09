@@ -33,7 +33,7 @@ void ptsc_memset(void* dest_addr,uint8_t val,uint32_t size);
 //字符串操作
 uint32_t ptsc_strlen(char * str_addr);
 int8_t ptsc_strcmp(char * str_addr_a,char * str_addr_b);
-void ptsc_strcpy(char * src_addr,char * dest_addr);
+void ptsc_strcpy(char * dest_addr,char * src_addr);
 
 
 

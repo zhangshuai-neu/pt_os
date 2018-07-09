@@ -241,9 +241,9 @@ int8_t ptsc_strcmp(char * str_addr_a,char * str_addr_b){
  * Comment: 	字符串复制
  * 会复制 \0
  */
-void ptsc_strcpy(char * src_addr,char * dest_addr){
+void ptsc_strcpy(char * dest_addr,char * src_addr){
 	if(dest_addr!=NULL && src_addr!=NULL){
-		while(src_addr!='\0'){
+		while(*src_addr != '\0'){
 			*dest_addr=*src_addr;
 			dest_addr++;
 			src_addr++;

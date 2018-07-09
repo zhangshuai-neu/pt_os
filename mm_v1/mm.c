@@ -46,8 +46,7 @@ void set_pde(uint32_t pde_id, uint32_t pde_val){
  */
 void set_pte(uint32_t pt_id, uint32_t pte_id,uint32_t pte_val, char* type){
 	uint32_t * pte_addr =  (uint32_t *)(PAGE_TAB_BASE_ADDR + pt_id*SIZE_4K + pte_id*PTE_SIZE);
-
-	if(ptsc_strcmp(type,"kd") == 0){
+	if( ptsc_strcmp(type,"kd") == 0){
 		//结尾为3
 		SET_PRESENT_BIT(pte_val);
 		SET_RW_BIT(pte_val);
@@ -79,7 +78,7 @@ void set_kernel_mmap(){
 	int i;
 	uint32_t pte_val = FS_ADDR;
 	for(i=0;i<1024;i++){
-		set_pte(1,i,pte_val,"kd");
+		set_pte(1,i,pte_val,"kd\0");
 		pte_val += SIZE_4K;
 	}
 }
