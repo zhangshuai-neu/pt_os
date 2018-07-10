@@ -47,9 +47,28 @@ int main(void){
 	set_kernel_mmap();
 	ptsc_print_str("Kernel Mmap Init: OK\n");
 
-	//4. disk接口初始化
+	//5. disk接口初始化
 	ide_init();
 	ptsc_print_str("Ide_init: OK\n");
+	
+	//测试读写
+	
+	/*硬盘读写
+	 
+	*/
+	
+	//6.内存管理
+	
+	
+	//7.elf文件加载器/加载工具
+	
+	
+	//8.进程管理器
+	
+	
+	//9.
+	
+	//文件系统
 
     //打开中断
     //asm volatile("sti");

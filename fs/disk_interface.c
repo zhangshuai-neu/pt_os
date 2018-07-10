@@ -15,6 +15,10 @@ uint8_t * channel_cnt = (uint8_t *)CHANNEL_COUNT_ADDR;
 // 有两个ide通道，只使用1个	
 struct ide_channel * channel = (struct ide_channel *)CHANNEL_STRUCT_ADDR;		
 
+void get_disk_info(){
+
+}
+
 /*
  * 从磁盘读取连续的block到指定内存
  *

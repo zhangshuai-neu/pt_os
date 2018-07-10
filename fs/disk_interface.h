@@ -23,7 +23,7 @@ struct disk {
 /* ata通道结构 
  * size: 8 + 2 + 1 + 4 + (8+4+1) = 28 byte < 32 byte
  */
-struct ide_channel {
+struct ide_channel {@@
 	char name[8];		 	// 本ata通道名称, 如ata0,也被叫做ide0. 可以参考bochs配置文件中关于硬盘的配置。
 	uint16_t port_base;		// 本通道的起始端口号
 	uint8_t irq_no;		 	// 本通道所用的中断号
