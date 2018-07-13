@@ -7,15 +7,15 @@
 
 /* 分区结构 */
 struct partition {
-   uint32_t start_lba;		 // 起始扇区
-   uint32_t sec_cnt;		 // 扇区数
-   struct disk* my_disk;	 // 分区所属的硬盘
-   struct list_elem part_tag;	 // 用于队列中的标记
-   char name[8];		 // 分区名称
-   struct super_block* sb;	 // 本分区的超级块
-   struct bitmap block_bitmap;	 // 块位图
-   struct bitmap inode_bitmap;	 // i结点位图
-   struct list open_inodes;	 // 本分区打开的i结点队列
+   uint32_t start_lba;		 	// 起始扇区
+   uint32_t sec_cnt;		 	// 扇区数
+   struct disk* my_disk;	 	// 分区所属的硬盘
+   struct list_elem part_tag;	// 用于队列中的标记
+   char name[8];		 		// 分区名称
+   struct super_block* sb;	 	// 本分区的超级块
+   struct bitmap block_bitmap;	// 块位图
+   struct bitmap inode_bitmap;	// i结点位图
+   struct list open_inodes;	 	// 本分区打开的i结点队列
 };
 
 /* 硬盘结构 */

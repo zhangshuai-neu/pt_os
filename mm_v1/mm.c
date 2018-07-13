@@ -18,6 +18,7 @@
 */
 #include "mm.h"
 #include "system_call.h"
+#include "bitmap.h"
 
 //--------------------------------配置pde和pte--------------------------------------
 /*
@@ -86,11 +87,13 @@ void set_kernel_mmap(){
 
 //--------------------------------位示图-----------------------------------------
 //全局变量
-struct bitmap * page_bit_map_p = (struct bitmap *)(SIZE_1M + SIZE_4K + SIZE_4K*32);
+struct bitmap mem_bitmap;
 
 //函数
-void bitmap_init(){
-	
+void mem_bitmap_init(){
+	mem_bitmap.bits = (uint8_t *)MEM_BITMAP_ADDR;
+	mem_bitmap.btmp_bytes_len = (uint32_t)MEM_BITMAP_SIZE;
+	init_bitmap(&mem_bitmap);
 }
 
 

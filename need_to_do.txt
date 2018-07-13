@@ -1,10 +1,12 @@
-1.测试现在所有功能
-	mem_v1 : 虚拟地址映射函数 writing
+1. mem_v1 : writing
+	位示图：
+		bitmap
+	mem_op : 
+		
+2. 多线程 和 调度器
+
+3. disk_interface : 推迟
 	
-	disk_interface : testing 
-	
-	mem_v1 : writing
-		mem_op : 
 	
 	mem_v2: 
 		page : write ok

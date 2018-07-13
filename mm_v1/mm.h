@@ -37,6 +37,11 @@
 #define SET_US_BIT(var) 		var = (var | PAGE_US_BIT)
 #define CLEAR_US_BIT(var)		var = (var & (~PAGE_US_BIT))
 
+//位式图
+#define MEM_BITMAP_ADDR	(SIZE_1M + 132*SIZE_1K)	// 1M+132K～1M+136K
+#define MEM_BITMAP_SIZE	(SIZE_4K)		// 4KB，用bit表示所有128M内存的所有页面
+
+
 //--------------------------------函数声明--------------------------------------
 //设置页目录-表项
 void set_pde(uint32_t pde_id, uint32_t pde_val);

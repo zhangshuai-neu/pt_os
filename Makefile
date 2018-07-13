@@ -26,9 +26,6 @@ LD_OBJECTS = $(BUILD_DIR)/main.o $(BUILD_DIR)/system_call.o \
 			
 LD_FLAGS = -m elf_i386 -T $(BUILD_DIR)/kernel_link.ld 
 
-
-
-
 #汇编代码
 asm: boot/mbr.S boot/loader.S boot/boot_parameter.inc
 	#-----------------------编译汇编代码-start-------------------------
