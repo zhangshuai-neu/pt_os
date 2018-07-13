@@ -48,17 +48,19 @@ void disk_write_block(void * mem_base_addr,uint32_t mem_length, uint32_t block_i
  * 使用一个ide接口连接一个主硬盘
  * */
 void ide_init() { 
+	//初始化信道
 	*channel_cnt = 1;	//通道数量，默认为1
-
-	ptsc_memset(channel,0,sizeof(struct ide_channel));
-	
 	ptsc_strcpy(channel->name,"ide0");
-	
 	//为ide通道初始化端口基址及中断向量
 	channel->port_base	 = 0x1f0;	   // ide0通道的起始端口号是0x1f0
 	channel->irq_no	 = 0x20 + 14;	   // 从片8259a上倒数第二的中断引脚,也就是ide0通道的的中断向量号
-		
 	channel->expecting_intr = FALSE;   // 未向硬盘写入指令时不期待硬盘的中断
+	
+	//初始化硬盘(一个channel实际上可以链接多个硬盘)
+	struct disk *hd = &(channel->device);
+	ptsc_strcpy(hd->name,"hda0");
+	hd->my_channel = channel;
+	hd->dev_no = 0;
 	
 	return ;
 }
