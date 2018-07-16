@@ -65,4 +65,13 @@ void bitmap_clear_bit(struct bitmap *bm,uint32_t bit_index){
 	*verify_byte_addr = *verify_byte_addr & or_byte;
 }
 
+/*
+ * apply some "continuous" bits in bitmap
+ * return: allocated bit_index (if it's 0, which means application failure)
+ * */
+uint32_t bitmap_apply(struct bitmap *bm){
+	
+
+}
+
 

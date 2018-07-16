@@ -19,5 +19,8 @@ struct bitmap {
 
 //----------------函数声明--------------
 void init_bitmap(struct bitmap *bm);
+bool bitmap_verify_bitset(struct bitmap *bm,uint32_t bit_index);
+void bitmap_set_bit(struct bitmap *bm,uint32_t bit_index);
+void bitmap_clear_bit(struct bitmap *bm,uint32_t bit_index);
 
 #endif
