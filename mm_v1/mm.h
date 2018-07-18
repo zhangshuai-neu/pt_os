@@ -40,6 +40,7 @@
 //位式图
 #define MEM_BITMAP_ADDR	(SIZE_1M + 132*SIZE_1K)	// 1M+132K～1M+136K
 #define MEM_BITMAP_SIZE	(SIZE_4K)		// 4KB，用bit表示所有128M内存的所有页面
+#define ALLOC_BIT_BEGIN_INDEX ((uint32_t)2048)  //用户分配的起始地址
 
 
 //--------------------------------函数声明--------------------------------------
