@@ -1,8 +1,8 @@
 /*
  * 内存管理
- * 
+ *
  * 管理方式 —— 使用位示图的方式进行管理
- * 
+ *
  * 管理地址范围：
  * 	物理地址 4MB-128MB
  *
@@ -47,7 +47,5 @@
 void set_pde(uint32_t pde_id, uint32_t pde_val);
 //设置页表-表项
 void set_kd_pde(uint32_t pt_id, uint32_t pte_id,uint32_t pte_val, char* type);
-//设置内核使用的内存区域
+//设置内核使用的内存区域（pde,pte的配置）
 void set_kernel_mmap();
-
-

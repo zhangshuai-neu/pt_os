@@ -1,8 +1,8 @@
 /*
  * 内存管理
- * 
+ *
  * 管理方式 —— 使用位示图的方式进行管理
- * 
+ *
  * 管理地址范围：
  * 	物理地址 4MB-128MB
  *
@@ -14,7 +14,7 @@
 	页目录:	1MB ~ 1MB+4K
 	页表:	1MB+4K ~ 1MB+4K+4K*32 = 1MB+132KB
 	物理页page_bitmap: 1MB+132KB
-	
+
 */
 #include "mm.h"
 #include "system_call.h"
@@ -64,7 +64,7 @@ void set_pte(uint32_t pt_id, uint32_t pte_id,uint32_t pte_val, char* type){
 		//错误处理
 		return ;
 	}
-	
+
 	*pte_addr = pte_val;
 }
 
@@ -86,7 +86,7 @@ void set_kernel_mmap(){
 
 
 //--------------------------------位示图-----------------------------------------
-//全局变量
+//全局变量 用来声明内存管理的bitmap
 struct bitmap mem_bitmap;
 
 //函数
@@ -94,7 +94,7 @@ void mem_bitmap_init(){
 	mem_bitmap.bits = (uint8_t *)MEM_BITMAP_ADDR;
 	mem_bitmap.btmp_bytes_len = (uint32_t)MEM_BITMAP_SIZE;
 	init_bitmap(&mem_bitmap);
+
+	//set kernel bitmap
+	bitmap_set_cont_bit(&mem_bitmap,0,2048,1);
 }
-
-
-
