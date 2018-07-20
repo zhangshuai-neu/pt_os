@@ -25,6 +25,9 @@
 #define PAGE_TAB_BASE_ADDR (PAGE_DIR_BASE_ADDR+SIZE_4K)		//页表地址
 #define PTE_SIZE ((uint32_t)sizeof(uint32_t))				//页表条目大小
 
+#define PHYS_ADDR_TO_PDE  ()
+#define PHYS_ADDR_TO_PTE  ()
+
 //页表相关属性
 #define PAGE_PRESENT_BIT    ((uint32_t)1)	//存在位（为1在物理内存，为0不在）
 #define PAGE_RW_BIT			((uint32_t)2)	//读写位，为0可读不可写，为1可读可写
@@ -38,9 +41,14 @@
 #define CLEAR_US_BIT(var)		var = (var & (~PAGE_US_BIT))
 
 //位示图
-#define MEM_BITMAP_ADDR	(SIZE_1M + 132*SIZE_1K)	// 1M+132K～1M+136K
-#define MEM_BITMAP_SIZE	(SIZE_4K)		// 4KB，用bit表示所有128M内存的所有页面
-#define ALLOC_BIT_BEGIN_INDEX ((uint32_t)2048)  //用户分配的起始地址
+//物理、内核地址
+#define PHYS_MEM_BITMAP_ADDR	(SIZE_1M + 132*SIZE_1K)	// 1M+132K～1M+136K
+#define PHYS_MEM_BITMAP_SIZE	(SIZE_4K)		// 4KB，用bit表示所有128M内存的所有页面
+//用户虚拟地址
+#define USER_MEM_BITMAP_ADDR	(PHYS_MEM_BITMAP_ADDR + PHYS_MEM_BITMAP_SIZE)
+#define USER_MEM_BITMAP_SIZE	(SIZE_4K)		// 4KB，用bit表示所有128M内存的所有页面
+
+#define ALLOC_BIT_BEGIN_INDEX ((uint32_t)2048)  //分配的物理起始索引
 
 //内核使用内存(虚拟地址划分，0~128M)
 #define KERNEL_VIRTUAL_BASE_ADDR  ((uint32_t)0)
