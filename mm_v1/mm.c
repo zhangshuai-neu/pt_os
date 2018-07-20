@@ -98,3 +98,40 @@ void mem_bitmap_init(){
 	//set kernel bitmap
 	bitmap_set_cont_bit(&mem_bitmap,0,2048,1);
 }
+
+//--------------------------利用bitmap管理物理函数-------------------------------
+//分配连续的物理页面
+void phys_page_alloc(uint32_t page_num, ){
+
+
+}
+
+//回收连续的物理页面
+void phys_page_recycle(){
+
+
+}
+
+//内核虚拟页面申请
+void kernel_page_alloc(){
+
+
+}
+
+//内核虚拟页面回收
+void kernel_page_recycle(){
+
+
+}
+
+//用户虚拟页面申请
+void user_page_alloc(){
+
+
+}
+
+//内核虚拟页面回收
+void user_page_recycle(){
+
+
+}

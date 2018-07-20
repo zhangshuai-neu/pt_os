@@ -37,10 +37,17 @@
 #define SET_US_BIT(var) 		var = (var | PAGE_US_BIT)
 #define CLEAR_US_BIT(var)		var = (var & (~PAGE_US_BIT))
 
-//位式图
+//位示图
 #define MEM_BITMAP_ADDR	(SIZE_1M + 132*SIZE_1K)	// 1M+132K～1M+136K
 #define MEM_BITMAP_SIZE	(SIZE_4K)		// 4KB，用bit表示所有128M内存的所有页面
 #define ALLOC_BIT_BEGIN_INDEX ((uint32_t)2048)  //用户分配的起始地址
+
+//内核使用内存(虚拟地址划分，0~128M)
+#define KERNEL_VIRTUAL_BASE_ADDR  ((uint32_t)0)
+
+//用户使用内存(虚拟地址范围，128M~256M)
+#define USER_VIRTUAL_BASE_ADDR  ((uint32_t)128*SIZE_1M)
+
 
 
 //--------------------------------函数声明--------------------------------------
