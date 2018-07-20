@@ -112,7 +112,7 @@ void phys_page_recycle(){
 
 }
 
-//内核虚拟页面申请
+//内核虚拟页面申请（使用物理地址bitmap作为virtual addr地址管理方式，两者一致）
 void kernel_page_alloc(){
 
 
