@@ -20,13 +20,14 @@
 #define FS_ADDR	SIZE_4M
 
 //配置pde和pte
-#define PAGE_DIR_BASE_ADDR SIZE_1M							//页目录地址
-#define PDE_SIZE ((uint32_t)sizeof(uint32_t))				//页目录条目大小
-#define PAGE_TAB_BASE_ADDR (PAGE_DIR_BASE_ADDR+SIZE_4K)		//页表地址
-#define PTE_SIZE ((uint32_t)sizeof(uint32_t))				//页表条目大小
+#define PAGE_DIR_BASE_ADDR SIZE_1M							         //页目录地址
+#define PDE_SIZE ((uint32_t)sizeof(uint32_t))				     //页目录条目大小
+#define PAGE_TAB_BASE_ADDR (PAGE_DIR_BASE_ADDR+SIZE_4K)	 //页表地址
+#define PTE_SIZE ((uint32_t)sizeof(uint32_t))				     //页表条目大小
 
-#define PHYS_ADDR_TO_PDE  ()
-#define PHYS_ADDR_TO_PTE  ()
+//内核地址 => 虚拟-物理配置索引
+#define KERNEL_ADDR_TO_PDE_ID(ka)  (((uint32_t)0xffc00000 & (uint32_t)ka) >> 22)
+#define KERNEL_ADDR_TO_PTE_ID(ka)  (((uint32_t)0x003FF000 & (uint32_t)ka) >> 12)
 
 //页表相关属性
 #define PAGE_PRESENT_BIT    ((uint32_t)1)	//存在位（为1在物理内存，为0不在）

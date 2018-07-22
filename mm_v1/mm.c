@@ -84,15 +84,43 @@ void kernel_mmap_init(){
 	}
 }
 
-//设置内核虚拟映射(连续的物理页面)
-bool set_kernel_page_mmap(uint32_t phys_page_addr, uint32_t page_num){
+/*
+ * 设置内核虚拟映射(连续的物理页面)
+ * 内核的虚拟和物理地址完全对应 0～128M
+ */
+bool set_kernel_page_mmap(uint32_t kernel_page_addr, uint32_t page_num){
 	//内核和物理地址一一对应
-	uint pde_addr = phys_page_addr & ;
+	uint32_t pde_start_index = KERNEL_ADDR_TO_PDE_ID(kernel_page_addr);
+	uint32_t pte_start_index = KERNEL_ADDR_TO_PTE_ID(kernel_page_addr);
+
+	//遍历个数
+	uint32_t pde_num = page_num / SIZE_1K;		//一个PDE对应4M的内存空间
+	uint32_t remain_pte_num = page_num % SIZE_1K;		//一个pte对应一个page
+
+	uint32_t pde_i=pde_start_index;
+	uint32_t pte_i=0;
+	for(; pde_i<pde_num; pde_i++){
+		//设置pde
+
+		for(pte_i=0; pte_i<SIZE_1K; pte_i++){
+			//设置pde内的1024个pte
+
+		}
+	}
+
+	//设置剩余pte对应的pde
+
+	for(pte_i=0; pte_i<remain_pte_num; pte_i++){
+		//设置剩余pte
+	}
 
 
 }
 
-//设置用户虚拟映射
+/*
+ * 设置用户虚拟映射(连续的物理页面)
+ * 用户虚拟地址范围为 128M~256M
+ */
 bool set_user_page_mmap(uint32_t start_page_id, uint32_t page_num){
 
 }
