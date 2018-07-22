@@ -11,7 +11,7 @@
  * 初始化bitmap
  * */
 void init_bitmap(struct bitmap *bm){
-	ptsc_memset(bm->bits,0,bm->btmp_bytes_len);	
+	ptsc_memset(bm->bits,0,bm->btmp_bytes_len);
 	return ;
 }
 
@@ -22,14 +22,14 @@ void init_bitmap(struct bitmap *bm){
 bool bitmap_verify_bitset(struct bitmap *bm,uint32_t bit_index){
 	uint32_t byte_index = bit_index/8;
 	uint8_t bit_index_in_byte = bit_index % 8;
-	
+
 	//要判断的字节地址
 	uint8_t * verify_byte_addr = bm->bits + byte_index;
-	
-	//生成要判断bit的"与字节"
-	uint8_t and_byte = VERIFY_BIT(bit_index_in_byte);	
 
-	return (and_byte & *verify_byte_addr); 
+	//生成要判断bit的"与字节"
+	uint8_t and_byte = VERIFY_BIT(bit_index_in_byte);
+
+	return (and_byte & *verify_byte_addr);
 }
 
 
@@ -40,12 +40,12 @@ bool bitmap_verify_bitset(struct bitmap *bm,uint32_t bit_index){
 void bitmap_set_bit(struct bitmap *bm,uint32_t bit_index){
 	uint32_t byte_index = bit_index/8;
 	uint8_t bit_index_in_byte = bit_index % 8;
-	
+
 	//要判断的字节地址
 	uint8_t * verify_byte_addr = bm->bits + byte_index;
 	//生成要判断bit的"与字节"
-	uint8_t or_byte = VERIFY_BIT(bit_index_in_byte);	
-	
+	uint8_t or_byte = VERIFY_BIT(bit_index_in_byte);
+
 	*verify_byte_addr = *verify_byte_addr | or_byte;
 }
 
@@ -56,12 +56,12 @@ void bitmap_set_bit(struct bitmap *bm,uint32_t bit_index){
 void bitmap_clear_bit(struct bitmap *bm,uint32_t bit_index){
 	uint32_t byte_index = bit_index/8;
 	uint8_t bit_index_in_byte = bit_index % 8;
-	
+
 	//要判断的字节地址
 	uint8_t * verify_byte_addr = bm->bits + byte_index;
 	//生成要判断bit的"与字节"
 	uint8_t and_byte = ~(VERIFY_BIT(bit_index_in_byte));
-	
+
 	*verify_byte_addr = *verify_byte_addr & or_byte;
 }
 
@@ -70,8 +70,6 @@ void bitmap_clear_bit(struct bitmap *bm,uint32_t bit_index){
  * return: allocated bit_index (if it's 0, which means application failure)
  * */
 uint32_t bitmap_apply(struct bitmap *bm){
-	
+
 
 }
-
-
