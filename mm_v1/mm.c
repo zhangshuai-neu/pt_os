@@ -20,7 +20,12 @@
 #include "system_call.h"
 #include "bitmap.h"
 
-//--------------------------------配置pde和pte--------------------------------------
+
+
+//全局变量 用来声明内存管理的bitmap
+struct bitmap phys_mem_bitmap;
+struct bitmap kernel_mem_bitmap;
+
 /*
  * 设置页目录-表项
  * pde_id：指明页目录条目
@@ -69,21 +74,6 @@ void set_pte(uint32_t pt_id, uint32_t pte_id,uint32_t pte_val, char* type){
 }
 
 
-//配置内核使用的内存区域(0-8M)
-void kernel_mmap_init(){
-	//0-4M已经在 boot/loader.s中配置完成
-
-	//4-8M配置文件系统使用的内存
-	set_pde(1,0x102000);
-
-	int i;
-	uint32_t pte_val = FS_ADDR;
-	for(i=0;i<1024;i++){
-		set_pte(1,i,pte_val,"kd\0");
-		pte_val += SIZE_4K;
-	}
-}
-
 /*
  * 设置内核虚拟映射(连续的物理页面)
  * 内核的虚拟和物理地址完全对应 0～128M
@@ -120,27 +110,56 @@ bool set_user_page_mmap(uint32_t start_page_id, uint32_t page_num, char* type){
 
 }
 
-
-//--------------------------------位示图-----------------------------------------
-//全局变量 用来声明内存管理的bitmap
-struct bitmap phys_mem_bitmap;
-struct bitmap * kernel_mem_bitmap = &phys_mem_bitmap;
-
-//函数
-void mem_bitmap_init(){
+//物理内存bitmap
+void phys_mem_bitmap_init(){
 	phys_mem_bitmap.bits = (uint8_t *)PHYS_MEM_BITMAP_ADDR;
 	phys_mem_bitmap.btmp_bytes_len = (uint32_t)PHYS_MEM_BITMAP_SIZE;
-	init_bitmap(&mem_bitmap);
+	init_bitmap(&phys_mem_bitmap);
 
-	//set kernel bitmap
-	bitmap_set_cont_bit(&phys_mem_bitmap,0,2048,1);
-
+	//set physical bitmap
+	bitmap_set_cont_bit(&phys_mem_bitmap,0,PHYS_ALLOC_BIT_BEGIN_INDEX,1);
 }
+
+//内核内存bitmap
+void kernel_mem_bitmap_init(){
+	kernel_mem_bitmap.bits = (uint8_t *)KERNEL_MEM_BITMAP_ADDR;
+	kernel_mem_bitmap.btmp_bytes_len = (uint32_t)KERNEL_MEM_BITMAP_SIZE;
+	init_bitmap(&kernel_mem_bitmap);
+
+	//set kernel bitmap,将前8M设置为1，因为kernel_mmap_init未完成了前8M的内存映射
+	//所以将虚拟部分和物理完成完成
+	bitmap_set_cont_bit(&kernel_mem_bitmap,0,KERNEL_ALLOC_BIT_BEGIN_INDEX,1);
+}
+
+//配置内核使用的内存区域(0-8M)
+void kernel_mmap_init(){
+	//0-4M已经在 boot/loader.s中配置完成
+
+	//4-8M配置文件系统使用的内存
+	set_pde(1,0x102000);
+
+	int i;
+	uint32_t pte_val = FS_ADDR;
+	for(i=0;i<1024;i++){
+		set_pte(1,i,pte_val,"kd\0");
+		pte_val += SIZE_4K;
+	}
+}
+
+void kernel_mem_init(){
+	//1)kernel虚拟内存初始化
+	kernel_mem_bitmap_init();
+	//2)物理内存初始化
+	phys_mem_bitmap_init();
+	//3）创建映射
+	kernel_mmap_init();
+}
+
 
 //--------------------------利用bitmap管理物理函数-------------------------------
 //分配连续的物理页面
 uint32_t phys_page_alloc(uint32_t page_num){
-	uint32_t page_bit_index = bitmap_alloc_cont_bits(&phys_mem_bitmap, ALLOC_BIT_BEGIN_INDEX,page_num);
+	uint32_t page_bit_index = bitmap_alloc_cont_bits(&phys_mem_bitmap, PHYS_ALLOC_BIT_BEGIN_INDEX,page_num);
 	return page_bit_index;
 }
 
@@ -148,6 +167,12 @@ uint32_t phys_page_alloc(uint32_t page_num){
 void phys_page_recycle(uint32_t start_page_id, uint32_t page_num){
 	bitmap_recycle_cont_bits(&phys_mem_bitmap, start_page_id, page_num);
 }
+
+//----------------------------kernel虚拟内存管理--------------------------------
+// kernel_page_alloc
+// kernel_page_recycle
+// 主要分成三步 1)虚拟页面分配 2)物理页面分配 3)完成虚拟物理映射
+//----------------------------------------------------------------------
 
 //内核虚拟页面申请（使用物理地址bitmap作为virtual addr地址管理方式，两者一致）
 bool kernel_page_alloc(uint32_t page_num, char * type){
@@ -170,13 +195,25 @@ bool kernel_page_alloc(uint32_t page_num, char * type){
 	return TRUE;
 }
 
+
 //内核虚拟页面回收
 void kernel_page_recycle(uint32_t start_page_id, uint32_t page_num){
-	phys_page_recycle(uint32_t start_page_id, uint32_t page_num);
+
 }
 
-//用户虚拟页面申请
-void user_page_alloc(){
+/*
+ * 用户虚拟页面申请
+ * p_btm：进程的bitmap，每个进程有一个,在创建进程时自动维护
+ *
+ */
+void user_page_alloc(struct bitmap p_btm,uint32_t page_num, char * type){
+
+
+	uint32_t phys_page_id = phys_page_alloc(page_num);
+	if(phys_page_id == 0){
+		return FALSE;
+	}
+
 
 
 }

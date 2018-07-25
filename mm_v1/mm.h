@@ -50,30 +50,26 @@
 //位示图
 //物理、内核位示图
 #define PHYS_MEM_BITMAP_ADDR	(SIZE_1M + 132*SIZE_1K)	// 1M+132K～1M+136K
-#define PHYS_MEM_BITMAP_SIZE	(SIZE_4K)		// 4KB，用bit表示所有128M内存的所有页面
-//用户虚拟地址位示图
-#define USER_MEM_BITMAP_ADDR	(PHYS_MEM_BITMAP_ADDR + PHYS_MEM_BITMAP_SIZE)
-#define USER_MEM_BITMAP_SIZE	(SIZE_4K)		// 4KB，用bit表示所有128M内存的所有页面
+#define PHYS_MEM_BITMAP_SIZE	(SIZE_4K)		  // 4KB，用bit表示所有128M内存的所有页面
+//内核虚拟地址位示图
+#define KERNEL_MEM_BITMAP_ADDR	(PHYS_MEM_BITMAP_ADDR + PHYS_MEM_BITMAP_SIZE)
+#define KERNEL_MEM_BITMAP_SIZE	(SIZE_1K)		// 1KB，用bit表示32M内核使用内存
 
-#define ALLOC_BIT_BEGIN_INDEX ((uint32_t)2048)  //分配的物理起始索引
+#define PHYS_ALLOC_BIT_BEGIN_INDEX ((uint32_t)2048)  //分配的物理起始索引
+#define KERNEL_ALLOC_BIT_BEGIN_INDEX ((uint32_t)2048)  //分配的物理起始索引
 
-//内核使用内存(虚拟地址划分，0~128M)
+//内核使用内存(虚拟地址划分，0~32M)
 #define KERNEL_VIRTUAL_BASE_ADDR  ((uint32_t)0)
 
-//用户使用内存(虚拟地址范围，128M~256M)
+//用户使用内存(虚拟地址范围，32M~128M)
 #define USER_VIRTUAL_BASE_ADDR  ((uint32_t)128*SIZE_1M)
 
 
 
 //--------------------------------函数声明--------------------------------------
-//设置内核使用的内存区域（pde,pte的配置）
-void kernel_mmap_init();
-//内存bitmap初始化
-void mem_bitmap_init();
-//分配内存内存,type=="kd" or "kc", 代表数据和代码
-bool kernel_page_alloc(uint32_t page_num, char * type);
-//回收内存
-void kernel_page_recycle(uint32_t start_page_id, uint32_t page_num);
+//设置内核使用的内存区域初始化
+void kernel_mem_init();
+
 
 
 

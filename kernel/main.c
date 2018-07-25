@@ -44,11 +44,8 @@ int main(void){
 
 
 	//4.设置内存
-	kernel_mmap_init();
-	ptsc_print_str("Kernel Mmap Init: OK\n");
-	
-	mem_bitmap_init();
-	ptsc_print_str("Mem Bitmap Init: OK\n");
+	kernel_mem_init();
+	ptsc_print_str("Kernel Mem Init: OK\n");
 
 	//5. disk接口初始化
 	ide_init();
