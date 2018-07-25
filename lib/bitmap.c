@@ -11,13 +11,9 @@
  * 初始化bitmap
  * */
 void init_bitmap(struct bitmap *bm){
-<<<<<<< HEAD
-	ptsc_memset(bm->bits,0,bm->btmp_bytes_len);
-=======
 	for(uint32_t i=0; i<bm->btmp_bytes_len; i++){
 		*(bm->bits + i) = 0;
 	}
->>>>>>> 61298279dfd68f7e01828342d4ebf4a331dd8bbd
 	return ;
 }
 
@@ -31,16 +27,10 @@ bool bitmap_verify_bitset(struct bitmap *bm,uint32_t bit_index){
 
 	//要判断的字节地址
 	uint8_t * verify_byte_addr = bm->bits + byte_index;
-<<<<<<< HEAD
 
 	//生成要判断bit的"与字节"
 	uint8_t and_byte = VERIFY_BIT(bit_index_in_byte);
 
-=======
-
-	//生成要判断bit的"与字节"
-	uint8_t and_byte = VERIFY_BIT(bit_index_in_byte);
->>>>>>> 61298279dfd68f7e01828342d4ebf4a331dd8bbd
 	return (and_byte & *verify_byte_addr);
 }
 
@@ -53,14 +43,6 @@ void bitmap_set_bit(struct bitmap *bm,uint32_t bit_index, uint8_t mask/* 1 or 0*
 	uint32_t byte_index = bit_index/8;
 	uint8_t bit_index_in_byte = bit_index % 8;
 
-<<<<<<< HEAD
-	//要判断的字节地址
-	uint8_t * verify_byte_addr = bm->bits + byte_index;
-	//生成要判断bit的"与字节"
-	uint8_t or_byte = VERIFY_BIT(bit_index_in_byte);
-
-	*verify_byte_addr = *verify_byte_addr | or_byte;
-=======
 	//要设置的字节地址
 	uint8_t * set_byte_addr = bm->bits + byte_index;
 	//生成要判断bit的"与字节"
@@ -69,25 +51,12 @@ void bitmap_set_bit(struct bitmap *bm,uint32_t bit_index, uint8_t mask/* 1 or 0*
 		*set_byte_addr = *set_byte_addr | op_byte;
 	else
 		*set_byte_addr = *set_byte_addr & ~op_byte;
->>>>>>> 61298279dfd68f7e01828342d4ebf4a331dd8bbd
 }
 
 /*
  * 将连续位置位为 1 or 0 (根据mask)
  * start_bit_index: 要确认的
  * */
-<<<<<<< HEAD
-void bitmap_clear_bit(struct bitmap *bm,uint32_t bit_index){
-	uint32_t byte_index = bit_index/8;
-	uint8_t bit_index_in_byte = bit_index % 8;
-
-	//要判断的字节地址
-	uint8_t * verify_byte_addr = bm->bits + byte_index;
-	//生成要判断bit的"与字节"
-	uint8_t and_byte = ~(VERIFY_BIT(bit_index_in_byte));
-
-	*verify_byte_addr = *verify_byte_addr & or_byte;
-=======
 void bitmap_set_cont_bits(struct bitmap *bm, uint32_t start_bit_index,  \
 	int32_t bit_length/* from 1*/ ,uint8_t mask/* 1 or 0*/){
 
@@ -149,7 +118,6 @@ bool is_valid_allocation(uint8_t * byte_headr, uint32_t start_bit_index ,	\
 
 	//并未发生上述错误 ok
 	return TRUE;
->>>>>>> 61298279dfd68f7e01828342d4ebf4a331dd8bbd
 }
 
 /*
@@ -159,9 +127,6 @@ bool is_valid_allocation(uint8_t * byte_headr, uint32_t start_bit_index ,	\
  * apply_bits_num: 申请的bit数
  * return: allocated bit_index (if it's 0, which means application failure)
  * */
-<<<<<<< HEAD
-uint32_t bitmap_apply(struct bitmap *bm){
-=======
 uint32_t bitmap_alloc_cont_bits(struct bitmap *bm, uint32_t base_bit_index, uint32_t apply_bits_num){
 	for(uint32_t i=base_bit_index; i<BITMAP_BYTE_SIZE*8; i++){
 		if(bitmap_verify_bitset(bm,i)){
@@ -177,14 +142,10 @@ uint32_t bitmap_alloc_cont_bits(struct bitmap *bm, uint32_t base_bit_index, uint
 	}
 	return 0;	//第几个资源
 }
->>>>>>> 61298279dfd68f7e01828342d4ebf4a331dd8bbd
 
 //回收一些连续bits
 void bitmap_recycle_cont_bits(struct bitmap *bm, uint32_t start_bit_index,  \
 	int32_t bit_length/* from 1*/){
 
-<<<<<<< HEAD
-=======
 	bitmap_set_cont_bits(bm,start_bit_index,bit_length,0);
->>>>>>> 61298279dfd68f7e01828342d4ebf4a331dd8bbd
 }

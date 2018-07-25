@@ -8,6 +8,8 @@
  *
  * Author:Shuai Zhang <zhangshuaiisme@gmail.com>
  */
+#ifndef MM_H
+#define MM_H
 
 #include "std_type_define.h"
 #include "bitmap.h"
@@ -27,7 +29,11 @@
 
 //内核地址 => 虚拟-物理配置索引
 #define KERNEL_ADDR_TO_PDE_ID(ka)  (((uint32_t)0xffc00000 & (uint32_t)ka) >> 22)
+#define KERNEL_ADDR_TO_PT_ID(ka)   ((uint32_t)ka / SIZE_4M)
+#define KERNEL_ADDR_TO_PT_ADDR(ka)  (KERNEL_ADDR_TO_PT_ID(ka) * SIZE_4K + SIZE_1M + SIZE_4K)
 #define KERNEL_ADDR_TO_PTE_ID(ka)  (((uint32_t)0x003FF000 & (uint32_t)ka) >> 12)
+
+
 
 //页表相关属性
 #define PAGE_PRESENT_BIT    ((uint32_t)1)	//存在位（为1在物理内存，为0不在）
@@ -42,10 +48,10 @@
 #define CLEAR_US_BIT(var)		var = (var & (~PAGE_US_BIT))
 
 //位示图
-//物理、内核地址
+//物理、内核位示图
 #define PHYS_MEM_BITMAP_ADDR	(SIZE_1M + 132*SIZE_1K)	// 1M+132K～1M+136K
 #define PHYS_MEM_BITMAP_SIZE	(SIZE_4K)		// 4KB，用bit表示所有128M内存的所有页面
-//用户虚拟地址
+//用户虚拟地址位示图
 #define USER_MEM_BITMAP_ADDR	(PHYS_MEM_BITMAP_ADDR + PHYS_MEM_BITMAP_SIZE)
 #define USER_MEM_BITMAP_SIZE	(SIZE_4K)		// 4KB，用bit表示所有128M内存的所有页面
 
@@ -60,9 +66,20 @@
 
 
 //--------------------------------函数声明--------------------------------------
-//设置页目录-表项
-void set_pde(uint32_t pde_id, uint32_t pde_val);
-//设置页表-表项
-void set_kd_pde(uint32_t pt_id, uint32_t pte_id,uint32_t pte_val, char* type);
 //设置内核使用的内存区域（pde,pte的配置）
-void set_kernel_mmap();
+void kernel_mmap_init();
+//内存bitmap初始化
+void mem_bitmap_init();
+//分配内存内存,type=="kd" or "kc", 代表数据和代码
+bool kernel_page_alloc(uint32_t page_num, char * type);
+//回收内存
+void kernel_page_recycle(uint32_t start_page_id, uint32_t page_num);
+
+
+
+
+
+
+
+
+#endif

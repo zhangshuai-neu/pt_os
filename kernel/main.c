@@ -43,9 +43,12 @@ int main(void){
 	ptsc_print_str("Timer Init: OK\n");
 
 
-	//4.设置内核内存区
+	//4.设置内存
 	kernel_mmap_init();
 	ptsc_print_str("Kernel Mmap Init: OK\n");
+	
+	mem_bitmap_init();
+	ptsc_print_str("Mem Bitmap Init: OK\n");
 
 	//5. disk接口初始化
 	ide_init();
