@@ -76,9 +76,11 @@ void set_pte(uint32_t pt_id, uint32_t pte_id,uint32_t pte_val, char* type){
 
 /*
  * 设置内核虚拟映射(连续的物理页面)
- * 内核的虚拟和物理地址完全对应 0～128M
+ * 内核的虚拟和物理地址完全对应 0～32M
  */
-void set_kernel_page_mmap(uint32_t kernel_start_page_addr, uint32_t page_num, char* type){
+void set_kernel_page_mmap(uint32_t kernel_start_page_addr, \
+	uint32_t phys_start_page_addr, uint32_t page_num, char* type){
+
 	uint32_t temp_page_addr=0;
 	//配置每一个页面的映射
 	for(uint32_t i=0; i<page_num; i++){
@@ -104,7 +106,7 @@ void set_kernel_page_mmap(uint32_t kernel_start_page_addr, uint32_t page_num, ch
 
 /*
  * 设置用户虚拟映射(连续的物理页面)
- * 用户虚拟地址范围为 128M~256M
+ * 用户虚拟地址范围为 32M-128M
  */
 bool set_user_page_mmap(uint32_t start_page_id, uint32_t page_num, char* type){
 
@@ -176,23 +178,20 @@ void phys_page_recycle(uint32_t start_page_id, uint32_t page_num){
 
 //内核虚拟页面申请（使用物理地址bitmap作为virtual addr地址管理方式，两者一致）
 bool kernel_page_alloc(uint32_t page_num, char * type){
-	uint32_t page_id = phys_page_alloc(page_num);
-	if(page_id == 0){
+	//1 分配虚拟页面
+	uint32_t kernel_virt_page_id =  bitmap_alloc_cont_bits(&kernel_mem_bitmap, KERNEL_ALLOC_BIT_BEGIN_INDEX, page_num);
+	bitmap_set_cont_bit(&kernel_mem_bitmap, kernel_virt_page_id, page_num, 1);
+
+	//2 分配物理页面
+	uint32_t phys_page_id = phys_page_alloc(page_num);
+	bitmap_set_cont_bit(&phys_mem_bitmap, phys_page_id, page_num, 1);
+
+	if(kernel_virt_page_id == 0 || phys_page_id==0){
 		return FALSE;
 	}
 
-	uint32_t page_addr = page_id * SIZE_4K;
+	//3 建立映射
 
-	if( ptsc_strcmp(type,"kd")==0 ){
-		//内核数据
-		set_kernel_page_mmap(page_addr,page_num,"kd");
-	}
-	if( ptsc_strcmp(type,"kc")==0 ){
-		//内核代码
-		set_kernel_page_mmap(page_addr,page_num,"kc");
-	}
-
-	return TRUE;
 }
 
 
