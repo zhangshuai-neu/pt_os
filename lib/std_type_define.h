@@ -18,7 +18,7 @@
 
 // 布尔类型
 // size: 4 byte
-typedef enum boolean {  
+typedef enum boolean {
 	FALSE=0,TRUE
 } bool;
 

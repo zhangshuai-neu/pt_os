@@ -3,23 +3,23 @@
  *
  * 为了实现一些重复的内核功能，创建一些系统调用，用户程序可以通过中断进行访问。
  * 所有的系统调用以ptsc作为前缀，表示ProtoType_System_Call
- * 
+ *
  * 实现的系统调用列表:
- * 
+ *
  * 打印操作
  * 1.ptsc_init_view 初始化亮度(字符模式)
  * 2.ptsc_print_str 打印字符串(字符模式)
  * 3 ptsc_print_num16 打印16进制整数
- * 
+ *
  * 内存操作
  * 4.ptsc_memcpy 内存复制
  * 5.ptsc_memset 内存置位
- * 
+ *
  * 字符串操作
  * 6.ptsc_strlen
  * 7.ptsc_strcmp
  * 8.ptsc_strcpy
- * 
+ *
  *
  * Author:Shuai Zhang
  * Email: zhangshuaiisme@gmail.com
@@ -44,14 +44,14 @@ uint16_t view_column=0;			//current column 当前列
 void ptsc_init_view(){
 	char *color_addr=(char*)VIEW_MEM_BASE_ADDR;
 	int i=0,j=0;
-	
+
 	for(i=0;i<=VIEW_ROW_MAX;i++){
 		for(j=0;j<=VIEW_COLUMN_MAX;j++){
 			*(color_addr+j*2+1)=0x0f;
 		}
 		color_addr+=VIEW_ROW_SIZE;
 	}
-	
+
 	/*
 	 * 对当前位置，真正的初始化
 	 */
@@ -70,9 +70,9 @@ void ptsc_init_view(){
 void up_line(){
 	int i=0; 	//line 遍历
 	int j=0;	//column 遍历
-	
+
 	//顶行之后可以保存到日志中
-	
+
 	//复制
 	char *pre_line_addr=(char *)VIEW_MEM_BASE_ADDR;
 	char *next_line_addr=(char *)VIEW_MEM_BASE_ADDR+VIEW_ROW_SIZE;
@@ -98,7 +98,7 @@ void print_char(char c){
 		view_column=0;
 		return ;
 	}
-	
+
 	//列满？
 	if(view_column > VIEW_COLUMN_MAX){
 		view_row++;
@@ -111,12 +111,12 @@ void print_char(char c){
 		view_row=VIEW_ROW_MAX;
 		view_column=0;
 	}
-		
+
 	//写内存（每个显示单元占2个字节）
 	view_addr+=VIEW_ROW_SIZE*view_row; 	//行
 	view_addr+=view_column * 2;			//列
 	*view_addr=c;						//写
-	
+
 	view_column+=1;						//光标后移
 }
 
@@ -128,7 +128,7 @@ void ptsc_print_str(char *str){
 		c_addr++;
 	}
 }
-	
+
 /*
  * ID: 			3
  * Comment: 	用来获取数字对应字符，空间换时间
@@ -144,7 +144,7 @@ void ptsc_print_num16(uint32_t num){
 	for(;i>0;i--){
 		num_low4bit=num & 0x0000000f;
 		out_str[i-1]=num16_to_char_array[num_low4bit];
-		
+
 		num=num>>4;
 	}
 	ptsc_print_str(out_str);
@@ -201,11 +201,11 @@ uint32_t ptsc_strlen(char * str_addr){
 /*
  * ID: 			7
  * Comment: 	字符串比较
- * 
+ *
  * str_addr_a > str_addr_b： 1
  * str_addr_a = str_addr_b： 0
  * str_addr_a < str_addr_b： -1
- * 
+ *
  */
 int8_t ptsc_strcmp(char * str_addr_a,char * str_addr_b){
 	int8_t result=0;
@@ -229,7 +229,7 @@ int8_t ptsc_strcmp(char * str_addr_a,char * str_addr_b){
 		} else{
 			result=-1;
 		}
-		
+
 		return result;
 	}
 	return result;

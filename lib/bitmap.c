@@ -122,6 +122,7 @@ bool is_valid_allocation(uint8_t * byte_headr, uint32_t start_bit_index ,	\
 
 /*
  * apply some "continuous" bits in bitmap
+ * 申请连续的bit，成功则被置1，并返回相应起始索引
  * 1）先用暴力方法来处理吧
  * base_bit_index: 从此处开始扫描，之前的不考虑
  * apply_bits_num: 申请的bit数
@@ -133,6 +134,7 @@ uint32_t bitmap_alloc_cont_bits(struct bitmap *bm, uint32_t base_bit_index, uint
 			//i指向bit为0
 			if(is_valid_allocation(bm->bits,i,apply_bits_num)){
 				//判断是否为合法起始bit_index
+				bitmap_set_cont_bits(bm,i,apply_bits_num,1);
 				return i;
 			}
 			else{

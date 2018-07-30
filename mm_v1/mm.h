@@ -57,6 +57,7 @@
 
 #define PHYS_ALLOC_BIT_BEGIN_INDEX ((uint32_t)2048)  //分配的物理起始索引
 #define KERNEL_ALLOC_BIT_BEGIN_INDEX ((uint32_t)2048)  //分配的物理起始索引
+#define USER_ALLOC_BIT_BEGIN_INDEX ((uint32_t)8192)  //分配的物理起始索引
 
 //内核使用内存(虚拟地址划分，0~32M)
 #define KERNEL_VIRTUAL_BASE_ADDR  ((uint32_t)0)

@@ -76,31 +76,35 @@ void set_pte(uint32_t pt_id, uint32_t pte_id,uint32_t pte_val, char* type){
 
 /*
  * 设置内核虚拟映射(连续的物理页面)
- * 内核的虚拟和物理地址完全对应 0～32M
+ * 内核的虚拟和物理地址 0～32M
+ * 虚拟地址用来进行查找，最后一个地址为物理地址
  */
 void set_kernel_page_mmap(uint32_t kernel_start_page_addr, \
 	uint32_t phys_start_page_addr, uint32_t page_num, char* type){
 
 	uint32_t temp_page_addr=0;
+	uint32_t temp_phys_page_addr=0;
 	//配置每一个页面的映射
 	for(uint32_t i=0; i<page_num; i++){
+		//虚拟地址，前20位用来查找pde和pte
 		temp_page_addr = kernel_start_page_addr + SIZE_4K * i;
+		//物理地址，最后访问的真实页面
+		temp_phys_page_addr = phys_start_page_addr + SIZE_4K * i;
+
 		//设置页目录
 		set_pde(KERNEL_ADDR_TO_PDE_ID(temp_page_addr),KERNEL_ADDR_TO_PT_ADDR(temp_page_addr));
-
 		//设置页表
 		if (ptsc_strcmp(type,"kd") == 0) {
 			//内核数据
-			set_pte(KERNEL_ADDR_TO_PT_ID(temp_page_addr),KERNEL_ADDR_TO_PTE_ID(temp_page_addr),temp_page_addr,"kd");
+			set_pte(KERNEL_ADDR_TO_PT_ID(temp_page_addr),KERNEL_ADDR_TO_PTE_ID(temp_page_addr),temp_phys_page_addr,"kd");
 		} else 	if (ptsc_strcmp(type,"kc") == 0) {
 			//内核代码
-			set_pte(KERNEL_ADDR_TO_PT_ID(temp_page_addr),KERNEL_ADDR_TO_PTE_ID(temp_page_addr),temp_page_addr,"kc");
+			set_pte(KERNEL_ADDR_TO_PT_ID(temp_page_addr),KERNEL_ADDR_TO_PTE_ID(temp_page_addr),temp_phys_page_addr,"kc");
 		} else{
 			//error
 
 			return ;
 		}
-
 	}
 }
 
@@ -159,9 +163,31 @@ void kernel_mem_init(){
 
 
 //--------------------------利用bitmap管理物理函数-------------------------------
-//分配连续的物理页面
-uint32_t phys_page_alloc(uint32_t page_num){
-	uint32_t page_bit_index = bitmap_alloc_cont_bits(&phys_mem_bitmap, PHYS_ALLOC_BIT_BEGIN_INDEX,page_num);
+/*
+ * 分配连续的物理页面
+ * type："kernel", "user"
+ * ,为
+ */
+uint32_t phys_page_alloc(uint32_t page_num, char * type){
+	uint32_t page_bit_index = 0;
+
+	if(ptsc_strcmp(type,"kernel") == 0) {
+		//内核物理页面，从8M开始分配
+		page_bit_index = bitmap_alloc_cont_bits(&phys_mem_bitmap, KERNEL_ALLOC_BIT_BEGIN_INDEX,page_num);
+		if(page_bit_index + page_num > USER_ALLOC_BIT_BEGIN_INDEX){
+			//error process 申请失败，内核部分不足
+			ptsc_print_str("debug_zs mm:kernel mem is not enough\n");
+
+			return 0;
+		}
+	} else 	if (ptsc_strcmp(type,"user") == 0) {
+		//用户物理页面，从32M开始分配
+		page_bit_index  = bitmap_alloc_cont_bits(&phys_mem_bitmap, USER_ALLOC_BIT_BEGIN_INDEX,page_num);
+	} else{
+		//error  process
+
+		return 0;
+	}
 	return page_bit_index;
 }
 
@@ -176,33 +202,55 @@ void phys_page_recycle(uint32_t start_page_id, uint32_t page_num){
 // 主要分成三步 1)虚拟页面分配 2)物理页面分配 3)完成虚拟物理映射
 //----------------------------------------------------------------------
 
-//内核虚拟页面申请（使用物理地址bitmap作为virtual addr地址管理方式，两者一致）
+//内核页面申请（使用物理地址bitmap作为virtual addr地址管理方式，两者一致）
 bool kernel_page_alloc(uint32_t page_num, char * type){
-	//1 分配虚拟页面
+	//1 分配连续的虚拟页面
 	uint32_t kernel_virt_page_id =  bitmap_alloc_cont_bits(&kernel_mem_bitmap, KERNEL_ALLOC_BIT_BEGIN_INDEX, page_num);
-	bitmap_set_cont_bit(&kernel_mem_bitmap, kernel_virt_page_id, page_num, 1);
+	if(kernel_virt_page_id == 0){
+		ptsc_print_str("debug_zs mm: kernel bitmap alloc failed\n");
+		return FALSE;
+	}
 
-	//2 分配物理页面
-	uint32_t phys_page_id = phys_page_alloc(page_num);
-	bitmap_set_cont_bit(&phys_mem_bitmap, phys_page_id, page_num, 1);
-
-	if(kernel_virt_page_id == 0 || phys_page_id==0){
+	//2 分配连续的物理页面
+	uint32_t phys_page_id = phys_page_alloc(page_num,"kernel");
+	if(phys_page_id == 0){
+		ptsc_print_str("debug_zs mm: phys bitmap alloc failed\n");
 		return FALSE;
 	}
 
 	//3 建立映射
+	if (ptsc_strcmp(type,"kd") == 0) {
+		//内核数据
+		set_kernel_page_mmap(ernel_virt_page_id * SIZE_4K, phys_page_id * SIZE_4K, page_num, "kd");
+	} else 	if (ptsc_strcmp(type,"kc") == 0) {
+		//内核代码
+		set_kernel_page_mmap(ernel_virt_page_id * SIZE_4K, phys_page_id * SIZE_4K, page_num, "kc");
+	} else{
+		//error  process
 
+		return FALSE;
+	}
+	return TRUE;
 }
 
-
-//内核虚拟页面回收
+//内核页面回收
 void kernel_page_recycle(uint32_t start_page_id, uint32_t page_num){
+	//1 回收内核页面
+	bitmap_recycle_cont_bits(&kernel_mem_bitmap, start_page_id, page_num);
+
+
+	//2 回收物理页面
+	phys_page_recycle( /*物理页面起始*/, page_num);
+
+
+	//3 解除映射
+
 
 }
 
 /*
  * 用户虚拟页面申请
- * p_btm：进程的bitmap，每个进程有一个,在创建进程时自动维护
+ * p_btm: 进程的bitmap，每个进程有一个,在创建进程时自动维护
  *
  */
 void user_page_alloc(struct bitmap p_btm,uint32_t page_num, char * type){
