@@ -22,10 +22,10 @@
 #define FS_ADDR	SIZE_4M
 
 //配置pde和pte
-#define PAGE_DIR_BASE_ADDR SIZE_1M							         //页目录地址
-#define PDE_SIZE ((uint32_t)sizeof(uint32_t))				     //页目录条目大小
-#define PAGE_TAB_BASE_ADDR (PAGE_DIR_BASE_ADDR+SIZE_4K)	 //页表地址
-#define PTE_SIZE ((uint32_t)sizeof(uint32_t))				     //页表条目大小
+#define PAGE_DIR_BASE_ADDR SIZE_1M							    //页目录地址
+#define PDE_SIZE ((uint32_t)sizeof(uint32_t))				    //页目录条目大小
+#define PAGE_TAB_BASE_ADDR (PAGE_DIR_BASE_ADDR+SIZE_4K)	 		//页表地址
+#define PTE_SIZE ((uint32_t)sizeof(uint32_t))				    //页表条目大小
 
 //内核地址 => 虚拟-物理配置索引
 #define KERNEL_ADDR_TO_PDE_ID(ka)  (((uint32_t)0xffc00000 & (uint32_t)ka) >> 22)
@@ -58,6 +58,7 @@
 #define PHYS_ALLOC_BIT_BEGIN_INDEX ((uint32_t)2048)  //分配的物理起始索引
 #define KERNEL_ALLOC_BIT_BEGIN_INDEX ((uint32_t)2048)  //分配的物理起始索引
 #define USER_ALLOC_BIT_BEGIN_INDEX ((uint32_t)8192)  //分配的物理起始索引
+
 
 //内核使用内存(虚拟地址划分，0~32M)
 #define KERNEL_VIRTUAL_BASE_ADDR  ((uint32_t)0)

@@ -20,8 +20,6 @@
 #include "system_call.h"
 #include "bitmap.h"
 
-
-
 //全局变量 用来声明内存管理的bitmap
 struct bitmap phys_mem_bitmap;
 struct bitmap kernel_mem_bitmap;
@@ -75,6 +73,18 @@ void set_pte(uint32_t pt_id, uint32_t pte_id,uint32_t pte_val, char* type){
 
 
 /*
+ * 解除页表-表项
+ * pt_id：指明页表
+ * pte_id：指明页表条目
+ */
+void unset_pte(uint32_t pt_id, uint32_t pte_id){
+	uint32_t * pte_addr =  (uint32_t *)(PAGE_TAB_BASE_ADDR + pt_id*SIZE_4K + pte_id*PTE_SIZE);
+
+	*pte_addr = CLEAR_PRESENT_BIT(*pte_addr);
+}
+
+
+/*
  * 设置内核虚拟映射(连续的物理页面)
  * 内核的虚拟和物理地址 0～32M
  * 虚拟地址用来进行查找，最后一个地址为物理地址
@@ -109,11 +119,15 @@ void set_kernel_page_mmap(uint32_t kernel_start_page_addr, \
 }
 
 /*
- * 设置用户虚拟映射(连续的物理页面)
- * 用户虚拟地址范围为 32M-128M
+ * 接触内核虚拟映射(连续的物理页面)
+ * 
  */
-bool set_user_page_mmap(uint32_t start_page_id, uint32_t page_num, char* type){
-
+bool unset_kernel_page_mmap(uint32_t kernel_start_page_addr, uint32_t page_num) {
+	uint32_t temp_page_addr=0;
+	for(uint32_t i=0; i<page_num; i++){
+		temp_page_addr = kernel_start_page_addr + SIZE_4K * i;
+		unset_pte(KERNEL_ADDR_TO_PT_ID(temp_page_addr),KERNEL_ADDR_TO_PTE_ID(temp_page_addr));
+	}
 }
 
 //物理内存bitmap
@@ -174,6 +188,10 @@ uint32_t phys_page_alloc(uint32_t page_num, char * type){
 	if(ptsc_strcmp(type,"kernel") == 0) {
 		//内核物理页面，从8M开始分配
 		page_bit_index = bitmap_alloc_cont_bits(&phys_mem_bitmap, KERNEL_ALLOC_BIT_BEGIN_INDEX,page_num);
+		if(page_bit_index == 0){
+			//申请失败
+			return 0;
+		}
 		if(page_bit_index + page_num > USER_ALLOC_BIT_BEGIN_INDEX){
 			//error process 申请失败，内核部分不足
 			ptsc_print_str("debug_zs mm:kernel mem is not enough\n");
@@ -203,6 +221,8 @@ void phys_page_recycle(uint32_t start_page_id, uint32_t page_num){
 //----------------------------------------------------------------------
 
 //内核页面申请（使用物理地址bitmap作为virtual addr地址管理方式，两者一致）
+//虽然使用两个bitmap来管理，但是由于每次申请，释放都对两个bitmap同时操作
+//所以，两个bitmap在0-32M范围内，完全一致
 bool kernel_page_alloc(uint32_t page_num, char * type){
 	//1 分配连续的虚拟页面
 	uint32_t kernel_virt_page_id =  bitmap_alloc_cont_bits(&kernel_mem_bitmap, KERNEL_ALLOC_BIT_BEGIN_INDEX, page_num);
@@ -221,10 +241,10 @@ bool kernel_page_alloc(uint32_t page_num, char * type){
 	//3 建立映射
 	if (ptsc_strcmp(type,"kd") == 0) {
 		//内核数据
-		set_kernel_page_mmap(ernel_virt_page_id * SIZE_4K, phys_page_id * SIZE_4K, page_num, "kd");
+		set_kernel_page_mmap(kernel_virt_page_id * SIZE_4K, phys_page_id * SIZE_4K, page_num, "kd");
 	} else 	if (ptsc_strcmp(type,"kc") == 0) {
 		//内核代码
-		set_kernel_page_mmap(ernel_virt_page_id * SIZE_4K, phys_page_id * SIZE_4K, page_num, "kc");
+		set_kernel_page_mmap(kernel_virt_page_id * SIZE_4K, phys_page_id * SIZE_4K, page_num, "kc");
 	} else{
 		//error  process
 
@@ -238,13 +258,12 @@ void kernel_page_recycle(uint32_t start_page_id, uint32_t page_num){
 	//1 回收内核页面
 	bitmap_recycle_cont_bits(&kernel_mem_bitmap, start_page_id, page_num);
 
-
 	//2 回收物理页面
-	phys_page_recycle( /*物理页面起始*/, page_num);
-
+	phys_page_recycle(start_page_id , page_num);
 
 	//3 解除映射
-
+	//将pte的PRESET位清空，就认为映射解除
+	unset_kernel_page_mmap(start_page_id * SIZE_4K,page_num);
 
 }
 
@@ -261,11 +280,9 @@ void user_page_alloc(struct bitmap p_btm,uint32_t page_num, char * type){
 		return FALSE;
 	}
 
-
-
 }
 
-//内核虚拟页面回收
+//用户虚拟页面回收
 void user_page_recycle(){
 
 
