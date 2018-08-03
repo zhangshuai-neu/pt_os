@@ -120,7 +120,7 @@ void set_kernel_page_mmap(uint32_t kernel_start_page_addr, \
 
 /*
  * 接触内核虚拟映射(连续的物理页面)
- * 
+ *
  */
 bool unset_kernel_page_mmap(uint32_t kernel_start_page_addr, uint32_t page_num) {
 	uint32_t temp_page_addr=0;
