@@ -10,8 +10,9 @@
 /*
  * 初始化bitmap
  * */
-void init_bitmap(struct bitmap *bm){
-	for(uint32_t i=0; i<bm->btmp_bytes_len; i++){
+void init_bitmap(struct bitmap *bm){\
+    uint32_t i=0;
+	for(; i<bm->btmp_bytes_len; i++){
 		*(bm->bits + i) = 0;
 	}
 	return ;
@@ -57,15 +58,14 @@ void bitmap_set_bit(struct bitmap *bm,uint32_t bit_index, uint8_t mask/* 1 or 0*
  * 将连续位置位为 1 or 0 (根据mask)
  * start_bit_index: 要确认的
  * */
-void bitmap_set_cont_bits(struct bitmap *bm, uint32_t start_bit_index,  \
-	int32_t bit_length/* from 1*/ ,uint8_t mask/* 1 or 0*/){
+void bitmap_set_cont_bits(struct bitmap *bm, uint32_t start_bit_index,  int32_t bit_length/* from 1*/ ,uint8_t mask/* 1 or 0*/){
 
 	if(start_bit_index + bit_length > SIZE_4K*8){
 		//错误，超出bitmap
 		return ;
 	}
-
-	for(uint32_t i=0; i<bit_length; i++){
+    uint32_t i=0;
+	for(; i<bit_length; i++){
 		bitmap_set_bit(bm,start_bit_index+i,mask);
 	}
 }
@@ -85,15 +85,12 @@ uint8_t verify_valid_bit_in_byte(uint8_t byte){
 }
 
 //判断申请位置是否合理，由bitmap_apply调用
-bool is_valid_allocation(uint8_t * byte_headr, uint32_t start_bit_index ,	\
-	uint32_t apply_bits_num){
-
-	uint32_t count=0;
+bool is_valid_allocation(uint8_t * byte_headr, uint32_t start_bit_index , uint32_t apply_bits_num){
 	uint32_t remain_bits_num;
 
 	//判断起始字节有几个可用的bit
 	uint32_t start_byte_index = start_bit_index / 8;
-	uint8_t count = verify_valid_bit_in_byte(byte_headr[start_byte_index]);
+	uint8_t count = (uint8_t)verify_valid_bit_in_byte(byte_headr[start_byte_index]);
 	if( count != (start_byte_index+1)*8-start_bit_index){
 		//start_bit_index 靠前,例如0010 1111 的第5位（从低到高）
 		return FALSE;
@@ -109,7 +106,8 @@ bool is_valid_allocation(uint8_t * byte_headr, uint32_t start_bit_index ,	\
 
 	//判断字节是否可用
 	int remain_byte = remain_bits_num/8;
-	for(uint32_t i=0; i<remain_byte; i++){
+    uint32_t i=0;
+	for(; i<remain_byte; i++){
 		if(!ALL_SET0(byte_headr[(start_bit_index + i+1)])){
 			//后续字节存在置1的情况
 			return FALSE;
@@ -129,9 +127,12 @@ bool is_valid_allocation(uint8_t * byte_headr, uint32_t start_bit_index ,	\
  * return: allocated bit_index (if it's 0, which means application failure)
  * */
 uint32_t bitmap_alloc_cont_bits(struct bitmap *bm, uint32_t base_bit_index, uint32_t apply_bits_num){
-	for(uint32_t i=base_bit_index; i<BITMAP_BYTE_SIZE*8; i++){
+    uint32_t i=base_bit_index;
+	for(; i<bm->btmp_bytes_len*8; i++){
+        //i指向bit为0
+        ptsc_print_num16(i);
+        ptsc_print_str(" bitmap_alloc_cont_bits\n");
 		if(bitmap_verify_bitset(bm,i)){
-			//i指向bit为0
 			if(is_valid_allocation(bm->bits,i,apply_bits_num)){
 				//判断是否为合法起始bit_index
 				bitmap_set_cont_bits(bm,i,apply_bits_num,1);

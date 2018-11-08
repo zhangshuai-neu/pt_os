@@ -32,7 +32,7 @@ int main(void){
 	//0.汇编完成的前期工作
 	ptsc_print_str("Get Memmory Size: OK\n");
 	ptsc_print_str("Get into Protection Mode: OK\n");
-	ptsc_print_str("Page Management: OK\n");	//完成部页表
+	ptsc_print_str("Page Management: OK\n");
 
 	//2. 中断初始化
 	idt_init();
@@ -51,32 +51,14 @@ int main(void){
 	ide_init();
 	ptsc_print_str("Ide_init: OK\n");
 
-	//测试读写
 
-	/*硬盘读写
-
-	*/
-
-	//6.内存管理
-
-
-	//7.elf文件加载器/加载工具
-
-
-	//8.进程管理器
-
-
-	//9.
-
-	//文件系统
-
+    // 测试内核内存的申请和释放
+    char* new_page = kernel_page_alloc(1,"kd");
+    
+    
     //打开中断
     //asm volatile("sti");
 
-	/*
-     * 测试程序
-     * 测试disk interface
-     */
 
 	while(1){
 

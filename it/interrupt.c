@@ -146,6 +146,5 @@ void idt_init() {
      */
     uint64_t idt_operand = ((sizeof(idt) - 1) | ((uint64_t)(uint32_t)idt << 16));
     asm volatile("lidt %0" : : "m" (idt_operand));
-    
 }
 

@@ -27,6 +27,9 @@ SECTIONS{
         /*内存管理*/
         ./build/mm.o(.text)
         
+        /*内核使用的库文件*/
+        ./build/lib.o(.text)
+        
     }
     
     .data :
@@ -45,6 +48,6 @@ SECTIONS{
         
         ./build/mm.o(.data)
         
+        ./build/lib.o(.data)
     }
-    
 }

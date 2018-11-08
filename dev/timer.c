@@ -29,23 +29,27 @@ uint32_t ticks;
  * tick 睡眠：
  * 以tick为单位的sleep,任何时间形式的sleep会转换此ticks形式
  * */
+/*
 static void tick_sleep(uint32_t sleep_ticks) {
    uint32_t start_tick = ticks;
    while (ticks - start_tick < sleep_ticks) {	   // 若间隔的ticks数不够便让出cpu
       thread_yield();
    }
 }
+*/
 
 /*
  * ms 睡眠：
  * 以毫秒为单位的sleep
  * */
+
+/*
 void ms_sleep(uint32_t m_seconds) {
   uint32_t sleep_ticks = DIV_ROUND_UP(m_seconds, mil_seconds_per_intr);
   ASSERT(sleep_ticks > 0);
   ticks_to_sleep(sleep_ticks); 
 }
-
+*/
 
 /* 
  * 设置频率:
