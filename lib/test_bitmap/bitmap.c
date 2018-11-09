@@ -4,8 +4,6 @@
  */
 
 #include "bitmap.h"
-#include "std_type_define.h"
-#include "system_call.h"
 
 /*
  * 初始化bitmap
@@ -145,8 +143,7 @@ uint32_t bitmap_alloc_cont_bits(struct bitmap *bm, uint32_t base_bit_index, uint
 }
 
 //回收一些连续bits
-void bitmap_recycle_cont_bits(struct bitmap *bm, uint32_t start_bit_index,  \
-	int32_t bit_length/* from 1*/){
+void bitmap_recycle_cont_bits(struct bitmap *bm, uint32_t start_bit_index, int32_t bit_length/* from 1*/){
 
 	bitmap_set_cont_bits(bm,start_bit_index,bit_length,0);
 }

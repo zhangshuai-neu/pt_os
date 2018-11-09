@@ -47,18 +47,18 @@
 
 //位示图
 //物理、内核位示图
-#define PHYS_MEM_BITMAP_ADDR	(SIZE_1M + 132*SIZE_1K)	// 1M+132K～1M+136K
-#define PHYS_MEM_BITMAP_SIZE	(SIZE_4K)		    // 4KB，用bit表示所有128M内存的所有页面
+#define PHYS_MEM_BITMAP_ADDR	(SIZE_1M + 132*SIZE_1K)	// 1M+132K～1M+136K 
+#define PHYS_MEM_BITMAP_SIZE	(SIZE_4K)		        // 4KB，用bit表示所有128M内存的所有页面 0x122000 ~ 0x123000
 //内核虚拟地址位示图
-#define KERNEL_MEM_BITMAP_ADDR	(PHYS_MEM_BITMAP_ADDR + PHYS_MEM_BITMAP_SIZE)
+#define KERNEL_MEM_BITMAP_ADDR	(PHYS_MEM_BITMAP_ADDR + PHYS_MEM_BITMAP_SIZE)   //1M+136K  122000
 #define KERNEL_MEM_BITMAP_SIZE	(SIZE_1K)		    // 1KB，用bit表示32M内核使用内存
 //用户虚拟地址位示图
 #define USER_MEM_BITMAP_ADDR	(PHYS_MEM_BITMAP_ADDR + PHYS_MEM_BITMAP_SIZE)
 #define USER_MEM_BITMAP_SIZE	(SIZE_4K)	        // 4KB，用bit表示128M内存（用户使用后96M）
 
-#define PHYS_ALLOC_BIT_BEGIN_INDEX ((uint32_t)2048)     //分配的物理起始索引,8M
-#define KERNEL_ALLOC_BIT_BEGIN_INDEX ((uint32_t)2048)   //内核虚拟地址，内核分配的物理起始索引,8M
-#define USER_ALLOC_BIT_BEGIN_INDEX ((uint32_t)8192)     //用户虚拟地址，用户分配的物理起始索引,32M
+#define PHYS_ALLOC_BIT_BEGIN_INDEX ((uint32_t)2048)     //2048 bit分配的物理起始索引,8M
+#define KERNEL_ALLOC_BIT_BEGIN_INDEX ((uint32_t)2048)   //2048 bit内核虚拟地址，内核分配的物理起始索引,8M
+#define USER_ALLOC_BIT_BEGIN_INDEX ((uint32_t)8192)     //8192 bit用户虚拟地址，用户分配的物理起始索引,32M
 
 //内核使用内存(虚拟地址划分，0~32M)
 #define KERNEL_VIRTUAL_BASE_ADDR  ((uint32_t)0)
