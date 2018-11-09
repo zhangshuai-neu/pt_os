@@ -35,7 +35,7 @@
 
 //页表相关属性
 #define PAGE_PRESENT_BIT    ((uint32_t)1)	//存在位（为1在物理内存，为0不在）
-#define PAGE_RW_BIT			((uint32_t)2)	//读写位，为0可读不可写，为1可读可写
+#define PAGE_RW_BIT			((uint32_t)2)	//读写位，为0可读不可写，为1可读可写(1:data_segment,0:code_segment)
 #define PAGE_US_BIT			((uint32_t)4)	//用户|特权位，为0特权，为1用户
 
 #define SET_PRESENT_BIT(var) 	var = (var | PAGE_PRESENT_BIT)
@@ -47,19 +47,14 @@
 
 //位示图
 //物理、内核位示图
-<<<<<<< HEAD
-#define PHYS_MEM_BITMAP_ADDR	(SIZE_1M + 132*SIZE_1K)	// 1M+132K～1M+136K
-#define PHYS_MEM_BITMAP_SIZE	(SIZE_4K)		        // 4KB，用bit表示所有128M内存的所有页面
-=======
 #define PHYS_MEM_BITMAP_ADDR	(SIZE_1M + 132*SIZE_1K)	// 1M+132K～1M+136K 
-#define PHYS_MEM_BITMAP_SIZE	(SIZE_4K)		        // 4KB，用bit表示所有128M内存的所有页面 0x122000 ~ 0x123000
->>>>>>> e27e671ade76535dba192bebbaab3a20ac6d1201
+#define PHYS_MEM_BITMAP_SIZE	(SIZE_4K)		        // 4KB，用bit表示所有128M内存的所有页面 0x121000 ~ 0x122000
 //内核虚拟地址位示图
-#define KERNEL_MEM_BITMAP_ADDR	(PHYS_MEM_BITMAP_ADDR + PHYS_MEM_BITMAP_SIZE)   //1M+136K  122000
+#define KERNEL_MEM_BITMAP_ADDR	(PHYS_MEM_BITMAP_ADDR + PHYS_MEM_BITMAP_SIZE)   //1M+136K  0x122000 ~ 0x122400
 #define KERNEL_MEM_BITMAP_SIZE	(SIZE_1K)		    // 1KB，用bit表示32M内核使用内存
 //用户虚拟地址位示图
-#define USER_MEM_BITMAP_ADDR	(PHYS_MEM_BITMAP_ADDR + PHYS_MEM_BITMAP_SIZE)
-#define USER_MEM_BITMAP_SIZE	(SIZE_4K)	        // 4KB，用bit表示128M内存（用户使用后96M）
+#define USER_MEM_BITMAP_ADDR	(KERNEL_MEM_BITMAP_ADDR + KERNEL_MEM_BITMAP_SIZE)
+#define USER_MEM_BITMAP_SIZE	(SIZE_4K)	        // 4KB，用bit表示128M内存（用户使用后96M） 0x122400 ~ 0x123400
 
 #define PHYS_ALLOC_BIT_BEGIN_INDEX ((uint32_t)2048)     //2048 bit分配的物理起始索引,8M
 #define KERNEL_ALLOC_BIT_BEGIN_INDEX ((uint32_t)2048)   //2048 bit内核虚拟地址，内核分配的物理起始索引,8M

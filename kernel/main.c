@@ -53,7 +53,9 @@ int main(void){
 
 
     // 测试内核内存的申请和释放
-    char* new_page = kernel_page_alloc(1,"kd");
+    char* page_virt_addr = kernel_page_alloc(1,"kd");
+    ptsc_print_str("one_page_alloc\n");
+	ptsc_print_num16((uint32_t)(page_virt_addr));
     
     
     //打开中断

@@ -55,12 +55,15 @@ void set_pte(uint32_t pt_id, uint32_t pte_id,uint32_t pte_val, char* type){
 		SET_PRESENT_BIT(pte_val);
 		SET_RW_BIT(pte_val);
 	} else if(ptsc_strcmp(type,"kc") == 0){
+		//结尾为1
 		SET_PRESENT_BIT(pte_val);
 	} else if(ptsc_strcmp(type,"ud") == 0){
+		//结尾为7
 		SET_PRESENT_BIT(pte_val);
 		SET_RW_BIT(pte_val);
 		SET_US_BIT(pte_val);
 	} else if(ptsc_strcmp(type,"uc") == 0){
+		//结尾为5
 		SET_PRESENT_BIT(pte_val);
 		SET_US_BIT(pte_val);
 	} else {
@@ -137,7 +140,7 @@ void phys_mem_bitmap_init(){
 	phys_mem_bitmap.bits = (uint8_t *)PHYS_MEM_BITMAP_ADDR;
 	phys_mem_bitmap.btmp_bytes_len = (uint32_t)PHYS_MEM_BITMAP_SIZE;
 	init_bitmap(&phys_mem_bitmap);
-
+	
 	//set physical bitmap
 	bitmap_set_cont_bits(&phys_mem_bitmap,0,PHYS_ALLOC_BIT_BEGIN_INDEX,1);
 }
@@ -163,7 +166,7 @@ void kernel_mmap_init(){
 	int i;
 	uint32_t pte_val = FS_ADDR;
 	for(i=0;i<1024;i++){
-		set_pte(1,i,pte_val,"kd\0");
+		set_pte(1,i,pte_val,"kd");
 		pte_val += SIZE_4K;
 	}
 }
