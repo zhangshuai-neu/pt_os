@@ -4,8 +4,6 @@
  */
 
 #include "bitmap.h"
-#include "std_type_define.h"
-#include "system_call.h"
 
 /*
  * 初始化bitmap
@@ -129,16 +127,8 @@ bool is_valid_allocation(uint8_t * byte_headr, uint32_t start_bit_index , uint32
 uint32_t bitmap_alloc_cont_bits(struct bitmap *bm, uint32_t base_bit_index, uint32_t apply_bits_num){
     uint32_t i=base_bit_index;
 	for(; i<bm->btmp_bytes_len*8; i++){
-<<<<<<< HEAD
-        //debug_zs i指向bit为0
-        ptsc_print_num16(i);
-        ptsc_print_str(" bitmap_alloc_cont_bits\n");
-        
-		if(bitmap_verify_bitset(bm,i)){
-=======
         //i指向bit为0
 		if(!bitmap_verify_bitset(bm,i)){
->>>>>>> e27e671ade76535dba192bebbaab3a20ac6d1201
 			if(is_valid_allocation(bm->bits,i,apply_bits_num)){
 				//判断是否为合法起始bit_index
 				bitmap_set_cont_bits(bm,i,apply_bits_num,1);
@@ -153,8 +143,7 @@ uint32_t bitmap_alloc_cont_bits(struct bitmap *bm, uint32_t base_bit_index, uint
 }
 
 //回收一些连续bits
-void bitmap_recycle_cont_bits(struct bitmap *bm, uint32_t start_bit_index,  \
-	int32_t bit_length/* from 1*/){
+void bitmap_recycle_cont_bits(struct bitmap *bm, uint32_t start_bit_index, int32_t bit_length/* from 1*/){
 
 	bitmap_set_cont_bits(bm,start_bit_index,bit_length,0);
 }

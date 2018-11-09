@@ -67,7 +67,7 @@ run:
 	sed  s/USER/${USER}/g  bochs_conf/bochsrc > bochs_conf/${USER}_bochsrc
 	/home/$(USER)/Desktop/bochs-2.6.9/bochs -f bochs_conf/${USER}_bochsrc
 
-all: build asm hd run
+all: asm build hd run
 
 #清空所有.o
 clean:
