@@ -42,9 +42,12 @@
 
 **2-3MB:** 内核程序
 
-build/ 目录下的kernel.elf被映射到该位置
+	build/ 目录下的kernel.elf被映射到该位置
 
 **3-4MB:** 进程管理结构
+
+	task结构
+
 
 **4MB-8MB:** 文件系统及其buffer
 
