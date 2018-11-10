@@ -23,6 +23,11 @@ struct list_node{
 
 /*
  * 可以用来获取list所在结构的基地址，和其他结构的地址
+ * link: list_node的地址
+ * type: 包含list_node的结构的类型
+ * member: 包含list_node的结构的一个成员的名字，
+ *         当member为list_node自己时，返回的时结构本身的地址
+ * 
  * 用法：list_entry(&list_node,struct page,list_node)
  * */
 #define list_entry(link, type, member) \
