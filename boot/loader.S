@@ -114,7 +114,7 @@ into_pro:
 
 	jmp dword SELECTOR_CODE:protection_mode_start 	;刷新流水线，跳转到保护模式执行
 													;会将cs自动切换到SELECTOR_CODE
-
+;保护模式，进入32位模式运行
 [bits 32]
 protection_mode_start:
 	mov ax,SELECTOR_DATA 	;设置额段选择子

@@ -6,12 +6,16 @@
 #ifndef TM_H
 #define TM_H
 
+#include "list.h"
+
 //任务结构基地址
 #define TASK_BASE_ADDR 0x300000
 
+//任务名字长度
+#define TASK_NAME_LEN 16
+
 //打开文件的最大数量
 #define OPEN_FILE_MAX_NUM 8
-
 
 /*********** 任务栈 task_stack  ***********
  * 线程自己的栈,用于存储线程中待执行的函数
@@ -68,7 +72,9 @@ struct intr_stack {
 enum task_status{
 	TASK_READY,		//就绪
 	TASK_RUNING,	//执行
-	TASK_WAITING,	//阻塞
+    TASK_BLOCKED    //阻塞
+	TASK_WAITING,	//等待
+    TASK_HANGING,   //悬挂
 	TASK_END		//结束
 }
 
@@ -79,21 +85,17 @@ struct task{
     uint16_t                task_id;                    //任务id
     char                    task_name[TASK_NAME_LEN];   //任务名
     enum task_status        status;                     //状态
+    uint32_t * 			    stack;                      //task的内核堆栈
     uint8_t                 priority;                   //优先级
-    task_stack* 			t_stack;                    //task的内核堆栈
-    uint8_t                 ticks;	  	  	  	  	  	//每次在处理器上执行的时间嘀嗒数
+    
+    uint8_t                 do_ticks;	  	  	  	  	//每次在处理器上执行的时间嘀嗒数
     uint32_t                elapsed_ticks;              //从开始执行所使用tick数
 
-    struct list_elem general_tag;                   // general_tag的作用是用于线程在一般的队列中的结点
-    struct list_elem all_list_tag;                  // all_list_tag的作用是用于线程队列thread_all_list中的结点
-    uint32_t* pgdir;                                // 进程自己页表的虚拟地址
-    struct virtual_addr userprog_vaddr;             // 用户进程的虚拟地址
-    struct mem_block_desc u_block_desc[DESC_CNT];   // 用户进程内存块描述符
-    int32_t fd_table[OPEN_FILE_MAX_NUM];      		// 已打开文件数组
-    uint32_t cwd_inode_nr;                          // 进程所在的工作目录的inode编号
-    pid_t parent_pid;                               // 父进程pid
-    int8_t  exit_status;                            // 进程结束时自己调用exit传入的参数
-    uint32_t stack_magic;                           // 用这串数字做栈的边界标记,用于检测栈的溢出
+    struct list_node general_link; // 在一般的队列中的结点
+    struct list_node task_link;    // 在线程队列中的结点
+    
+    uint32_t* pgdir;         // 进程自己页表的虚拟地址
+    uint32_t  stack_magic;   // 用这串数字做栈的边界标记,用于检测栈的溢出
 };
 
 struct schedule_entity{
