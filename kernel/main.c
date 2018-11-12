@@ -54,9 +54,9 @@ int main(void){
 
     // 测试内核内存的申请和释放
     char* page_virt_addr = kernel_page_alloc(1,"kd");
-    ptsc_print_str("one_page_alloc\n");
+    ptsc_print_str("test one_page_alloc: ");
 	ptsc_print_num16((uint32_t)(page_virt_addr));
-    
+    ptsc_print_str("\n");
     
     //打开中断
     //asm volatile("sti");

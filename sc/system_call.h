@@ -26,7 +26,7 @@ void ptsc_init_view();
 void ptsc_print_str(char *str);
 void ptsc_print_num16(uint32_t num);
 
-//内存操作
+//内存操作(字节为大小)
 void ptsc_memcpy(void* src_addr,void* dest_addr,uint32_t size);
 void ptsc_memset(void* dest_addr,uint8_t val,uint32_t size);
 

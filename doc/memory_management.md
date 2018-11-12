@@ -46,8 +46,26 @@
 
 **3-4MB:** 进程管理结构
 
-	task结构
-
+    // 内核thread
+	内核task结构（struct task 和 kernel stack）
+    一共4K
+    
+    // 用户进程
+    struct task 和 kernel stack,再包括一个虚拟地址空间管理的bitmap
+    一共8K
+    
+    //======= 存储方式 =====
+    0 task struct
+    
+        ^
+        |
+    4K kstack
+    4K bitmap
+        |
+        V
+    8K
+    //=====================
+    最大占用空间 = 8K *128 = 1M
 
 **4MB-8MB:** 文件系统及其buffer
 
@@ -59,7 +77,11 @@
 		8MB-4KB ~ 8MB 为buffer
 
 
-**8MB-128MB:** 随意使用部分
+**8MB-32MB:** 内核使用部分
+    
+
+**32MB-128MB:** 用户使用部分
+    任务自己申请的内存
 
 
 1)物理页面管理

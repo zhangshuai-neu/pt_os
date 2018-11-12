@@ -91,7 +91,7 @@ SELECTOR_CODE  equ (0x0001<<3) + TI_GDT + RPL0
 SELECTOR_DATA  equ (0x0002<<3) + TI_GDT + RPL0
 
 ;段选择子，堆栈段和数据段一致
-STACK_TOP 	   equ  (MBR_MEM_BASE_ADDR-8)	;栈顶靠近0x7c00，x500到0x7c00为一段空余内存（近30KB）
+STACK_TOP 	   equ  (MBR_MEM_BASE_ADDR-8)	;栈顶靠近0x7c00，0x500到0x7c00为一段空余内存（近30KB）
 
 ;段选择子_显示段
 SELECTOR_VIDEO equ (0x0003<<3) + TI_GDT + RPL0

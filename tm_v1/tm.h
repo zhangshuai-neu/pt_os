@@ -8,15 +8,6 @@
 
 #include "list.h"
 
-//任务结构基地址
-#define TASK_BASE_ADDR 0x300000
-
-//任务名字长度
-#define TASK_NAME_LEN 16
-
-//打开文件的最大数量
-#define OPEN_FILE_MAX_NUM 8
-
 /*********** 任务栈 task_stack  ***********
  * 线程自己的栈,用于存储线程中待执行的函数
  * 此结构在线程自己的内核栈中位置不固定,
@@ -78,31 +69,33 @@ enum task_status{
 	TASK_END		//结束
 }
 
-#define TASK_NAME_LEN 32 //任务名长度
 
-//任务结构
+#define TASK_MAX_NUM   128          //任务的最大数量
+#define TASK_BASE_ADDR 0x300000     //任务结构基地址
+#define TASK_NAME_LEN  16           //任务名字长度
+#define TASK_DO_TICKS  100          //任务进行的tick数量(一个单位)
+
+#define OPEN_FILE_MAX_NUM 8         //打开文件的最大数量
+
+//任务结构 52 byte
 struct task{
-    uint16_t                task_id;                    //任务id
+    uint16_t                task_id;                    //任务id, 从1开始
     char                    task_name[TASK_NAME_LEN];   //任务名
-    enum task_status        status;                     //状态
-    uint32_t * 			    stack;                      //task的内核堆栈
-    uint8_t                 priority;                   //优先级
     
-    uint8_t                 do_ticks;	  	  	  	  	//每次在处理器上执行的时间嘀嗒数
+    enum task_status        status;                     //状态
+    
+    uint8_t                 priority;                   //优先级
     uint32_t                elapsed_ticks;              //从开始执行所使用tick数
-
+    
+    uint32_t * 			    kstack;                     //task的内核堆栈
+    struct bitmap           virt_bitmap;                //任务的虚拟地址空间
+    
+    uint32_t* pgdir;         // 进程自己页目录的虚拟地址
+    uint32_t  stack_magic;   // 用这串数字做栈的边界标记,用于检测栈的溢出
+    
     struct list_node general_link; // 在一般的队列中的结点
     struct list_node task_link;    // 在线程队列中的结点
-    
-    uint32_t* pgdir;         // 进程自己页表的虚拟地址
-    uint32_t  stack_magic;   // 用这串数字做栈的边界标记,用于检测栈的溢出
 };
-
-struct schedule_entity{
-
-};
-
-
 
 
 #endif

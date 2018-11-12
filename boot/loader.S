@@ -140,8 +140,6 @@ load_kernel_bin:
 	;debug
 	
 ;-------------启用内存分页机制，页式管理内存------------
-;采用 linux一样的做法，将0-3G作为虚拟的用户空间，3-4G位虚拟的系统空间
-;物理上，0-2M作为实际使用系统空间;其他部分，由进程使用
 ;
 ;1 创建页目录和页表,初始化内存位图
 ;2 修改GDT
@@ -155,11 +153,11 @@ load_kernel_bin:
 	;2 修改GDT
 	sgdt [gdt_ptr]	;
 	
-	mov ebx,GDTR_BASE_ADDR
-	or dword [ebx + 24 + 4],0xc0000000	;修改显示段
+	;mov ebx,GDTR_BASE_ADDR
+	;or dword [ebx + 24 + 4],0xc0000000	;修改显示段
 	
-	add dword [gdt_ptr + 2],0xc0000000	;由于采用页式管理，访问GDT的地址也发生变化
-	add esp,0xc0000000					;将堆栈空间指向系统内存
+	;add dword [gdt_ptr + 2],0xc0000000	;由于采用页式管理，访问GDT的地址也发生变化
+	;add esp,0xc0000000					;将堆栈空间指向系统内存
 	
 	
 	;3 页目录地址写入cr3，打开cr0的pg位
@@ -180,7 +178,7 @@ load_kernel_bin:
 ;内核初始化
 ;-------------------------------------------------------	
 enter_kernel:    
-	mov esp, 0xc02b0000
+	mov esp, 0x2b0000
 	jmp KERNEL_ENTRY_POINT                 ;
 
 
@@ -275,13 +273,11 @@ setup_page:
 	mov eax, PAGE_DIR_BASE_ADDR
 	add eax, 0x1000 			     ;此时eax为第一个页表的位置及属性
 	mov ebx, eax				     ;此处为ebx赋值，是为.create_pte做准备，ebx为基址。
-	;下面将页目录项0和0xc00都存为第一个页表的地址，
-	;一个页表可表示4MB内存,这样0xc03fffff以下的地址和0x003fffff以下的地址都指向相同的页表，
-	;这是为将地址映射为内核地址做准备
+	;下面将页目录项0存为第一个页表的地址，
+	;一个页表可表示4MB内存,这样0x3fffff以下的地址指向第一个页表
+    
 	or	eax, PG_US_U | PG_RW_W | PG_P		;页目录项的属性RW和P位为1,US为1,表示用户属性,所有特权级别都可以访问.
 	mov [PAGE_DIR_BASE_ADDR + 0x0], eax		;第1个目录项,在页目录表中的第1个目录项写入第一个页表的位置(0x101000)及属性(3)
-	mov [PAGE_DIR_BASE_ADDR + 0xc00], eax	;一个页表项占用4字节,0xc00表示第768个页表占用的目录项,0xc00以上的目录项用于内核空间,
-	;也就是页表的0xc0000000~0xffffffff共计1G属于内核,0x0~0xbfffffff共计3G属于用户进程.
 	sub eax, 0x1000
 	mov [PAGE_DIR_BASE_ADDR + 4092], eax	;使最后一个目录项指向页目录表自己的地址
 
@@ -295,19 +291,7 @@ setup_page:
 	add edx,4096
 	inc esi
 	loop .create_pte
-
-;创建内核其它页表的PDE
-	mov eax, PAGE_DIR_BASE_ADDR
-	add eax, 0x2000 		     		;此时eax为第二个页表的位置
-	or	eax, PG_US_U | PG_RW_W | PG_P	;页目录项的属性RW和P位为1,US为0
-	mov ebx, PAGE_DIR_BASE_ADDR
-	mov ecx, 254			     		;范围为第769~1022的所有目录项数量
-	mov esi, 769
-.create_kernel_pde:
-	mov [ebx+esi*4], eax
-	inc esi
-	add eax, 0x1000
-	loop .create_kernel_pde
+    
 	ret
 		
 		

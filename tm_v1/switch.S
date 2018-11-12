@@ -2,7 +2,7 @@
 section .text
 global switch_to
 switch_to:
-   ;栈中此处是返回地址	       
+   ;栈中此处是返回地址 c语言的ABI的调用规范	       
    push esi
    push edi
    push ebx
@@ -16,6 +16,7 @@ switch_to:
    mov eax, [esp + 24]		 ; 得到栈中的参数next, next = [esp+24]
    mov esp, [eax]		 ; pcb的第一个成员是self_kstack成员,用来记录0级栈顶指针,
 				 ; 用来上cpu时恢复0级栈,0级栈中保存了进程或线程所有信息,包括3级栈指针
+                 
    pop ebp
    pop ebx
    pop edi
