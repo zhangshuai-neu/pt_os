@@ -2,21 +2,6 @@
  * 任务管理 实现
  * author:Shuai Zhang <zhangshuaiisme@gmail.com>
  */
- 
-/*
- * 一些实现问题: 内核线程和用户进程，没有用户线程的设计
- * task结构的存储方法，查看 doc/memory_management.md
- * 
- * 调度方法
- * 
- * 1) 轮询调度:  所有任务的优先级相同，循环调度
- *      所有优先级都为1
- * 2) 类cfs调度: 
- *      虚拟执行 virt_tick
- *      实际执行 real_tick
- *      优先级从 1～10，每个优先级的实际运行的单位时间为 (优先级*N，N为固定real_tick数) 
- *      virt_tick小的先执行
- * */
 
 #include "std_type_defines.h"
 #include "system_call.h"
