@@ -43,7 +43,7 @@ struct task{
 //返回一个初始化好的 thread task结构
 struct task* thread_init(char* task_name, uint8_t prio){
     struct task * tp = NULL;
-    int i =0;
+    int i = 1;
     for(;i<TASK_MAX_NUM;i++){
         tp = struct task *(TASK_BASE_ADDR+i*SIZE_4K*2)
         if(tp->task_id == 0){
