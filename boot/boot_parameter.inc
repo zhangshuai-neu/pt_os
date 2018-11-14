@@ -35,7 +35,7 @@ PAGE_DIR_BASE_ADDR		equ		0x0010_0000	;页表所在的基地址(1M~1.5M)
 KERNEL_BASE_ADDR	equ		0x0020_0000		;内核加载到内存的的位置(2M~3M)
 KERNEL_ENTRY_POINT	equ 	0x0020_0000		;可能会改变
 KERNEL_BIN_BASE_SECTOR	equ		19			;kernel.bin的起始扇区号
-KERNEL_BIN_SECTOR_SIZE	equ		200			;kernel.bin的最大长度（1M 4096）
+KERNEL_BIN_SECTOR_SIZE	equ		200			;kernel.bin的最大长度 100K（1M 4096）
 
 ;--------------------------loader程序：loader要读取的扇区数---------------------
 LOADER_READ_SECTOR_SIZE	equ		KERNEL_BIN_SECTOR_SIZE

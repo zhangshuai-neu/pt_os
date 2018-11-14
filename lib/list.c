@@ -13,15 +13,13 @@
 //1 双向循环链表
 //======================================================================
 //初始化
-void list_init(struct list_node *list_head)
-{
+void list_init(struct list_node *list_head){
 	list_head->next = list_head;
 	list_head->prev = list_head;
 }
 
 //在list_head之前插入新节点，成为新末尾
-void list_insert(struct list_node *list_head, struct list_node *new_node)
-{
+void list_insert(struct list_node *list_head, struct list_node *new_node){
 	if(list_head==NULL || new_node==NULL) return ;
 	//新节点插入头部之前
 	new_node->prev		= list_head->prev;
@@ -34,8 +32,7 @@ void list_insert(struct list_node *list_head, struct list_node *new_node)
 //将old_node从其所在链表删除
 //如果只有一个，该节点自己就一个新的list
 //被删除的节点，在list_init之后也变成一个新的list
-void list_remove(struct list_node *old_node)
-{
+void list_remove(struct list_node *old_node){
 	if(old_node == NULL) return ;
 		
 	//有多个节点
@@ -43,12 +40,17 @@ void list_remove(struct list_node *old_node)
 	old_node->next->prev = old_node->prev;
 }
 
-//======================================================================
-//2 单链表
-//======================================================================
-
-
-
-
+// 判断find_node是否在head所指向的list中
+// 在：返回TRUE 不在：返回FALSE
+bool list_find(struct list_node *head, struct list_node *find_node){
+    struct list_node * temp_node = head->next;
+    while(temp_node!=head){
+        if(temp_node == find_node){
+            return TRUE;
+        }
+        temp_node=temp_node->next;
+    }
+    return FALSE;
+}
 
 

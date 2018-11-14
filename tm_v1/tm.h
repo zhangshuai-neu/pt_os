@@ -8,6 +8,9 @@
 
 #include "list.h"
 
+// 通用函数类型
+typedef void thread_func(void*);
+
 /*********** 任务栈 task_stack  ***********
  * 线程自己的栈,用于存储线程中待执行的函数
  * 此结构在线程自己的内核栈中位置不固定,
@@ -21,8 +24,9 @@ struct task_stack {
 	uint32_t esi;
 
 	// 线程第一次执行时,eip指向待调用的函数kernel_thread 
-	// 其它时候,eip是指向switch_to的返回地址 
+	// 其它时候,eip是指向 thread_switch_to 的返回地址 
 	void (*eip) (thread_func* func, void* func_arg);
+    
 	// 参数unused_ret只为占位置充数为返回地址
 	void (*unused_retaddr);
 	thread_func* function;   // 由Kernel_thread所调用的函数名
@@ -77,24 +81,21 @@ enum task_status{
 
 #define OPEN_FILE_MAX_NUM 8         //打开文件的最大数量
 
-//任务结构 52 byte
+//任务结构 50 byte
 struct task{
-    uint16_t                task_id;                    //任务id, 从1开始
+    uint32_t * 			    kstack;                     //task的内核堆栈, 栈所在页的地址
+    uint8_t                 task_id;                    //任务id, 从1开始
     char                    task_name[TASK_NAME_LEN];   //任务名
-    
     enum task_status        status;                     //状态
-    
     uint8_t                 priority;                   //优先级
     uint32_t                elapsed_ticks;              //从开始执行所使用tick数
-    
-    uint32_t * 			    kstack;                     //task的内核堆栈
     struct bitmap           virt_bitmap;                //任务的虚拟地址空间
     
     uint32_t* pgdir;         // 进程自己页目录的虚拟地址
     uint32_t  stack_magic;   // 用这串数字做栈的边界标记,用于检测栈的溢出
     
-    struct list_node general_link; // 在一般的队列中的结点
-    struct list_node task_link;    // 在线程队列中的结点
+    struct list_node all_link;   // 在一般的队列中的结点
+    struct list_node ready_link; // 在线程队列中的结点
 };
 
 
