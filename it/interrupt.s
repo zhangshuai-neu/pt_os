@@ -7,7 +7,8 @@ extern intr_handler_table		;intr_handler_table是C中注册的中断处理程序
 section .data
 global intr_entry_table	;定义intr_entry_table数组，具体项为dd intr%1entry
 intr_entry_table:
- 
+
+;========================汇编的宏定义===========================
 %macro VECTOR 2
 section .text
 ;--------------------------------------------------------
@@ -38,6 +39,8 @@ section .data
     dd    intr%1entry	;存储各个中断入口程序的地址，形成intr_entry_table数组
 %endmacro
 
+
+;========================中断结束函数===========================
 section .text
 global intr_exit
 intr_exit:	     
@@ -51,6 +54,8 @@ intr_exit:
     add esp, 4			;跳过error_code
     iretd               ;中断返回
 
+
+;========================中断处理实例化===========================
 VECTOR 0x00,ZERO
 VECTOR 0x01,ZERO
 VECTOR 0x02,ZERO

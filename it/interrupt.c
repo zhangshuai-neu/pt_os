@@ -8,15 +8,11 @@
  * author:Shuai Zhang (zhangshuaiisme@gmail.com)
  */
 
-//头文件
-#include "interrupt.h"
 #include "std_type_define.h"		
 #include "global.h"			//全局宏,如GDT,IDT
 #include "io.h"				//读写外部IO(全为内联函数)
 #include "system_call.h"
-
-// 静态函数声明,非必须
-static void make_idt_desc(struct gate_desc* p_gdesc, uint8_t attr, intr_handler function);
+#include "interrupt.h"
 
 // idt是中断描述符表,本质上就是个中断门描述符数组
 static struct gate_desc idt[IDT_DESC_CNT]={{0}};
@@ -25,7 +21,7 @@ static struct gate_desc idt[IDT_DESC_CNT]={{0}};
 char* intr_name[IDT_DESC_CNT]={0};
 
 /*
- * 定义中断处理程序数组.在kernel.S中定义的intrXXentry只是中断处理程序的入口	 	
+ * 定义中断处理程序数组.在interrupt.S中定义的intrXXentry只是中断处理程序的入口	 	
  * 最终调用的是intr_handler_table中的处理程序
  */
 intr_handler intr_handler_table[IDT_DESC_CNT]={0};	
@@ -58,7 +54,7 @@ static void pic_init(void) {
 }
 
 /* 
- * 创建中断门描述符 
+ * 创建中断门描述符
  */
 static void make_idt_desc(struct gate_desc* p_gdesc, uint8_t attr, intr_handler function) { 
     p_gdesc->func_offset_low_word = (uint32_t)function & 0x0000FFFF;
@@ -70,11 +66,11 @@ static void make_idt_desc(struct gate_desc* p_gdesc, uint8_t attr, intr_handler 
 
 /*
  * 初始化中断描述符表
- *
  */
 static void idt_desc_init(void) {
     int i;
     for (i = 0; i < IDT_DESC_CNT; i++) {
+        //IDT_DESC_ATTR_DPL0在kernel/global.h中定义
         make_idt_desc(&idt[i], IDT_DESC_ATTR_DPL0, intr_entry_table[i]); 
     }
 }
@@ -97,6 +93,54 @@ static void general_intr_handler(uint8_t vec_nr) {
         ptsc_print_str("\n page fault addr is ");
         ptsc_print_num16(page_fault_vaddr); 
     }
+    // 能进入中断处理程序就表示已经处在关中断情况下,
+    // 不会出现调度进程的情况。故下面的死循环不会再被中断。
+    while(1);
+}
+
+// 将中断状态设置为status
+enum intr_status intr_set_status(enum intr_status status) {
+   return status & INTR_ON ? intr_enable() : intr_disable();
+}
+
+// 获取当前中断状态
+enum intr_status intr_get_status() {
+   uint32_t eflags = 0; 
+   GET_EFLAGS(eflags);
+   return (EFLAGS_IF & eflags) ? INTR_ON : INTR_OFF;
+}
+
+// 开中断并返回开中断前的状态
+enum intr_status intr_enable() {
+    enum intr_status old_status;
+    if (INTR_ON == intr_get_status()) {
+        old_status = INTR_ON;
+        return old_status;
+    } else {
+        old_status = INTR_OFF;
+        asm volatile("sti");	 // 开中断,sti指令将IF位置1
+        return old_status;
+    }
+}
+
+// 关中断,并且返回关中断前的状态
+enum intr_status intr_disable() {     
+    enum intr_status old_status;
+    if (INTR_ON == intr_get_status()) {
+        old_status = INTR_ON;
+        asm volatile("cli" : : : "memory"); // 关中断,cli指令将IF位置0
+        return old_status;
+    } else {
+        old_status = INTR_OFF;
+        return old_status;
+    }
+}
+
+// 在中断处理程序数组第vector_no个元素中注册安装中断处理程序function
+void register_handler(uint8_t vector_no, intr_handler function) {
+    /* idt_table数组中的函数是在进入中断后根据中断向量号调用的,
+     * 见kernel/kernel.S的call [idt_table + %1*4] */
+    idt_table[vector_no] = function; 
 }
 
 
