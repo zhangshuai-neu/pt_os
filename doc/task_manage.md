@@ -10,7 +10,7 @@
     任务的存储空间为物理内存的3M~4M之间
 
     内核thread：
-	内核task结构（struct task 和 kernel stack）
+    内核task结构（struct task 和 kernel stack）
     一共4K
 
     用户进程：
@@ -22,15 +22,15 @@
     虽然内核线程占据的空间比较小，但是仍然按照最大的范围预留。
 
     //======= 存储单位 =====
-    0 task struct
-
-        ^
-        |
-    4K kstack
-    4K bitmap 任务的虚拟地址空间
-        |
-        V
-    8K
+    / 0 task struct
+    /
+    /    ^
+    /    |
+    / 4K kstack
+    / 4K bitmap 任务的虚拟地址空间
+    /    |
+    /    V
+    / 8K
     //=====================
 
     最大占用空间 = 8K * 128 = 1M
