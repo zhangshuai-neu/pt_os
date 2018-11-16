@@ -81,8 +81,6 @@ static void idt_desc_init(void) {
 
 /*
  * 用来初始化的通用中断处理函数
- * 
- * 可以用在异常处理
  */
 static void general_intr_handler(uint8_t vec_nr) {
     if (vec_nr == 0x27 || vec_nr == 0x2f) {
@@ -90,14 +88,20 @@ static void general_intr_handler(uint8_t vec_nr) {
         //IRQ7和IRQ15会产生伪中断(spurious interrupt),无须处理。
         return;					
     }
-    ptsc_print_str("int vector: 0x");
-    ptsc_print_num16(vec_nr);
-    ptsc_print_str("\n");
+    
+    //若为Pagefault异常,将缺失的地址打印出来并悬停
+    if (vec_nr == 14) {	  
+        uint32_t page_fault_vaddr = 0; 
+        // cr2是存放造成page_fault的地址
+        asm ("movl %%cr2, %0" : "=r" (page_fault_vaddr));
+        ptsc_print_str("\n page fault addr is ");
+        ptsc_print_num16(page_fault_vaddr); 
+    }
 }
+
 
 /* 
  * 初始化所有异常初始化函数
- *
  * 默认全部初始化为general_intr_handler
  */
 static void exception_init(void) {
