@@ -25,7 +25,7 @@ struct task_stack {
 
 	// 线程第一次执行时,eip指向待调用的函数kernel_thread 
 	// 其它时候,eip是指向 thread_switch_to 的返回地址 
-	void (*eip) (thread_func* func, void* func_arg);
+	void (*eip) (thread_func* func, void* func_arg);    //esp+20的位置
     
 	// 参数unused_ret只为占位置充数为返回地址
 	void (*unused_retaddr);
@@ -77,7 +77,7 @@ enum task_status{
 #define TASK_MAX_NUM   128          //任务的最大数量
 #define TASK_BASE_ADDR 0x300000     //任务结构基地址
 #define TASK_NAME_LEN  16           //任务名字长度
-#define TASK_DO_TICKS  100          //任务进行的tick数量(一个单位)
+#define TASK_DO_TICKS  10　          //任务进行的tick数量(一个单位)
 
 #define OPEN_FILE_MAX_NUM 8         //打开文件的最大数量
 
@@ -97,6 +97,22 @@ struct task{
     struct list_node all_link;   // 在一般的队列中的结点
     struct list_node ready_link; // 在线程队列中的结点
 };
+
+//======================================================
+// 函数声明
+
+// 确定当前任务的task结构所在位置
+struct task_struct* thread_get_task_struct(); 
+
+// 返回一个初始化好的 thread task结构,返回NULL表示失败
+// task_id为0表示该结构未被使用
+struct task* thread_init(char* task_name, uint8_t prio);
+
+// 撤销一个任务
+void thread_destroy(uint8_t task_id);
+
+//　线程环境初始化
+void thread_environment_init();
 
 
 #endif

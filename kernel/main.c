@@ -21,15 +21,14 @@
 #include "timer.h"
 #include "mm.h"
 #include "disk_interface.h"
+#include "tm.h"
 
-
-int main(void){
-
-	//1. 初始化显示亮度(字符模式)
+void init_all(){
+    //0. 初始化显示亮度(字符模式)
 	ptsc_init_view();
 	ptsc_print_str("Init View: OK\n");
 
-	//0.汇编完成的前期工作
+	//1.汇编完成的前期工作
 	ptsc_print_str("Get Memmory Size: OK\n");
 	ptsc_print_str("Get into Protection Mode: OK\n");
 	ptsc_print_str("Page Management: OK\n");
@@ -42,28 +41,45 @@ int main(void){
 	timer_init();		//测试ok
 	ptsc_print_str("Timer Init: OK\n");
 
-
 	//4.设置内存
 	kernel_mem_init();
 	ptsc_print_str("Kernel Mem Init: OK\n");
 
-	//5. disk接口初始化
+	//5.disk接口初始化
 	ide_init();
 	ptsc_print_str("Ide_init: OK\n");
 
+    //6.线程环境初始化
+    thread_environment_init();
+    ptsc_print_str("Thread_environment_init: OK\n");
+}
 
-    // 测试内核内存的申请和释放
-    char* page_virt_addr = kernel_page_alloc(1,"kd");
-    ptsc_print_str("test one_page_alloc: ");
-	ptsc_print_num16((uint32_t)(page_virt_addr));
-    ptsc_print_str("\n");
-    
-    //打开中断
-    //asm volatile("sti");
+
+/* 在线程A中运行的函数 */
+void k_thread_a(void* arg) {     
+    //用void*来通用表示参数,被调用的函数知道自己需要什么类型的参数,自己转换再用 */
+    char* para = arg;
+    while(1) {
+        ptsc_print_str(para);
+    }
+}
+
+/* 在线程B中运行的函数 */
+void k_thread_b(void* arg) {     
+    /* 用void*来通用表示参数,被调用的函数知道自己需要什么类型的参数,自己转换再用 */
+    char* para = arg;
+    while(1) {
+        ptsc_print_str(para);
+    }
+}
+
+
+int main(void){
+    init_all();
 
 
 	while(1){
-
+        ptsc_print_str("This is main_task!");
 	}
 	return 0;
 }

@@ -30,9 +30,15 @@ struct task_struct* thread_get_task_struct() {
    return (struct task_struct*)(esp & 0xfffff000);
 }
 
-// 返回一个初始化好的 thread task结构
+// 返回一个初始化好的 thread task结构,返回NULL表示失败
 // task_id为0表示该结构未被使用
 struct task* thread_init(char* task_name, uint8_t prio){
+    //error 命名过长
+    if(ptsc_strlen(task_name)>TASK_NAME_LEN-1){
+        ptsc_print_str("task_errer: task_name too long!\n")
+        return NULL;
+    }
+    
     struct task * tp = NULL;    
     int i = 1;  // 从1开始，空出0任务结构的空间 main_task独立存放
     for(;i<TASK_MAX_NUM;i++){
@@ -116,7 +122,7 @@ void thread_environment_init(){
     // 创建 main_task
     thread_make_main(main_task);
     
-    // 
+    // 注册任务切换的中断
     
 }
 
