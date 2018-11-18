@@ -2,7 +2,7 @@
 %define ERROR_CODE nop	;若在相关的异常中cpu已经自动压入了错误码,为保持栈中格式统一,这里不做操作.
 %define ZERO push 0		;若在相关的异常中cpu没有压入错误码,为了统一栈中格式,就手工压入一个0
 
-extern intr_handler_table		;intr_handler_table是C中注册的中断处理程序数组
+extern intr_handler_table	;intr_handler_table是C中注册的中断处理程序数组
 
 section .data
 global intr_entry_table	;定义intr_entry_table数组，具体项为dd intr%1entry
@@ -15,10 +15,10 @@ section .text
 ;每个中断处理程序都要压入中断向量号,所以一个中断类型一个中断处理
 ;程序，自己知道自己的中断向量号是多少
 ;--------------------------------------------------------
-intr%1entry:		 	
-
-    %2				 	; 中断若有错误码会压在eip后面 
-; 以下是保存上下文环境
+intr%1entry:
+    ; 中断若有错误码会压在eip后面
+    %2
+    ; 以下是保存上下文环境
     push ds
     push es
     push fs
@@ -26,7 +26,7 @@ intr%1entry:
     pushad			 	;PUSHAD指令压入32位寄存器,其入栈顺序是: EAX,ECX,EDX,EBX,ESP,
     					;EBP,ESI,EDI
 
-    ; 如果是从片上进入的中断,除了往从片上发送EOI外,还要往主片上发送EOI 
+    ; 如果是从片上进入的中断,除了往从片上发送EOI外,还要往主片上发送EOI
     mov al,0x20          ;中断结束命令EOI
     out 0xa0,al          ;向从片发送
     out 0x20,al          ;向主片发送
@@ -43,7 +43,7 @@ section .data
 ;========================中断结束函数===========================
 section .text
 global intr_exit
-intr_exit:	     
+intr_exit:
 ; 以下是恢复上下文环境
     add esp, 4			;跳过中断号
     popad
@@ -59,33 +59,33 @@ intr_exit:
 VECTOR 0x00,ZERO
 VECTOR 0x01,ZERO
 VECTOR 0x02,ZERO
-VECTOR 0x03,ZERO 
+VECTOR 0x03,ZERO
 VECTOR 0x04,ZERO
 VECTOR 0x05,ZERO
 VECTOR 0x06,ZERO
-VECTOR 0x07,ZERO 
+VECTOR 0x07,ZERO
 VECTOR 0x08,ERROR_CODE
 VECTOR 0x09,ZERO
 VECTOR 0x0a,ERROR_CODE
-VECTOR 0x0b,ERROR_CODE 
+VECTOR 0x0b,ERROR_CODE
 VECTOR 0x0c,ZERO
 VECTOR 0x0d,ERROR_CODE
 VECTOR 0x0e,ERROR_CODE
-VECTOR 0x0f,ZERO 
+VECTOR 0x0f,ZERO
 VECTOR 0x10,ZERO
 VECTOR 0x11,ERROR_CODE
 VECTOR 0x12,ZERO
-VECTOR 0x13,ZERO 
+VECTOR 0x13,ZERO
 VECTOR 0x14,ZERO
 VECTOR 0x15,ZERO
 VECTOR 0x16,ZERO
-VECTOR 0x17,ZERO 
+VECTOR 0x17,ZERO
 VECTOR 0x18,ERROR_CODE
 VECTOR 0x19,ZERO
 VECTOR 0x1a,ERROR_CODE
-VECTOR 0x1b,ERROR_CODE 
+VECTOR 0x1b,ERROR_CODE
 VECTOR 0x1c,ZERO
 VECTOR 0x1d,ERROR_CODE
 VECTOR 0x1e,ERROR_CODE
-VECTOR 0x1f,ZERO 
+VECTOR 0x1f,ZERO
 VECTOR 0x20,ZERO

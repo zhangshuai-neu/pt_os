@@ -23,10 +23,10 @@ struct task_stack {
 	uint32_t edi;
 	uint32_t esi;
 
-	// 线程第一次执行时,eip指向待调用的函数kernel_thread 
-	// 其它时候,eip是指向 thread_switch_to 的返回地址 
+	// 线程第一次执行时,eip指向待调用的函数kernel_thread
+	// 其它时候,eip是指向 thread_switch_to 的返回地址
 	void (*eip) (thread_func* func, void* func_arg);    //esp+20的位置
-    
+
 	// 参数unused_ret只为占位置充数为返回地址
 	void (*unused_retaddr);
 	thread_func* function;   // 由Kernel_thread所调用的函数名
@@ -40,7 +40,8 @@ struct task_stack {
  * 此栈在线程自己的内核栈中位置固定,所在页的最顶端
 ********************************************/
 struct intr_stack {
-    uint32_t vec_no;	 // kernel.S 宏VECTOR中push %1压入的中断号
+	// interrupt.S 中的主动压栈内容
+    uint32_t vec_no;	 // 宏VECTOR中push %1压入的中断号
     uint32_t edi;
     uint32_t esi;
     uint32_t ebp;
@@ -54,8 +55,9 @@ struct intr_stack {
     uint32_t es;
     uint32_t ds;
 
-	//以下由cpu从低特权级进入高特权级时压入
-    uint32_t err_code;		 // err_code会被压入在eip之后
+	// 中断硬件自动压栈
+	// err_code会被压入在eip之后
+    uint32_t err_code;
     void (*eip) (void);
     uint32_t cs;
     uint32_t eflags;
@@ -83,26 +85,25 @@ enum task_status{
 
 //任务结构 50 byte
 struct task{
-    uint32_t * 			    kstack;                     //task的内核堆栈, 栈所在页的地址
+    uint32_t * 			    	  kstack;                     //task的内核堆栈, 栈所在页的地址
     uint8_t                 task_id;                    //任务id, 从1开始
     char                    task_name[TASK_NAME_LEN];   //任务名
     enum task_status        status;                     //状态
     uint8_t                 priority;                   //优先级
     uint32_t                elapsed_ticks;              //从开始执行所使用tick数
     struct bitmap           virt_bitmap;                //任务的虚拟地址空间
-    
-    uint32_t* pgdir;         // 进程自己页目录的虚拟地址
-    uint32_t  stack_magic;   // 用这串数字做栈的边界标记,用于检测栈的溢出
-    
+    uint32_t* pgdir;         		 // 进程自己页目录的虚拟地址
     struct list_node all_link;   // 在一般的队列中的结点
     struct list_node ready_link; // 在线程队列中的结点
+		uint32_t  stack_magic;   		 // 用这串数字做栈的边界标记,用于检测栈的溢出
+																 // 判断栈的操作是否覆盖了task结构
 };
 
 //======================================================
 // 函数声明
 
 // 确定当前任务的task结构所在位置
-struct task_struct* thread_get_task_struct(); 
+struct task_struct* thread_get_task_struct();
 
 // 返回一个初始化好的 thread task结构,返回NULL表示失败
 // task_id为0表示该结构未被使用

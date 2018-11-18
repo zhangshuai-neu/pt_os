@@ -10,7 +10,7 @@
 #include "bitmap.h"
 #include "tm.h"
 
-struct task * main_task_ptr; 
+struct task * main_task_ptr;
 struct list_node task_ready_list_head;	// 就绪链表
 struct list_node task_list_head;	    // 所有任务链表
 
@@ -22,9 +22,9 @@ extern void thread_switch_to(struct task* cur, struct task* next);
 
 // 确定当前任务的task结构所在位置
 struct task_struct* thread_get_task_struct() {
-   uint32_t esp; 
+   uint32_t esp;
    asm ("mov %%esp, %0" : "=g" (esp));
-   
+
    // 因为任务的栈在 doc/task_manage.md描述中存储单元中
    // 可以根据stack所在页，确定task结构的位置
    return (struct task_struct*)(esp & 0xfffff000);
@@ -38,8 +38,8 @@ struct task* thread_init(char* task_name, uint8_t prio){
         ptsc_print_str("task_errer: task_name too long!\n")
         return NULL;
     }
-    
-    struct task * tp = NULL;    
+
+    struct task * tp = NULL;
     int i = 1;  // 从1开始，空出0任务结构的空间 main_task独立存放
     for(;i<TASK_MAX_NUM;i++){
         tp = struct task *(TASK_BASE_ADDR+i*SIZE_4K*2)
@@ -51,17 +51,17 @@ struct task* thread_init(char* task_name, uint8_t prio){
             tp->priority = prio;
             tp->elapsed_ticks = 0;
             tp->kstack = (uint32_t*)((uint32_t)tp + SIZE_4K);
-            
+
             // thread的bitmap结构为空，process再添加
             ptsc_memset(&virt_bitmap,0,sizeof(struct bitmap);
-            
+
             //进程的处理
             /*
             tp->virt_bitmap.bits = (uint32_t*)((uint32_t)tp + SIZE_4K);
             tp->virt_bitmap.btmp_bytes_len = SIZE_4K;
             init_bitmap(&(tp->virt_bitmap));
             */
-            
+
             tp->pgdir = NULL;
             tp->stack_magic = 0x19941027;
         }
@@ -69,14 +69,26 @@ struct task* thread_init(char* task_name, uint8_t prio){
     return tp;
 }
 
+// 确定线程执行的函数以及参数
+void thread_run(struct task * thread_ptr,thread_func run_func, void* func_arg){
+  //预留中断栈空间
+  thread_ptr->kstack -= sizeof(intr_stack);
+  struct intr_stack * i_stack = thread_ptr->kstack;
+
+  //预留任务栈空间
+  thread_ptr->kstack -= sizeof(task_stack);
+  struct intr_stack * t_stack = thread_ptr->kstack;
+
+}
+
 // 撤销一个任务
 void thread_destroy(uint8_t task_id){
     struct list_node *temp_node;
     // 从 task_ready_list 中删除
     temp_node = &task_ready_list_head;
-    
+
     // 从 task_all_list 中删除
-    
+
     // 复位task结构
     uint8_t i = task_id-1;
     struct task * tp = (struct task *)(SIZE_4K*2*i);
@@ -86,23 +98,25 @@ void thread_destroy(uint8_t task_id){
 // 将 kernel/main.c 下的main函数作为 主线程
 void thread_make_main(){
     main_task_ptr = (struct task*)thread_get_task_struct()
-    // main线程的特别修改
+    // main线程的修改
     main_task_ptr->kstack = (uint32_t *)((uint32_t)main_task_ptr + SIZE_4K);
     main_task_ptr->task_id = 1;
     ptsc_strcpy(main_task_ptr->task_name, "main_task")
 
     main_task_ptr->status = TASK_RUNING;
-    
+
     main_task_ptr->priority = 1;
-    
+
     // 后续处理
     main_task_ptr->elapsed_ticks = 0
-    main_task_ptr->pgdir = NULL; 
-    
+    main_task_ptr->pgdir = NULL;
+
     // 初始化队列
     list_init(&(main_task_ptr->all_link));
-    list_insert(&task_list_head, main_task_ptr);   // 将main_task加载到task_list中
+    list_insert(&task_list_head, main_task_ptr);
     list_init(&(main_task_ptr->ready_link));
+
+    main_task_ptr->stack_magic = 0x19941027;
 }
 
 
@@ -110,7 +124,7 @@ void thread_environment_init(){
     // 初始化列表
     list_init(task_ready_list_head);
     list_init(task_list_head);
-    
+
     // 初始化 task 结构的 task_id
     struct task * tp = NULL;
     int i =0;
@@ -118,12 +132,12 @@ void thread_environment_init(){
         tp = struct task *(TASK_BASE_ADDR+i*SIZE_4K*2)
         tp->task_id = (uint16_t)0;
     }
-    
+
     // 创建 main_task
     thread_make_main(main_task);
-    
+
     // 注册任务切换的中断
-    
+
 }
 
 void schedule(){
@@ -134,9 +148,3 @@ void schedule(){
 
 //============ 进程部分 =====================
 // 所有函数 process开头
-
-
-
-
-
-
