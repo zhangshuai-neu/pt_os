@@ -89,10 +89,10 @@ struct task{
     char                task_name[TASK_NAME_LEN];   //任务名
     enum task_status    status;                     //状态
     uint8_t             priority;                   //优先级
-
-    // 静态优先级，循环调度
-    uint32_t            weight;                     //权重，表示要执行ticks数
-    uint32_t            elapsed_ticks;              //从开始执行所使用tick数
+    
+    // CFS调度
+    uint32_t            virt_ticks;                 //虚拟执行时间
+    uint32_t            real_ticks;                 //实际执行时间
 
     struct bitmap       virt_bitmap;                //任务的虚拟地址空间
     uint32_t* pgdir;                // 进程自己页目录的虚拟地址

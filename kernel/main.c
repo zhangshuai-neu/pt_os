@@ -56,7 +56,7 @@ void init_all(){
 
 
 /* 在线程A中运行的函数 */
-void k_thread_a(void* arg) {     
+void k_thread_a(void* arg) {
     //用void*来通用表示参数,被调用的函数知道自己需要什么类型的参数,自己转换再用 */
     char* para = arg;
     while(1) {
@@ -65,7 +65,7 @@ void k_thread_a(void* arg) {
 }
 
 /* 在线程B中运行的函数 */
-void k_thread_b(void* arg) {     
+void k_thread_b(void* arg) {
     /* 用void*来通用表示参数,被调用的函数知道自己需要什么类型的参数,自己转换再用 */
     char* para = arg;
     while(1) {
@@ -75,11 +75,17 @@ void k_thread_b(void* arg) {
 
 
 int main(void){
+	//进行所有初始化工作
     init_all();
 
+	//创建task结构，并指明线程执行的函数及参数
+	struct task * k_thread_A = thread_init();
+	thread_specify_func(k_thread_A,k_thread_a,"A_hi\n");
+	struct task * k_thread_B = thread_init();
+	thread_specify_func(k_thread_B,k_thread_b,"B_hi\n");
 
 	while(1){
-        ptsc_print_str("This is main_task!");
+        ptsc_print_str("This is main_task!\n");
 	}
 	return 0;
 }
