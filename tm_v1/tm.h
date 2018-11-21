@@ -80,7 +80,7 @@ enum task_status{
 #define TASK_MAX_NUM   128          //任务的最大数量
 #define TASK_BASE_ADDR 0x300000     //任务结构基地址
 #define TASK_NAME_LEN  16           //任务名字长度
-#define TASK_DO_TICKS  5　          //任务进行的tick数量(一个单位)，5个调度周期
+#define TASK_DO_TICKS  1　          //任务进行的tick数量(一个单位)，5个调度周期
 
 //任务结构 50 byte
 struct task{

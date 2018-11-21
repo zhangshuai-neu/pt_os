@@ -1,6 +1,6 @@
 /*
  * 中断实现
- * 
+ *
  * 初始化8259A
  * 初始化IDT和中断向量表
  * 初始化中断处理函数
@@ -8,7 +8,7 @@
  * author:Shuai Zhang (zhangshuaiisme@gmail.com)
  */
 
-#include "std_type_define.h"		
+#include "std_type_define.h"
 #include "global.h"			//全局宏,如GDT,IDT
 #include "io.h"				//读写外部IO(全为内联函数)
 #include "system_call.h"
@@ -21,23 +21,23 @@ static struct gate_desc idt[IDT_DESC_CNT]={{0}};
 char* intr_name[IDT_DESC_CNT]={0};
 
 /*
- * 定义中断处理程序数组.在interrupt.S中定义的intrXXentry只是中断处理程序的入口	 	
+ * 定义中断处理程序数组.在interrupt.S中定义的intrXXentry只是中断处理程序的入口
  * 最终调用的是intr_handler_table中的处理程序
  */
-intr_handler intr_handler_table[IDT_DESC_CNT]={0};	
+intr_handler intr_handler_table[IDT_DESC_CNT]={0};
 
-//声明引用定义在kernel.S中的中断处理函数入口数组		
+//声明引用定义在kernel.S中的中断处理函数入口数组
 extern intr_handler intr_entry_table[IDT_DESC_CNT];
 
-/* 
- * 初始化可编程中断控制器8259A 
+/*
+ * 初始化可编程中断控制器8259A
  * 对ICW和OCW进行写操作
  */
 static void pic_init(void) {
     /* 初始化主片 */
     outb (PIC_M_CTRL, 0x11);		//ICW1: 边沿触发,级联8259, 需要ICW4.
     outb (PIC_M_DATA, 0x20);		//ICW2: 起始中断向量号为0x20,也就是IR[0-7] 为 0x20 ~ 0x27.
-    outb (PIC_M_DATA, 0x04);		//ICW3: IR2接从片. 
+    outb (PIC_M_DATA, 0x04);		//ICW3: IR2接从片.
     outb (PIC_M_DATA, 0x01);		//ICW4: 8086模式, 正常EOI
 
     /* 初始化从片 */
@@ -46,20 +46,20 @@ static void pic_init(void) {
     outb (PIC_S_DATA, 0x02);		//ICW3: 设置从片连接到主片的IR2引脚
     outb (PIC_S_DATA, 0x01);		//ICW4: 8086模式, 正常EOI
 
-    /* 
-     * OCW1:打开主片上IR0,也就是目前只接受时钟产生的中断 
+    /*
+     * OCW1:打开主片上IR0,也就是目前只接受时钟产生的中断
      */
     outb (PIC_M_DATA, 0xfe);
     outb (PIC_S_DATA, 0xff);
 }
 
-/* 
+/*
  * 创建中断门描述符
  */
-static void make_idt_desc(struct gate_desc* p_gdesc, uint8_t attr, intr_handler function) { 
+static void make_idt_desc(struct gate_desc* p_gdesc, uint8_t attr, intr_handler function) {
     p_gdesc->func_offset_low_word = (uint32_t)function & 0x0000FFFF;
     p_gdesc->selector = SELECTOR_K_CODE;
-    p_gdesc->dcount = 0;	
+    p_gdesc->dcount = 0;
     p_gdesc->attribute = attr;
     p_gdesc->func_offset_high_word = ((uint32_t)function & 0xFFFF0000) >> 16;
 }
@@ -71,7 +71,7 @@ static void idt_desc_init(void) {
     int i;
     for (i = 0; i < IDT_DESC_CNT; i++) {
         //IDT_DESC_ATTR_DPL0在kernel/global.h中定义
-        make_idt_desc(&idt[i], IDT_DESC_ATTR_DPL0, intr_entry_table[i]); 
+        make_idt_desc(&idt[i], IDT_DESC_ATTR_DPL0, intr_entry_table[i]);
     }
 }
 
@@ -82,16 +82,16 @@ static void general_intr_handler(uint8_t vec_nr) {
     if (vec_nr == 0x27 || vec_nr == 0x2f) {
         //0x2f是从片8259A上的最后一个irq引脚，保留
         //IRQ7和IRQ15会产生伪中断(spurious interrupt),无须处理。
-        return;					
+        return;
     }
-    
+
     //若为Pagefault异常,将缺失的地址打印出来并悬停
-    if (vec_nr == 14) {	  
-        uint32_t page_fault_vaddr = 0; 
+    if (vec_nr == 14) {
+        uint32_t page_fault_vaddr = 0;
         // cr2是存放造成page_fault的地址
         asm ("movl %%cr2, %0" : "=r" (page_fault_vaddr));
         ptsc_print_str("\n page fault addr is ");
-        ptsc_print_num16(page_fault_vaddr); 
+        ptsc_print_num16(page_fault_vaddr);
     }
     // 能进入中断处理程序就表示已经处在关中断情况下,
     // 不会出现调度进程的情况。故下面的死循环不会再被中断。
@@ -105,7 +105,7 @@ enum intr_status intr_set_status(enum intr_status status) {
 
 // 获取当前中断状态
 enum intr_status intr_get_status() {
-   uint32_t eflags = 0; 
+   uint32_t eflags = 0;
    GET_EFLAGS(eflags);
    return (EFLAGS_IF & eflags) ? INTR_ON : INTR_OFF;
 }
@@ -124,7 +124,7 @@ enum intr_status intr_enable() {
 }
 
 // 关中断,并且返回关中断前的状态
-enum intr_status intr_disable() {     
+enum intr_status intr_disable() {
     enum intr_status old_status;
     if (INTR_ON == intr_get_status()) {
         old_status = INTR_ON;
@@ -140,25 +140,25 @@ enum intr_status intr_disable() {
 void register_handler(uint8_t vector_no, intr_handler function) {
     /* idt_table数组中的函数是在进入中断后根据中断向量号调用的,
      * 见kernel/kernel.S的call [idt_table + %1*4] */
-    idt_table[vector_no] = function; 
+    idt_table[vector_no] = function;
 }
 
 
-/* 
+/*
  * 初始化所有异常初始化函数
  * 默认全部初始化为general_intr_handler
  */
 static void exception_init(void) {
     int i;
     for (i = 0; i < IDT_DESC_CNT; i++) {
-        /* 
+        /*
          * intr_handler_table数组中的函数是在进入中断后根据中断向量号调用的,
-         * 见kernel/interrupt.S的call [intr_handler_table + %1*4] 
+         * 见kernel/interrupt.S的call [intr_handler_table + %1*4]
          */
         //初始化为general_intr_handler
-        intr_handler_table[i] = general_intr_handler;	
-		//先统一赋值为reserved								
-        intr_name[i] = "reserved"; 			
+        intr_handler_table[i] = general_intr_handler;
+		//先统一赋值为reserved
+        intr_name[i] = "reserved";
     }
     intr_name[0] = "#DE Divide Error";
     intr_name[1] = "#DB Debug Exception";
@@ -188,11 +188,10 @@ void idt_init() {
     exception_init();	//异常名初始化并注册通常的中断处理函数
     pic_init();			//初始化8259A
 
-    /* 
-     * 加载idt 
+    /*
+     * 加载idt
      * IDTR: 4 Byte：IDT base addr, 2 Byte:IDT_table size
      */
     uint64_t idt_operand = ((sizeof(idt) - 1) | ((uint64_t)(uint32_t)idt << 16));
     asm volatile("lidt %0" : : "m" (idt_operand));
 }
-

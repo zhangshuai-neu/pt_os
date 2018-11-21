@@ -53,6 +53,7 @@ struct task* thread_init(char* task_name, uint8_t prio){
             ptsc_strcpy(tp->task_name,task_name);
             tp->status = TASK_READY;
             tp->priority = prio;
+            tp->weight = piro * TASK_DO_TICKS;
             tp->elapsed_ticks = 0;
             tp->kstack = (uint32_t*)((uint32_t)tp + SIZE_4K);
 
@@ -145,10 +146,32 @@ void thread_environment_init(){
 }
 
 void schedule(){
-    // 当前task
-    struct task * cur_task = thread_run()
-    //
-    thread_switch_to();
+    // 是否关中断
+    if(intr_get_status() == INTR_OFF){
+        return;
+    }
+
+    // 当前任务的时间骗是否运行完
+    // 运行完，寻找下一个任务，并切换
+    struct task * cur_task = thread_run();
+    struct task * next_task = NULL;
+    struct list_node * ready_node =  &task_ready_list_head;
+
+    //如果当前任务weight已经执行完，则切换到下一个任务
+    if(cur_task->weight <= 0){
+        cur_task->weight = cur_task->priority * TASK_DO_TICKS;
+        if(ready_node->next == NULL){
+
+            return ;    //ready 队列为空
+        }
+        ready_node = ready_node->next;
+        list_remove(ready_node);
+        //获取next task结构
+        next_task = list_entry(ready_node,strcut task,ready_link);
+
+        //任务切换
+        thread_switch_to(cur_task,next_task);
+    }
 }
 
 

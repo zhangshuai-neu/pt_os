@@ -66,6 +66,6 @@ void timer_init() {
    frequency_set(CONTRER0_PORT, COUNTER0_NO, READ_WRITE_LATCH, COUNTER_MODE,  COUNTER0_VALUE);
 
    // 设置时钟中断的处理函数
-
+   register_handler(0x20,intr_timer_handler);
 
 }
