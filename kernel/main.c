@@ -79,10 +79,12 @@ int main(void){
     init_all();
 
 	//创建task结构，并指明线程执行的函数及参数
-	struct task * k_thread_A = thread_init();
+	struct task * k_thread_A = thread_init("k_thread_A",1);
 	thread_specify_func(k_thread_A,k_thread_a,"A_hi\n");
-	struct task * k_thread_B = thread_init();
+	struct task * k_thread_B = thread_init("k_thread_A",1);
 	thread_specify_func(k_thread_B,k_thread_b,"B_hi\n");
+
+    intr
 
 	while(1){
         ptsc_print_str("This is main_task!\n");

@@ -6,7 +6,10 @@
 #ifndef TM_H
 #define TM_H
 
+#include "std_type_defines.h"
+#include "system_call.h"
 #include "list.h"
+#include "bitmap.h"
 
 // 通用函数类型
 typedef void thread_func(void*);
@@ -74,7 +77,7 @@ enum task_status{
 	TASK_WAITING,	//等待
     TASK_HANGING,   //悬挂
 	TASK_END		//结束
-}
+};
 
 
 #define TASK_MAX_NUM   128          //任务的最大数量
@@ -110,6 +113,8 @@ struct task_struct* thread_get_task_struct();
 // 返回一个初始化好的 thread task结构,返回NULL表示失败
 // task_id为0表示该结构未被使用
 struct task* thread_init(char* task_name, uint8_t prio);
+// 指明线程的执行函数
+void thread_specify_func(struct task * thread_ptr,thread_func run_func, void* func_arg);
 
 // 撤销一个任务
 void thread_destroy(uint8_t task_id);

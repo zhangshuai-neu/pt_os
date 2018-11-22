@@ -4,10 +4,6 @@
  *
  */
 
-#include "std_type_defines.h"
-#include "system_call.h"
-#include "list.h"
-#include "bitmap.h"
 #include "tm.h"
 
 struct task * main_task_ptr;
@@ -56,18 +52,10 @@ struct task* thread_init(char* task_name, uint8_t prio){
             tp->weight = piro * TASK_DO_TICKS;
             tp->elapsed_ticks = 0;
             tp->kstack = (uint32_t*)((uint32_t)tp + SIZE_4K);
-
-            // thread的bitmap结构为空，process再添加
             ptsc_memset(&virt_bitmap,0,sizeof(struct bitmap);
-
-            //进程的处理
-            /*
-            tp->virt_bitmap.bits = (uint32_t*)((uint32_t)tp + SIZE_4K);
-            tp->virt_bitmap.btmp_bytes_len = SIZE_4K;
-            init_bitmap(&(tp->virt_bitmap));
-            */
-
             tp->pgdir = NULL;
+            list_insert(&task_list_head,&p->all_link)
+            list_insert(&task_ready_list_head,&p->ready_link)
             tp->stack_magic = 0x19941027;
         }
     }
@@ -76,23 +64,25 @@ struct task* thread_init(char* task_name, uint8_t prio){
 
 // 确定线程执行的函数以及参数
 void thread_specify_func(struct task * thread_ptr,thread_func run_func, void* func_arg){
-  //预留中断栈空间
-  thread_ptr->kstack -= sizeof(intr_stack);
-  struct intr_stack * i_stack = thread_ptr->kstack;
+    //预留中断栈空间
+    thread_ptr->kstack -= sizeof(intr_stack);
 
-  //预留任务栈空间
-  thread_ptr->kstack -= sizeof(task_stack);
-  struct intr_stack * t_stack = thread_ptr->kstack;
+    //预留任务栈空间
+    thread_ptr->kstack -= sizeof(task_stack);
+    struct task_stack * t_stack = thread_ptr->kstack;
 
+    t_stack->eip = kernel_thread;
+    t_stack->unused_retaddr  = NULL;
+    t_stack->function = run_func;
+    t_stack->func_arg = func_arg;
 }
 
 // 撤销一个任务
 void thread_destroy(uint8_t task_id){
-    struct list_node *temp_node;
-    // 从 task_ready_list 中删除
-    temp_node = &task_ready_list_head;
-
-    // 从 task_all_list 中删除
+    struct * tp = (struct task*)(TASK_BASE_ADDR+(task_id-1)*SIZE_4K*2);
+    // 从 list 中删除
+    list_remove(&(tp->ready_link));
+    list_remove(&(tp->all_link));
 
     // 复位task结构
     uint8_t i = task_id-1;
@@ -140,9 +130,6 @@ void thread_environment_init(){
 
     // 创建 main_task
     thread_make_main(main_task);
-
-    // 注册任务切换的中断
-
 }
 
 void schedule(){
@@ -168,7 +155,9 @@ void schedule(){
         list_remove(ready_node);
         //获取next task结构
         next_task = list_entry(ready_node,strcut task,ready_link);
-
+        next_task->status=TASK_RUNING;
+        cur_task->status = TASK_READY;
+        list_insert(&task_ready_list_head,&cur_task->ready_link);
         //任务切换
         thread_switch_to(cur_task,next_task);
     }

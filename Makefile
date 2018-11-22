@@ -3,6 +3,7 @@
 
 #自己修改
 MM_VERSION=1
+TM_VERSION=1
 
 #编译器、链接器
 CC = gcc
@@ -14,7 +15,8 @@ USER=$(shell who |head -1 |cut -d' ' -f1)
 BUILD_DIR = ./build
 
 #编译选项
-LIB = -I sc -I lib -I it -I dev -I kernel -I fs -I mm_v$(MM_VERSION)
+LIB = -I sc -I lib -I it -I dev -I kernel -I fs -I mm_v$(MM_VERSION) \
+	-I tm_v$(MM_VERSION)
 C_FLAGS = -Wall -m32 -c -fno-zero-initialized-in-bss -fno-stack-protector \
 			$(LIB) -nostdinc
 
@@ -22,14 +24,15 @@ C_FLAGS = -Wall -m32 -c -fno-zero-initialized-in-bss -fno-stack-protector \
 LD_OBJECTS = $(BUILD_DIR)/main.o $(BUILD_DIR)/system_call.o \
 			$(BUILD_DIR)/asm_it.o $(BUILD_DIR)/interrupt.o \
 			$(BUILD_DIR)/timer.o $(BUILD_DIR)/disk_interface.o \
-			$(BUILD_DIR)/mm.o $(BUILD_DIR)/lib.o
-			
-LD_FLAGS = -m elf_i386 -T $(BUILD_DIR)/kernel_link.ld 
+			$(BUILD_DIR)/mm.o $(BUILD_DIR)/lib.o \
+			$(BUILD_DIR)/tm.o
+
+LD_FLAGS = -m elf_i386 -T $(BUILD_DIR)/kernel_link.ld
 
 #汇编代码
 asm: boot/mbr.S boot/loader.S boot/boot_parameter.inc
 	@ $(AS) -I boot/ -o $(BUILD_DIR)/mbr.bin boot/mbr.S
-	@ $(AS) -I boot/ -o $(BUILD_DIR)/loader.bin boot/loader.S 
+	@ $(AS) -I boot/ -o $(BUILD_DIR)/loader.bin boot/loader.S
 	@ $(AS) -f elf32 -o $(BUILD_DIR)/asm_it.o it/interrupt.s
 
 #模块
@@ -38,13 +41,13 @@ $(BUILD_DIR)/main.o: kernel/main.c
 
 $(BUILD_DIR)/system_call.o: sc/system_call.c sc/system_call.h
 	@ $(CC) $(C_FLAGS) $< -o $@
-	
-$(BUILD_DIR)/interrupt.o: it/interrupt.c it/interrupt.h 
+
+$(BUILD_DIR)/interrupt.o: it/interrupt.c it/interrupt.h
 	@ $(CC) $(C_FLAGS) $< -o $@
 
 $(BUILD_DIR)/timer.o: dev/timer.c dev/timer.h
 	@ $(CC) $(C_FLAGS) $< -o $@
-    
+
 $(BUILD_DIR)/disk_interface.o: fs/disk_interface.c fs/disk_interface.h
 	@ $(CC) $(C_FLAGS) $< -o $@
 
@@ -52,6 +55,9 @@ $(BUILD_DIR)/lib.o:	lib/bitmap.c lib/bitmap.h
 	@ $(CC) $(C_FLAGS) $< -o $@
 
 $(BUILD_DIR)/mm.o: mm_v$(MM_VERSION)/mm.c  mm_v$(MM_VERSION)/mm.h
+	@ $(CC) $(C_FLAGS) $< -o $@
+
+$(BUILD_DIR)/tm.o: tm_v$(TM_VERSION)/tm.c  tm_v$(TM_VERSION)/tm.h
 	@ $(CC) $(C_FLAGS) $< -o $@
 
 build: asm $(LD_OBJECTS)
@@ -72,9 +78,7 @@ all: asm build hd run
 #清空所有.o
 clean:
 	rm $(LD_OBJECTS) $(BUILD_DIR)/kernel.elf $(BUILD_DIR)/*.bin
-	
+
 #使用bochs自带的镜像制作程序
 image:
 	/home/$(USER)/Desktop/bochs-2.6.9/bximage
-
-

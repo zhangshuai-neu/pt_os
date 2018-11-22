@@ -67,5 +67,4 @@ void timer_init() {
 
    // 设置时钟中断的处理函数
    register_handler(0x20,intr_timer_handler);
-
 }

@@ -5,7 +5,7 @@
  *
  * author:Shuai Zhang (zhangshuaiisme@gmail.com)
  */
- 
+
 #ifndef __INTERRUPT_H
 #define __INTERRUPT_H
 
@@ -39,10 +39,12 @@ enum intr_status {		 // 中断状态
 };
 
 //w函数指针，中断处理函数
-typedef void* intr_handler;		
+typedef void* intr_handler;
 
 void idt_init(void);	//中断初始化
 
+// 注册中断处理函数
+void register_handler(uint8_t vector_no, intr_handler function);
 
 static void make_idt_desc(struct gate_desc* p_gdesc, uint8_t attr, intr_handler function);
 enum intr_status intr_set_status(enum intr_status status);
@@ -51,4 +53,3 @@ enum intr_status intr_enable();
 enum intr_status intr_disable();
 
 #endif
- 
