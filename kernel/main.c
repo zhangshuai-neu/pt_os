@@ -23,6 +23,30 @@
 #include "disk_interface.h"
 #include "tm.h"
 
+void init_all();
+void k_thread_a(void* arg);
+void k_thread_b(void* arg);
+
+// 由于是从loader.s中跳转过来
+// 必须放在最开头，否则会无法进入main函数
+int main(void){
+	//进行所有初始化工作
+    init_all();
+
+	//创建task结构，并指明线程执行的函数及参数
+	struct task * k_thread_A = thread_init("k_thread_A",10);
+	thread_specify_func(k_thread_A,k_thread_a,"A_hi\n");
+	struct task * k_thread_B = thread_init("k_thread_A",10);
+    thread_specify_func(k_thread_B,k_thread_b,"B_hi\n");
+
+    intr_enable();
+
+    ptsc_print_str("This is main_task!\n");
+	while(1){
+	}
+	return 0;
+}
+
 void init_all(){
     //0. 初始化显示亮度(字符模式)
 	ptsc_init_view();
@@ -38,7 +62,7 @@ void init_all(){
 	ptsc_print_str("Idt Init: OK\n");
 
 	//3. 时钟初始化
-	timer_init();		//测试ok
+	timer_init();
 	ptsc_print_str("Timer Init: OK\n");
 
 	//4.设置内存
@@ -59,8 +83,8 @@ void init_all(){
 void k_thread_a(void* arg) {
     //用void*来通用表示参数,被调用的函数知道自己需要什么类型的参数,自己转换再用 */
     char* para = arg;
+    ptsc_print_str(para);
     while(1) {
-        ptsc_print_str(para);
     }
 }
 
@@ -68,26 +92,7 @@ void k_thread_a(void* arg) {
 void k_thread_b(void* arg) {
     /* 用void*来通用表示参数,被调用的函数知道自己需要什么类型的参数,自己转换再用 */
     char* para = arg;
+    ptsc_print_str(para);
     while(1) {
-        ptsc_print_str(para);
     }
-}
-
-
-int main(void){
-	//进行所有初始化工作
-    init_all();
-
-	//创建task结构，并指明线程执行的函数及参数
-	struct task * k_thread_A = thread_init("k_thread_A",1);
-	thread_specify_func(k_thread_A,k_thread_a,"A_hi\n");
-	struct task * k_thread_B = thread_init("k_thread_A",1);
-	thread_specify_func(k_thread_B,k_thread_b,"B_hi\n");
-
-    intr
-
-	while(1){
-        ptsc_print_str("This is main_task!\n");
-	}
-	return 0;
 }

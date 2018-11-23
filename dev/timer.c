@@ -46,13 +46,13 @@ static void frequency_set(uint8_t counter_port, \
 
 //时钟的中断处理函数
 static void intr_timer_handler(void) {
-    struct task* cur_thread = thread_get_task_struct();
+    struct task* cur_thread = (struct task*)thread_get_task_struct();
     // 检查栈是否溢出
     if (cur_thread->stack_magic != 0x19941027){
         ptsc_print_str("intr_timer_handler: stack overflow\n");
         while(1);
     }
-
+    cur_thread->weight--;
     cur_thread->elapsed_ticks++; // 记录此线程占用的cpu时间嘀
     ticks++;	                 // 从内核第一次处理时间中断后开始至今的滴哒数
                                  //内核态和用户态总共的嘀哒数

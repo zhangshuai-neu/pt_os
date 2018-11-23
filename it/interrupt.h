@@ -46,7 +46,6 @@ void idt_init(void);	//中断初始化
 // 注册中断处理函数
 void register_handler(uint8_t vector_no, intr_handler function);
 
-static void make_idt_desc(struct gate_desc* p_gdesc, uint8_t attr, intr_handler function);
 enum intr_status intr_set_status(enum intr_status status);
 enum intr_status intr_get_status();
 enum intr_status intr_enable();

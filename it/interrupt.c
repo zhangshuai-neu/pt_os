@@ -93,6 +93,7 @@ static void general_intr_handler(uint8_t vec_nr) {
         ptsc_print_str("\n page fault addr is ");
         ptsc_print_num16(page_fault_vaddr);
     }
+
     // 能进入中断处理程序就表示已经处在关中断情况下,
     // 不会出现调度进程的情况。故下面的死循环不会再被中断。
     while(1);
@@ -140,7 +141,7 @@ enum intr_status intr_disable() {
 void register_handler(uint8_t vector_no, intr_handler function) {
     /* idt_table数组中的函数是在进入中断后根据中断向量号调用的,
      * 见kernel/kernel.S的call [idt_table + %1*4] */
-    idt_table[vector_no] = function;
+    intr_handler_table[vector_no] = function;
 }
 
 
@@ -187,6 +188,8 @@ void idt_init() {
     idt_desc_init();	//初始化中断描述符表
     exception_init();	//异常名初始化并注册通常的中断处理函数
     pic_init();			//初始化8259A
+
+    asm volatile("cli" : : : "memory"); // 关中断,cli指令将IF位置0
 
     /*
      * 加载idt

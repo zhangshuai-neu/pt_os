@@ -6,10 +6,11 @@
 #ifndef TM_H
 #define TM_H
 
-#include "std_type_defines.h"
+#include "std_type_define.h"
 #include "system_call.h"
 #include "list.h"
 #include "bitmap.h"
+#include "interrupt.h"
 
 // 通用函数类型
 typedef void thread_func(void*);
@@ -73,8 +74,7 @@ struct intr_stack {
 enum task_status{
 	TASK_READY,		//就绪
 	TASK_RUNING,	//执行
-    TASK_BLOCKED    //阻塞
-	TASK_WAITING,	//等待
+    TASK_BLOCKED,   //阻塞
     TASK_HANGING,   //悬挂
 	TASK_END		//结束
 };
@@ -83,11 +83,11 @@ enum task_status{
 #define TASK_MAX_NUM   128          //任务的最大数量
 #define TASK_BASE_ADDR 0x300000     //任务结构基地址
 #define TASK_NAME_LEN  16           //任务名字长度
-#define TASK_DO_TICKS  1　          //任务进行的tick数量(一个单位)，5个调度周期
+#define TASK_DO_TICKS  1            //任务进行的tick数量(一个单位)，5个调度周期
 
 //任务结构 50 byte
 struct task{
-    uint32_t *          kstack;                     //task的内核堆栈, 栈所在页的地址
+    uint32_t            kstack;                     //task的内核堆栈, 栈所在页的地址
     uint8_t             task_id;                    //任务id, 从1开始
     char                task_name[TASK_NAME_LEN];   //任务名
     enum task_status    status;                     //状态
@@ -105,10 +105,9 @@ struct task{
                                     // 判断栈的操作是否覆盖了task结构
 };
 //======================================================
-// 函数声明
 
-// 确定当前任务的task结构所在位置
-struct task_struct* thread_get_task_struct();
+// 当前任务结构
+struct task* thread_get_task_struct();
 
 // 返回一个初始化好的 thread task结构,返回NULL表示失败
 // task_id为0表示该结构未被使用
@@ -119,8 +118,10 @@ void thread_specify_func(struct task * thread_ptr,thread_func run_func, void* fu
 // 撤销一个任务
 void thread_destroy(uint8_t task_id);
 
-//　线程环境初始化
+// 线程环境初始化
 void thread_environment_init();
 
+// 调度函数
+void schedule();
 
 #endif

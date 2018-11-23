@@ -26,6 +26,7 @@ intr%1entry:
     pushad			 	;PUSHAD指令压入32位寄存器,其入栈顺序是: EAX,ECX,EDX,EBX,ESP,
     					;EBP,ESI,EDI
 
+    ; 处理中断，
     ; 如果是从片上进入的中断,除了往从片上发送EOI外,还要往主片上发送EOI
     mov al,0x20          ;中断结束命令EOI
     out 0xa0,al          ;向从片发送

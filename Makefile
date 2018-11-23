@@ -24,16 +24,18 @@ C_FLAGS = -Wall -m32 -c -fno-zero-initialized-in-bss -fno-stack-protector \
 LD_OBJECTS = $(BUILD_DIR)/main.o $(BUILD_DIR)/system_call.o \
 			$(BUILD_DIR)/asm_it.o $(BUILD_DIR)/interrupt.o \
 			$(BUILD_DIR)/timer.o $(BUILD_DIR)/disk_interface.o \
-			$(BUILD_DIR)/mm.o $(BUILD_DIR)/lib.o \
-			$(BUILD_DIR)/tm.o
+			$(BUILD_DIR)/mm.o $(BUILD_DIR)/lib.a \
+			$(BUILD_DIR)/switch.o $(BUILD_DIR)/tm.o
 
 LD_FLAGS = -m elf_i386 -T $(BUILD_DIR)/kernel_link.ld
 
+
 #汇编代码
-asm: boot/mbr.S boot/loader.S boot/boot_parameter.inc
+asm: boot/mbr.S boot/loader.S boot/boot_parameter.inc tm_v$(MM_VERSION)/switch.S
 	@ $(AS) -I boot/ -o $(BUILD_DIR)/mbr.bin boot/mbr.S
 	@ $(AS) -I boot/ -o $(BUILD_DIR)/loader.bin boot/loader.S
 	@ $(AS) -f elf32 -o $(BUILD_DIR)/asm_it.o it/interrupt.s
+	@ $(AS) -f elf32 -o $(BUILD_DIR)/switch.o tm_v$(MM_VERSION)/switch.S
 
 #模块
 $(BUILD_DIR)/main.o: kernel/main.c
@@ -51,14 +53,21 @@ $(BUILD_DIR)/timer.o: dev/timer.c dev/timer.h
 $(BUILD_DIR)/disk_interface.o: fs/disk_interface.c fs/disk_interface.h
 	@ $(CC) $(C_FLAGS) $< -o $@
 
-$(BUILD_DIR)/lib.o:	lib/bitmap.c lib/bitmap.h
-	@ $(CC) $(C_FLAGS) $< -o $@
-
 $(BUILD_DIR)/mm.o: mm_v$(MM_VERSION)/mm.c  mm_v$(MM_VERSION)/mm.h
 	@ $(CC) $(C_FLAGS) $< -o $@
 
 $(BUILD_DIR)/tm.o: tm_v$(TM_VERSION)/tm.c  tm_v$(TM_VERSION)/tm.h
 	@ $(CC) $(C_FLAGS) $< -o $@
+
+#静态库
+$(BUILD_DIR)/lib.a: $(BUILD_DIR)/bitmap.o $(BUILD_DIR)/list.o
+	@ ar crv $(BUILD_DIR)/lib.a $^
+
+$(BUILD_DIR)/bitmap.o: lib/bitmap.c
+	@ $(CC) $(C_FLAGS) $^ -o $@
+
+$(BUILD_DIR)/list.o: lib/list.c
+	@ $(CC) $(C_FLAGS) $^ -o $@
 
 build: asm $(LD_OBJECTS)
 	@ ld $(LD_FLAGS) $(LD_OBJECTS) -o $(BUILD_DIR)/kernel.elf
