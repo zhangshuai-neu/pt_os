@@ -34,7 +34,7 @@ void list_insert(struct list_node *list_head, struct list_node *new_node){
 //被删除的节点，在list_init之后也变成一个新的list
 void list_remove(struct list_node *old_node){
 	if(old_node == NULL) return ;
-		
+
 	//有多个节点
 	old_node->prev->next = old_node->next;
 	old_node->next->prev = old_node->prev;
@@ -52,5 +52,3 @@ bool list_find(struct list_node *head, struct list_node *find_node){
     }
     return FALSE;
 }
-
-
