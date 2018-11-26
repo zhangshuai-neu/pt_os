@@ -6,6 +6,8 @@
 #ifndef HEAP_H
 #define HEAP_H
 
+#include "std_type_define.h"
+
 struct heap{
     uint32_t heap_base_addr;         //heap空间的基地址
     uint32_t heap_end_addr;
