@@ -16,10 +16,10 @@ These are the target that I want to do.
 
 #### Multi-Core
 
-- single Intel core (It's working)
+- single Intel core (working)
 - two same Intel cores (In the future)
 - two Intel cores with different frequency (In the future)
-- single RISC-V 32 core (In the future)
+- single Hbird e200 32 core (In the future)
 
 There is a problems that the Hardware-Platform is based on Intel, and I want to
 transplant it to other platforms in the future. Recently I am building a SOC
@@ -27,24 +27,30 @@ based on RISC-V ISA, so this maybe a new direction.
 
 #### Memory Management
 
-- physical page management (It's testing)
-- Fine-grained memory management (In the future)
+- physical page management (working)
+	
+	linux(Buddy system), book(bitmap ok) 
+
+- Fine-grained memory management (working)
+
+	FreeRTOS(heap testing), Linux(Slab)
 
 The detailed information about memory  will be showed
 
 #### Task Management
 
-- ELF program load (It's doing)
-- Kernel process and thread (In the future)
+- ELF program load (tesing)
+- Kernel thread (ok)
+- Simple priority scheduling (ok)
 - User process and thread (In the future)
-- Simple priority scheduling (In the future)
 - CFS scheduling (In the future, and it needs a long time)
+- RR sechduling ((In the future, and it needs some time))
 - EAS scheduling (In the future, and it needs a long time)
 
 #### Interrupt and Timer Management
 
-- Interrupt controler based on 8258A (It's working)
-- Timer based on 8253 (It's working)
+- Interrupt controler based on 8258A (ok)
+- Timer based on 8253 (ok)
 
 #### Debug and Error Handling
 
@@ -83,7 +89,7 @@ Third step, you should configure bochs in bochs_dir.
 
 Final step, you should compile bochs in bochs_dir.
 
-	make -j8
+	make -j4
 
 ---------------------------------
 
@@ -97,7 +103,7 @@ according to you pc's user name.
 
 **build:** The obj file and elf file will be built here.
 
-**dev:** The device's hardware interface.
+**dev:** The device's hardware interface. (timer, disk_interface)
 
 **doc:** Some design document which useful for understanding these code.
 
@@ -106,16 +112,13 @@ according to you pc's user name.
 **kernel:** It includes the code which are used to start all init and configure.
 
 **lib:** There are some general program and struct, which is helpful for our
-development.
+development. (list, bitmap, heap, lock, elf, std_type_define)
 
-**mm_v1:** This the simplest memory management system, which uses a Bitmap to
-manage the physical memory's usage.(Low Level)
+**mm_v1:** This the simplest memory management system, which uses a bitmap to
+manage the physical/virtual memory's usage.(Low Level)
 
 **mm_v2:**	This the more complex memory management system, which uses a Buddy
 system to manage the physical memory's usage .(Middle Level)
-
-**mm_v3:**	This the most complex memory management system, which uses a Buddy
-system and SLAB mechanism. (High Level)
 
 **sc:** It has some system call. However, these function can only be used by
 kernel, because our OS is not completed. In the future , these sys_call will be
@@ -125,8 +128,8 @@ occured by system_call handle function and interrupt.
 #### Code Notice
 
 The variable in code will be initialized by 0, and I add the option of
--fno-zero-initialized-in-bss in gcc C_FLAGS. Therefore the variable will be put
-in .data segment.
+**-fno-zero-initialized-in-bss** in gcc C_FLAGS. Therefore the variable 
+will be put in .data segment.
 
 #### User Notice
 
@@ -143,3 +146,4 @@ otherwise you need to modify "bochsrc" and "Makefile".
 [5] 深入理解linux内核架构 </br>
 [6] 奔跑吧Linux内核 </br>
 [7] 一个64位操作系统的设计与实现 </br>
+[8] FreeRTOS源码详解与应用开发——基于STM32 </br>
