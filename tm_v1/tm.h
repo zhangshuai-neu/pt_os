@@ -101,6 +101,7 @@ struct task{
     uint32_t* pgdir;                // 进程自己页目录的虚拟地址
     struct list_node all_link;      // 在一般的队列中的结点
     struct list_node ready_link;    // 在线程队列中的结点
+    struct list_node block_link;    // 阻塞队列中的节点
 	uint32_t  stack_magic;          // 用这串数字做栈的边界标记,用于检测栈的溢出
                                     // 判断栈的操作是否覆盖了task结构
 };

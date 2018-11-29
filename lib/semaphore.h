@@ -1,3 +1,12 @@
+/**
+ * 信号量
+ * 
+ * 信号量的实现，并没有具体要求
+ * freeRTOS是利用队列实现的，队列的元素表示了资源数量
+ * 我直接使用一个变量来进行记录了
+ * 
+*/
+
 #ifndef SEMAPHORE_H
 #define SEMAPHORE_H
 
