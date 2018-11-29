@@ -1,5 +1,5 @@
-#ifndef LOCK_H
-#define LOCK_H
+#ifndef SEMAPHORE_H
+#define SEMAPHORE_H
 
 #include "std_type_define.h"
 

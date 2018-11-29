@@ -1,6 +1,4 @@
-
-
-#include "lock.h"
+#include "semaphore.h"
 
 //=====================
 // 二值信号量
