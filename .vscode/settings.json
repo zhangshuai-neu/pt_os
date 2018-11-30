@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "lock.h": "c"
+        "lock.h": "c",
+        "semaphore.h": "c",
+        "tm.h": "c"
     }
 }

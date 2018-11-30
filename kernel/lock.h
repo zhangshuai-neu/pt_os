@@ -1,14 +1,14 @@
 #ifndef LOCK_H
 #define LOCK_H
 
-#include "semaphore.h"
-
-
-
+#include "../lib/semaphore.h"
+#include "../lib/list.h"
+#include "tm.h"
 
 // 互斥锁
-struct lock{
-    struct semaphore 
-}
+struct mutex_lock{
+    struct mutex_semaphore ms;
+    struct task * holder;
+};
 
 #endif

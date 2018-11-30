@@ -11,17 +11,20 @@
 #define SEMAPHORE_H
 
 #include "std_type_define.h"
+#include "list.h"
+
+
+enum bin_value {
+    ZERO, ONE
+};
 
 //=====================
 // 二值信号量
 // 用来进行同步，初始为0
 //=====================
-enum bin_value {
-    ZERO, ONE
-};
 struct bin_semaphore{
     enum bin_value value;
-    uint8_t holder_count;
+    struct list_node wait_list_head;
 };
 
 //=====================
@@ -30,7 +33,7 @@ struct bin_semaphore{
 //=====================
 struct count_semaphore{
     uint32_t count;
-    uint8_t holder_count;
+    struct list_node wait_list_head;
 };
 
 //=====================
@@ -39,8 +42,21 @@ struct count_semaphore{
 //=====================
 struct mutex_semaphore{
     enum bin_value mutex_value;
-    uint8_t holder_count;
-}
+    struct list_node wait_list_head;
+};
 
+
+//函数声明==============================
+void bin_semaphore_init(struct bin_semaphore * bs_ptr);
+bool bin_semaphore_get(struct bin_semaphore * bs_ptr);
+void bin_semaphore_release(struct bin_semaphore * bs_ptr);
+
+void count_semaphore_init(struct count_semaphore *cs_ptr, uint32_t resource_num);
+bool count_semaphore_get(struct count_semaphore *cs_ptr);
+void count_semaphore_release(struct bin_semaphore * bs_ptr);
+
+void mutex_semaphore_init(struct mutex_semaphore * ms_ptr);
+bool mutex_semaphore_get(struct mutex_semaphore * ms_ptr);
+void mutex_semaphore_release(struct mutex_semaphore * ms_ptr);
 
 #endif

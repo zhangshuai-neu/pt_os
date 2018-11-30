@@ -6,7 +6,7 @@
 
 void bin_semaphore_init(struct bin_semaphore * bs_ptr){
     bs_ptr->value = ZERO;
-    bs_ptr->holder_count = 0;
+    list_init(&bs_ptr->wait_list_head);
 }
 
 bool bin_semaphore_get(struct bin_semaphore * bs_ptr){
@@ -28,7 +28,7 @@ void bin_semaphore_release(struct bin_semaphore * bs_ptr){
 //=====================
 void count_semaphore_init(struct count_semaphore *cs_ptr, uint32_t resource_num){
     cs_ptr->count = resource_num;
-    cs_ptr->holder_count = 0;
+    list_init(&cs_ptr->wait_list_head);
 }
 
 bool count_semaphore_get(struct count_semaphore *cs_ptr){
@@ -50,7 +50,7 @@ void count_semaphore_release(struct bin_semaphore * bs_ptr){
 //=====================
 void mutex_semaphore_init(struct mutex_semaphore * ms_ptr){
     ms_ptr->mutex_value  = ONE;
-    ms_ptr->holder_count = 0;
+    list_init(&ms_ptr->wait_list_head);
 }
 
 bool mutex_semaphore_get(struct mutex_semaphore * ms_ptr){
