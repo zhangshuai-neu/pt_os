@@ -44,4 +44,12 @@ struct heap{
 #define USE_BLOCK  ((uint8_t)1)
 #define FREE_BLOCK ((uint8_t)0)
 
+//==============================
+// 函数声明
+//==============================
+
+void heap_init(struct heap * hp, uint32_t heap_base_addr, uint32_t heap_size);
+void * heap_malloc(struct heap *hp, uint32_t size);
+void heap_free(struct heap *hp, uint32_t block_base_addr);
+
 #endif
