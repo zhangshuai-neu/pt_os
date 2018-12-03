@@ -6,7 +6,6 @@
         每个heap_block包含heap_block结构和申请的内存空间
         next_block_ptr的UINT32_TOP_BIT表明是不是
         heap_block的block_size：需要减去heap_block本身的size
-
 */
 
 #include "heap.h"
@@ -16,6 +15,7 @@
 void heap_block_init(struct heap_block* hp, uint32_t size, uint8_t flag){
     hp->next_block_ptr = NULL;
     hp->block_size = size;
+    
     if(flag==FREE_BLOCK){
         SET_FREE(hp);
     }
@@ -23,23 +23,6 @@ void heap_block_init(struct heap_block* hp, uint32_t size, uint8_t flag){
         SET_USE(hp);
     }
 }
-
-/*
-// not be used
-
-// 从小到大的顺序插入
-// in_block的位置一定在 head和end之间
-void heap_block_insert(struct heap_block* head, struct heap_block * in_block){
-    struct heap_block* hb_temp = head;
-    struct heap_block* pre = hb_temp;
-    while((uint32_t)hb_temp < (uint32_t)in_block){
-        pre = hb_temp;
-        hb_temp = hb_temp->next_block_ptr;
-    }
-    pre->next_block_ptr = in_block;
-    in_block->next_block_ptr = hb_temp;
-}
-*/
 
 // heap初始化
 void heap_init(struct heap * hp, uint32_t heap_base_addr, uint32_t heap_size){
@@ -54,10 +37,9 @@ void heap_init(struct heap * hp, uint32_t heap_base_addr, uint32_t heap_size){
 
     heap_block_init(hp->hb_head,0,USE_BLOCK);
     heap_block_init(hp->hb_end,0,USE_BLOCK);
-    hp->hb_head->next_block_ptr = hp->hb_end;
 
     // 初始化 free_block, 并将其插入链表
-    struct heap_block * free_block = (hp->hb_head + 1);
+    struct heap_block * free_block = (struct heap_block*)(heap_base_addr + BLOCK_SZIE);
     // 只减去use的block
     heap_block_init(free_block, heap_size - 3*BLOCK_SZIE, FREE_BLOCK);
     
@@ -109,6 +91,7 @@ void * heap_malloc(struct heap *hp, uint32_t size){
     // 如果剩余的空间比struct heap_block的size要大才进行分割
     if(alloc_block->block_size - size > BLOCK_SZIE){
         struct heap_block * new_free_block = (struct heap_block *)((uint32_t)alloc_block + size);
+
         new_free_block->block_size = alloc_block->block_size - size - BLOCK_SZIE;
         SET_FREE(new_free_block);
 
@@ -118,13 +101,11 @@ void * heap_malloc(struct heap *hp, uint32_t size){
         
         // 链接
         new_free_block->next_block_ptr = alloc_block->next_block_ptr;
-        alloc_block->next_block_ptr = new_free_block;
-        
+        alloc_block->next_block_ptr = new_free_block;        
     }
 
     // 剩余空间
     hp->heap_left_size -= (size + BLOCK_SZIE);
-
 
     // 确定返回的地址
     uint32_t ret_addr = (uint32_t)alloc_block;

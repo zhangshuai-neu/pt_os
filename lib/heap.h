@@ -39,7 +39,7 @@ struct heap{
 // free: 置0时size可以直接参数size的比较(很方便)
 // use: 置1时，因为size不需要参与判断，所以block_size被修改也无所谓
 #define SET_USE(BLOCK_PTR)   (BLOCK_PTR->block_size = BLOCK_PTR->block_size | UINT32_TOP_BIT) 
-#define SET_FREE(BLOCK_PTR)  (BLOCK_PTR->block_size = BLOCK_PTR->block_size & (!UINT32_TOP_BIT))
+#define SET_FREE(BLOCK_PTR)  (BLOCK_PTR->block_size = BLOCK_PTR->block_size & (~UINT32_TOP_BIT))
 
 #define USE_BLOCK  ((uint8_t)1)
 #define FREE_BLOCK ((uint8_t)0)
@@ -47,6 +47,9 @@ struct heap{
 //==============================
 // 函数声明
 //==============================
+
+
+void heap_block_init(struct heap_block* hp, uint32_t size, uint8_t flag);
 
 void heap_init(struct heap * hp, uint32_t heap_base_addr, uint32_t heap_size);
 void * heap_malloc(struct heap *hp, uint32_t size);
