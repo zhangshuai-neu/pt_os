@@ -5,28 +5,7 @@
 #ifndef BITMAP_H
 #define BITMAP_H
 
-//size 常用宏
-#define SIZE_4M ((uint32_t)1024*1024*4)
-#define SIZE_1M ((uint32_t)1024*1024)
-#define SIZE_4K ((uint32_t)1024*4)
-#define SIZE_1K ((uint32_t)1024)
-
-// 布尔类型
-// size: 4 byte
-typedef enum boolean {
-	FALSE=0,TRUE
-} bool;
-
-//整数
-typedef signed 	char 			int8_t;
-typedef signed 	short int		int16_t;
-typedef signed 	int 			int32_t;
-
-typedef unsigned char 			uint8_t;
-typedef unsigned short int		uint16_t;
-typedef unsigned int 			uint32_t;
-typedef unsigned long long int 	uint64_t;
-
+#include "std_type_define.h"
 
 //----------------宏定义---------------
 //生成指定位为1的byte数据
