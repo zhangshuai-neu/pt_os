@@ -316,5 +316,7 @@ section gdt vstart=GDTR_BASE_ADDR
 		dd DESC_VIDEO_HIGH4
 
 	;空余一段内容保存以后增加的GDT表项
+    ; $表示当前位置，$$表示section头部位置
+    ; 多次进行db 0
 	times (GDTR_END_ADDR-GDTR_BASE_ADDR)-($-$$) db 0
 	
