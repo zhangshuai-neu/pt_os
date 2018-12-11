@@ -61,22 +61,30 @@ bool queue_send_value(struct queue * q, void * unit_ptr){
 }
 
 // 传值 从队列接收数据
-bool queue_receive_value(struct queue * q){
+bool queue_receive_value(struct queue * q, void * unit_ptr){
     // 队列为空
     if( queue_is_empty(q) ){
         return FALSE;
     }
 
+    // 非空
+    char * unit_src_addr = q->base_addr;
+    unit_src_addr += ( q->unit_head * q->unit_size);
+    
+    queue_unit_copy( unit_src_addr, (char*)unit_ptr, q->unit_size);
+    q->unit_head = (q->unit_head+1) % q->unit_num;
+    
+    return TRUE;
 }
 
 // 传指针 发送数据
-void queue_send_value(struct queue * q ){
+void queue_send_ptr(struct queue * q ){
     
 
 }
 
 // 传指针 接收数据
-void queue_receive_value(struct queue * q){
+void queue_receive_ptr(struct queue * q){
 
 
 }

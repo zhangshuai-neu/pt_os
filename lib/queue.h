@@ -16,5 +16,12 @@ struct queue{
     char queue_receive_block;   // 接收锁，1是未加锁，0加锁
 };
 
+
+bool queue_init(struct queue * q, void* base_addr, int unit_size, int unit_num);
+bool queue_is_empty(struct queue * q);
+bool queue_is_full(struct queue * q);
+bool queue_send_value(struct queue * q, void * unit_ptr);
+bool queue_receive_value(struct queue * q, void * unit_ptr);
+
 #endif 
 
