@@ -39,10 +39,9 @@ bool queue_is_full(struct queue * q){
 static void queue_unit_copy(char* src_addr, char* dest_addr, int size){
     int i;
     for(i=0;i<size;i++){
-        *(src_addr+i) = *(dest_addr+i);
+        *(dest_addr+i) = *(src_addr+i);
     }
 }
-
 
 // 传值 向队列发送数据
 bool queue_send_value(struct queue * q, void * unit_ptr){
@@ -71,8 +70,16 @@ bool queue_receive_value(struct queue * q, void * unit_ptr){
     char * unit_src_addr = q->base_addr;
     unit_src_addr += ( q->unit_head * q->unit_size);
     
+    // 拷贝到目标unit_ptr
     queue_unit_copy( unit_src_addr, (char*)unit_ptr, q->unit_size);
     q->unit_head = (q->unit_head+1) % q->unit_num;
+
+    // 清空数据
+    // 当多个任务可以都可以访问该queue时，可能会泄露其他任务的信息
+    int i;
+    for (i=0;i<q->unit_size;i++){
+        *(unit_src_addr+i) = 0;
+    }
     
     return TRUE;
 }

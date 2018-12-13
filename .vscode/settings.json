@@ -2,6 +2,7 @@
     "files.associations": {
         "lock.h": "c",
         "semaphore.h": "c",
-        "tm.h": "c"
+        "tm.h": "c",
+        "queue.h": "c"
     }
 }
