@@ -3,6 +3,7 @@
         "lock.h": "c",
         "semaphore.h": "c",
         "tm.h": "c",
-        "queue.h": "c"
+        "queue.h": "c",
+        "rb_tree.h": "c"
     }
 }
