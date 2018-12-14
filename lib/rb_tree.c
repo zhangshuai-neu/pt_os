@@ -8,8 +8,24 @@ void rb_tree_init(struct rb_tree * tree){
 }
 
 // 进行左旋
+// 例子，将e节点进行左旋,其实时 e 和 e->right 的位置进行调整
+// 注意:e,g,h的位置变化
+/*
+      p                  p
+    /   \              /   \
+ [e]     b            g     b
+ / \           =>    / \
+f   g               e   i
+   / \             / \
+  h   i           f   h
+*/
 void left_roate(struct rb_tree * node){
+    struct rb_tree * p = node->parent;
+    if(node == p->left) {
+        
+    } else {
 
+    }
 }
 
 // 进行右旋
