@@ -22,7 +22,7 @@ enum rb_color{
 };
 
 struct rb_tree{
-    int key;    // 临时加的，之后会写成宏
+    int key;
     enum rb_color color;
     struct rb_tree * parent;
     struct rb_tree * left;
@@ -64,8 +64,6 @@ void rb_tree_init(struct rb_tree * tree);
 
 // 插入节点
 void rb_tree_insert(struct rb_tree * tree, struct rb_tree * in_node);
-
-#define MACRO_rb_tree_insert(tree, in_node, TYPE, RB_TREE_ADDR, RB_TREE_MEMBER, KEY)
 
 // 删除节点
 void rb_tree_remove(struct rb_tree * tree, struct rb_tree * out_node);
