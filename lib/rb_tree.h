@@ -18,7 +18,7 @@
  */
 
 enum rb_color{
-    RED,BLACK
+    RED, BLACK
 };
 
 struct rb_tree{
@@ -61,11 +61,5 @@ struct rb_tree{
 
 // 初始化
 void rb_tree_init(struct rb_tree * tree);
-
-// 插入节点
-void rb_tree_insert(struct rb_tree * tree, struct rb_tree * in_node);
-
-// 删除节点
-void rb_tree_remove(struct rb_tree * tree, struct rb_tree * out_node);
 
 #endif

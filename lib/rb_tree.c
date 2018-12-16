@@ -78,23 +78,135 @@ void right_roate(struct rb_tree * g_node){
  * notice: node的颜色是红色的
  */
 
+/*
+-r 表示是红色，-b 表示是黑色
+
+违反性质4，node的父节点都为红色
+[]的节点是需要处理的节点
+
+情形1： 
+    h是要处理的节点，对g,u,f进行变色
+
+             r-b
+           /     \ 
+         p-r     ...
+       /     \ 
+     g-b     a-b
+   /   \  
+ u-r   f-r
+      /   \
+    [h-r]   ...
+        
+            | 变色
+            V
+
+             g-b
+           /     \ 
+         f-r     u-b
+       /     \     \ 
+    [n-r]     b-b   m-r
+   /   \  
+ u1-b   f1-b
+      /   \
+     h1-r  ...
+    
+    变成情形3
+
+情形2：
+             g-b
+           /     \ 
+        f-r      ...
+      /   \ 
+    b-b     [n-r]
+          /    \  
+       u1-b    f1-b
+              /     \
+             h1-r   ...
+        
+            | 右旋
+            V 
+
+                  g-b
+                /     \ 
+             n2-r     ...
+           /    \  
+        [f2-r]    f1-b
+       /  \     /     \
+     b-b u1-b  h1-r   ...
+    
+        变成情形3
+
+情形3：
+    后缀1表示情形1处理过，n节点变成要处理的节点
+    对g,f进行右旋
+
+             g-b
+           /     \ 
+         f-r     u-b
+       /     \     \ 
+    [n-r]     b-b   m-r
+   /   \  
+ u1-b   f1-b
+      /   \
+     h1-r  ...
+
+            |
+            V
+    
+           f3-b (性质2变色)
+         /      \
+      n-r       g3-r
+    /    \      /    \
+ u1-b   f1-b   b-b   u-b
+      /   \           \
+     h1-r  ...        m-r
+     后缀3表示情形3处理过
+
+
+*/
+// 代码按照上图进行编写,node表示要处理的节点
 struct rb_tree * fix_insert(struct rb_tree * root, struct rb_tree * node){
-    //违反性质4，node的父节点都为红色
-    // 性质4-情形1：node的叔节点是红色
-    
-    // 性质4-情形2: node的叔节点为黑，且为右孩子
-    
-    // 性质4-情形3: node的叔节点为黑，且为左孩子
+    // 违反性质4，node的父节点都为红色
+    // 修复性质4，之后其他节点可能仍然违反性质4
+    struct rb_tree * g_node = NULL; //祖父节点
+    struct rb_tree * f_node = NULL; //父节点
+    struct rb_tree * u_node = NULL; //叔节点
+    while( node->parent && node->parent->color == RED ){
+        f_node = node->parent;
+        if(f_node->parent){
+            //祖父节点存在，则叔节点一定存在，否则违反性质5
+            g_node = f_node->parent;
+            if(f_node == g_node->right)
+                u_node = g_node->left;
+            else
+                u_node = g_node->right;
+        }
+        // 性质4-情形1: node的叔节点是红色, 修改颜色避免违反性质5
+        if(u_node->color==RED){
+            f_node->color = BLACK;
+            u_node->color = BLACK;
+            g_node->color = RED;    //之前一定是黑色的，因为f_node是红色的
+            node = g_node;
+            // g_node之下的节点不违反性质，但是g_node可能违反
+            // 图中，g_node及其父节点，再次违反性质4
+        } else {
+            if( u_node == f_node->right){
+                // 性质4-情形2: node的叔节点为黑，且node为右孩子
+                left_roate(f_node);     //f_node和node进行左旋
+                node = f_node;
+            }
+            // 性质4-情形3: node的叔节点为黑，且node为左孩子
+            f_node = node->parent;      //因为可能是从情形2过来，所以需要更新
+            g_node = f_node->parent;     //因为可能是从情形2过来，所以需要更新
 
-
+            node->parent->color = BLACK;
+            node->parent->parent->color = RED;
+            right_roate(g_node);    //f_node和node进行右旋
+        }
+    }
     // 性质2-情形0: node为根节点，上面的调整也可能会造成
     root->color = BLACK;
-
     return root;
-}
-
-inline bool rb_tree_is_leaf(struct rb_tree * node){
-    return !(node->left || node->right);
 }
 
 // 从rb_tree中插入
@@ -135,12 +247,17 @@ struct rb_tree * rb_tree_insert(struct rb_tree * root, struct rb_tree * in_node)
     return root;
 }
 
+// 移植，将y移动到x的位置
+struct rb_tree * transplant(struct rb_tree * root, struct rb_tree * old_node, struct rb_tree * new_node){
+    if(old_node->parent==NULL){
+        return new_node;
+    }
+}
 
 // 修复删除的影响
 struct rb_tree * fix_remove(struct rb_tree * root, struct rb_tree * out_node){
-    
-}
 
+}
 
 // 从rb_tree中删除节点
 struct rb_tree * rb_tree_remove(struct rb_tree * root, struct rb_tree * out_node){
