@@ -274,20 +274,50 @@ struct rb_tree * rb_tree_insert(struct rb_tree * root, struct rb_tree * in_node)
     return root;
 }
 
-
-// node节点的后继(比node大的最小节点)
-struct rb_tree * successor( struct rb_tree * node ){
-    
+// tree的最小节点
+struct rb_tree * rb_minimum(struct rb_tree * root){
+    while(root && root->left)
+        root = root->left;
+    return root;
 }
 
-// 移植，将y移动到x的位置
-struct rb_tree * transplant(struct rb_tree * root, struct rb_tree * x_node, struct rb_tree * y_node){
+// 后继节点，比x大的最小节点y
+struct rb_tree * rb_successor(struct rb_tree * x){
+    if(x==NULL)
+        return NULL;
+    //x存在右孩子
+    if(x->right!=NULL)
+        return rb_minimum(x->right);
+    
+    // x是父亲的左儿子，则直接结束，因为父亲节点是第一个比他大的节点
+    struct rb_tree * y = x->parent;
+    while(y && x==y->right){
+        // x是父亲的右儿子，x比父亲节点大，判断祖父节点是否会比x大
+        // 如果没有祖先节点比x大，则返回NULL(root->parent)
+        x=y;
+        y=x->parent;
+    }
+    return y;
+} 
 
+// 移植，将v移动到u的位置
+struct rb_tree * rb_transplant(struct rb_tree * root, struct rb_tree * u_node, struct rb_tree * v_node){
+    if(u_node->parent == NULL){
+        root = v_node;
+    } else {
+        if(u_node == u_node->parent->left){
+            u_node->parent->left = v_node;
+        } else {
+            u_node->parent->right = v_node;
+        }
+    }
+    v_node->parent =  u_node->parent;
+    return root;
 }
 
 // 修复删除的影响
 struct rb_tree * fix_remove(struct rb_tree * root, struct rb_tree * out_node){
-
+    
 }
 
 // 从rb_tree中删除节点
