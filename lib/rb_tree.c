@@ -300,7 +300,8 @@ struct rb_tree * rb_successor(struct rb_tree * x){
     return y;
 } 
 
-// 移植，将v移动到u的位置
+// 移植，将树v替换树u
+// u_node必须存在
 struct rb_tree * rb_transplant(struct rb_tree * root, struct rb_tree * u_node, struct rb_tree * v_node){
     if(u_node->parent == NULL){
         root = v_node;
@@ -311,17 +312,83 @@ struct rb_tree * rb_transplant(struct rb_tree * root, struct rb_tree * u_node, s
             u_node->parent->right = v_node;
         }
     }
-    v_node->parent =  u_node->parent;
+    if(v_node)
+        v_node->parent =  u_node->parent;
     return root;
 }
 
+/*
+情形1:
+
+
+情形2:
+
+
+情形3:
+
+
+情形4:
+
+
+*/
 // 修复删除的影响
 struct rb_tree * fix_remove(struct rb_tree * root, struct rb_tree * out_node){
     
 }
 
 // 从rb_tree中删除节点
-struct rb_tree * rb_tree_remove(struct rb_tree * root, struct rb_tree * out_node){
+struct rb_tree * rb_tree_remove(struct rb_tree * root, struct rb_tree * z_node){
+    struct rb_tree * x_node = NULL;
+    struct rb_tree * y_node = z_node;
+    enum rb_color y_origin_color = y_node->color;
+
+    if(z_node->left == NULL){
+        // 没有孩子节点，或者只有右孩子
+        x_node = z_node->right;
+        root = rb_transplant(root, z_node, x_node);
+    } else {
+         if(z_node->right == NULL){
+            // 没有孩子节点，或者只有左孩子
+            x_node = z_node->left;
+            root = rb_transplant(root, z_node, x_node);
+         } else {
+            // 有两个孩子节点, y为z的后继节点
+            y_node = rb_successor(z_node);
+            y_origin_color = y_node->color;
+
+            // y一定没有左儿子，因为y是z的后继
+            // y可能由右儿子或者没有孩子 
+            x_node = y_node->right;
+
+            if(y_node->parent = z_node){
+                // y的父亲节点是z，直接移动y替换z
+                // 不需要在z,y的值进行交换，在进行删除
+                root = rb_transplant(root, z_node, y_node);
+                // 将z的孩子节点连接到y上 (y就是z的右孩子，所以只处理左孩子)
+                y_node->left = z_node->left;
+                y_node->left->parent = y_node;
+            } else {
+                // 将y节点放置在叶子节点的位置
+                root = rb_transplant(root, y_node, x_node);
+                
+                // 将z的孩子节点连接到y上
+                y_node->right = z_node->right;
+                y_node->right->parent = y_node;
+
+                y_node->left = z_node->left;
+                y_node->left->parent = y_node;
+                
+                // 将y子树，替换z子树(z子树只有z自己)
+                root = rb_transplant(root, z_node, y_node);
+            }
+            // 为了减少红黑树规则的违反数量，将y节点的颜色，设置为z节点的颜色
+            y_node->color = z_node->color;
+         }
+
+    }
+
+    if(y_origin_color == BLACK)
+        fix_remove(root, x_node);
 
     return root;
 }

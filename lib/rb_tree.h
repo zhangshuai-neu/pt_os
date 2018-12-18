@@ -62,4 +62,10 @@ struct rb_tree{
 // 初始化
 void rb_tree_init(struct rb_tree * tree);
 
+// 插入新节点
+struct rb_tree * rb_tree_insert(struct rb_tree * root, struct rb_tree * in_node);
+
+// 从rb_tree中删除节点
+struct rb_tree * rb_tree_remove(struct rb_tree * root, struct rb_tree * z_node);
+
 #endif
