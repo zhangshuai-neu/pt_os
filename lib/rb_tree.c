@@ -1,3 +1,11 @@
+/*
+ * 参考：
+ *  算法导论
+ *  https://www.cnblogs.com/yyxt/p/4983967.html
+ *  https://www.cnblogs.com/skywang12345/p/3245399.html
+ * 
+ */
+
 #include "rb_tree.h"
 #include "std_type_define.h"
 
@@ -317,33 +325,144 @@ struct rb_tree * rb_transplant(struct rb_tree * root, struct rb_tree * u_node, s
     return root;
 }
 
-/*
-情形1: x是"黑+黑"节点，x的兄弟节点是红色。(此时x的父节点和x的兄弟节点的子节点都是黑节点)。
-(01) 将x的兄弟节点设为“黑色”。
-(02) 将x的父节点设为“红色”。
-(03) 对x的父节点进行左旋。
-(04) 左旋后，重新设置x的兄弟节点。
 
-情形2: x是“黑+黑”节点，x的兄弟节点是黑色，x的兄弟节点的两个孩子都是黑色。
-(01) 将x的兄弟节点设为“红色”。
-(02) 设置“x的父节点”为“新的x节点”。
-
-情形3: x是“黑+黑”节点，x的兄弟节点是黑色；x的兄弟节点的左孩子是红色，右孩子是黑色的。
-(01) 将x兄弟节点的左孩子设为“黑色”。
-(02) 将x兄弟节点设为“红色”。
-(03) 对x的兄弟节点进行右旋。
-(04) 右旋后，重新设置x的兄弟节点。
-
-情形4: x是“黑+黑”节点，x的兄弟节点是黑色；x的兄弟节点的右孩子是红色的，x的兄弟节点的左孩子任意颜色。
-(01) 将x父节点颜色 赋值给 x的兄弟节点。
-(02) 将x父节点设为“黑色”。
-(03) 将x兄弟节点的右子节设为“黑色”。
-(04) 对x的父节点进行左旋。
-(05) 设置“x”为“根节点”。
-*/
 // 修复删除的影响
-struct rb_tree * fix_remove(struct rb_tree * root, struct rb_tree * out_node){
+struct rb_tree * fix_remove(struct rb_tree * root, struct rb_tree * x_node){
+    while(x_node!=root && x_node!=BLACK){
+        if(x_node == x_node->parent->left){
+           // 获取b和d节点
+            struct rb_tree * b_node = x_node->parent;
+            struct rb_tree * d_node = NULL;
+            if(x_node == b_node->left)
+                d_node = b_node->right;
+            else
+                d_node = b_node->left;
+
+            if(d_node->color==RED){
+                /*  
+                    // notice: 代码图中[]为x节点，-r表示红色，-b表示黑色,-*表示不确定
+                    情形1: x是黑色节点，x的兄弟节点是红色。(此时x的父节点和x的兄弟节点的子节点都是黑节点)。
+                    (01) 将x的兄弟节点设为“黑色”。
+                    (02) 将x的父节点设为“红色”。
+                    (03) 对x的父节点进行左旋。
+                    (04) 左旋后，重新设置x的兄弟节点。
+
+                    说明：
+                    因为d为红色，d的子节点全为黑色
+                    该种情形一定会转化为2,3,4中的一种
+                    只有a，c节点都为黑色，才有可能使用左旋来增加，a节点一侧的黑高
+                        ...                    ...
+                         |                      |   
+                        b-b                    d-b
+                        /   \                  /   \ 
+                    [a-b]    d-r    ->      b-r    e-b   -> 变成情形2,3,4中的一种
+                            /    \         /   \  
+                        c-b   e-b     [a-b]  c-b   
+                */
+                d_node->color = BLACK;
+                b_node->color = RED;
+                left_roate(b_node);
+                if(d_node->parent==NULL)
+                    root = d_node;
+            }
+            if( (d_node->left==NULL || d_node->left->color==BLACK) && (d_node->right==NULL || d_node->right->color==BLACK) ){
+                /*
+                    // notice: 代码图中[]为x节点，-r表示红色，-b表示黑色,-*表示不确定
+                    情形2: x是黑色节点，x的兄弟节点是黑色，x的兄弟节点的两个孩子都是黑色。
+                    (01) 将x的兄弟节点设为“红色”。
+                    (02) 设置“x的父节点”为“新的x节点”。
+
+                    说明：
+                    a侧左子树由于删除节点时，删除的y为黑色，所以a侧的黑高比d侧黑高低
+                    通过将d的颜色变成红色，将两侧的黑高一致化
+                    但是b节点相对其兄弟节点，黑高还是少了1
+                    如果b是红色，将其置为黑色，则b节点相对其兄弟节点黑高一致，全树平衡
+                    如果b是黑色，将b当做x继续处理
+                        ...                    ...
+                         |                       |          
+                        b-*                    [b-*]
+                        /   \                  /    \       ->     如果b为红色(b相对其兄弟节点，少一个黑色节点)，将其改为黑色，则全树平衡
+                    [a-b]    d-b    ->       a-b      d-r          如果b为黑色，变成情形1,2,3,4中的一种
+                            /    \                   /    \   
+                           c-b   e-b               c-b   e-b  
+                */
+
+                if(b_node->color==RED){
+                    b_node->color==BLACK;
+                } else {
+                    x_node = b_node;
+                    root = fix_remove(root, x_node);
+                }
+            } else {
+                /*
+                    // notice: 代码图中[]为x节点，-r表示红色，-b表示黑色,-*表示不确定
+                    情形3: x是黑色节点，x的兄弟节点是黑色；x的兄弟节点的左孩子是红色，右孩子是黑色的。
+                    (01) 将x兄弟节点的左孩子设为“黑色”。
+                    (02) 将x兄弟节点设为“红色”。
+                    (03) 对x的兄弟节点进行右旋。
+                    (04) 右旋后，重新设置x的兄弟节点。
+
+                    说明：
+                    在保持d侧黑高不变的情况下，增加d侧的树高，为情况4做准备
+
+                        ...                      ...
+                         |                        |          
+                         b-*                      b-*
+                        /   \                   /   \    
+                    [a-b]    d-b    ->       [a-b]  c-b  -> 情况4
+                            /    \                   \
+                            c-r   e-b                 d-r
+                                                        \
+                                                        e-b
+                        情形3处理的目的是为了增加右子树的黑高
+                    */
+
+                        d_node->left->color = BLACK;
+                        d_node->color = RED;
+                        right_roate(d_node);
+                        root = fix_remove(root,x_node);
+            }
+                /*
+                    情形4: x是黑色节点，x的兄弟节点是黑色；x的兄弟节点的右孩子是红色的，x的兄弟节点的左孩子任意颜色。
+                    (01) 将x父节点颜色 赋值给 x的兄弟节点。
+                    (02) 将x父节点设为“黑色”。
+                    (03) 将x兄弟节点的右子节设为“黑色”。
+                    (04) 对x的父节点进行左旋。
+                    (05) 设置“x”为“根节点”。
+                       ...                    ...
+                        |                      |
+                        b-*                   [d-*]
+                       /   \                 /     \
+                    [a-b]    d-b    ->     b-b     e-b
+                            /    \        /   \
+                           c-r/b e-r    a-b  c-r/b
+                            
+                        情形4处理的目的是为了增加左子树的黑高(不破坏左子树黑高的基础上)
+                */
+            d_node->color = b_node->color;
+            d_node->color = BLACK;
+            d_node->right->right == BLACK;
+            left_roate(d_node);
+            if(d_node->parent==NULL)
+                root = d_node;
+        } else {
+
+        } //right end
+        
+    }   //while end
     
+    /*
+    // notice: 代码图中[]为x节点，-r表示红色，-b表示黑色,-*表示不确定
+    情形0: x是红色节点
+    (01) 将x节点变成黑色，则全树平衡
+                
+    说明：
+    x节点侧由于删除节点时，删除的y为黑色，所以a侧的黑高比另一侧黑高低
+    直接讲x置位黑色，就能实现黑高的加1，最终达到平衡
+    */
+    x_node->color = BLACK;
+
+    return root;
 }
 
 // 从rb_tree中删除节点
@@ -362,12 +481,12 @@ struct rb_tree * rb_tree_remove(struct rb_tree * root, struct rb_tree * z_node){
             x_node = z_node->left;
             root = rb_transplant(root, z_node, x_node);
          } else {
-            // 有两个孩子节点, y为z的后继节点
+            // z有两个孩子节点, y为z的后继节点
+            // y已经是z的右二子的最左节点
             y_node = rb_successor(z_node);
             y_origin_color = y_node->color;
 
-            // y一定没有左儿子，因为y是z的后继
-            // y可能由右儿子或者没有孩子 
+            // y一定没有左儿子,y可能有右儿子或者没有孩子 
             x_node = y_node->right;
 
             if(y_node->parent = z_node){
@@ -400,11 +519,12 @@ struct rb_tree * rb_tree_remove(struct rb_tree * root, struct rb_tree * z_node){
     /* 
      * z节点删除之后可能会违反性质2,4,5 违反的例子
      * 违反性质2：删除z且z是根，而y是红色的 => 违反 根节点为黑色
-     * 违反性质4：y为黑色，y的父亲为红色, x为红色 =>  违反 红色节点的孩子节点为黑色
-     * 违反性质5：
+     * 违反性质4：y为黑色，y的父亲为红色, x为红色 => 违反 红色节点的孩子节点为黑色
+     * 违反性质5：z为黑色,删除了黑色节点 => 违反 节点到叶子节点的简单路径的黑高不同
+     * 
+     * 删除造成不平衡的本质在于，y节点所在一侧的黑高减少了1
      * 
      */
-
     if(y_origin_color == BLACK)
         fix_remove(root, x_node);
 
