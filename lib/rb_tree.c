@@ -334,15 +334,12 @@ struct rb_tree * rb_transplant(struct rb_tree * root, struct rb_tree * u_node, s
 (03) 对x的兄弟节点进行右旋。
 (04) 右旋后，重新设置x的兄弟节点。
 
-
 情形4: x是“黑+黑”节点，x的兄弟节点是黑色；x的兄弟节点的右孩子是红色的，x的兄弟节点的左孩子任意颜色。
 (01) 将x父节点颜色 赋值给 x的兄弟节点。
 (02) 将x父节点设为“黑色”。
 (03) 将x兄弟节点的右子节设为“黑色”。
 (04) 对x的父节点进行左旋。
 (05) 设置“x”为“根节点”。
-
-
 */
 // 修复删除的影响
 struct rb_tree * fix_remove(struct rb_tree * root, struct rb_tree * out_node){
