@@ -564,3 +564,27 @@ struct rb_tree * rb_tree_remove(struct rb_tree * root, struct rb_tree * z_node){
     return root;
 }
 
+// 红黑树中序遍历
+void rb_traversal_inorder(struct rb_tree * root){
+    if(root->left){
+        rb_traversal_inorder(root->left)
+    }
+
+    //使用lib的人自己定义 show_rb_tree
+    
+
+
+    if(root->right){
+        rb_traversal_inorder(root->right)
+    }
+}
+
+// 红黑树前序遍历
+void rb_traversal_preorder(struct rb_tree * root){
+
+}
+
+// 红黑树后序遍历
+void rb_traversal_postorder(struct rb_tree * root){
+
+}
