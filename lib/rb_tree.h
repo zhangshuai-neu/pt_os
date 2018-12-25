@@ -17,6 +17,14 @@
  * 
  */
 
+/*
+ * 参考：
+ *  算法导论
+ *  https://www.cnblogs.com/yyxt/p/4983967.html
+ *  https://www.cnblogs.com/skywang12345/p/3245399.html
+ * 
+ */
+
 enum rb_color{
     RED, BLACK
 };
