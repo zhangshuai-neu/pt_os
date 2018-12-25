@@ -404,8 +404,7 @@ struct rb_tree * rb_tree_remove(struct rb_tree * root, struct rb_tree * z_node){
      * z节点删除之后可能会违反性质2,4,5 违反的例子
      * 违反性质2：删除z且z是根，而y是红色的 => 违反 根节点为黑色
      * 违反性质4：y为黑色，y的父亲为红色, x为红色 =>  违反 红色节点的孩子节点为黑色
-     * 违反性质5：
-     * 
+     * 违反性质5：删除了黑色节点 => 违反 每个点的简单路径上的黑色节点数相同(黑高)
      */
 
     if(y_origin_color == BLACK)
