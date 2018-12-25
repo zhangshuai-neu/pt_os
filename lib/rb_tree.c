@@ -259,13 +259,13 @@ struct rb_tree * rb_tree_insert(struct rb_tree * root, struct rb_tree * in_node)
         // 遍历一下, 找到in_node的父亲节点，并插入
         while (temp_node){
             temp_node_parent = temp_node;
-            if(temp_node->key < in_node->key){
+            if( rb_tree_get_key(temp_node) < rb_tree_get_key(in_node) ){
                 temp_node = temp_node->left; 
             } else {
                 temp_node = temp_node->right;
             }
         }
-        if(temp_node_parent->key < in_node->key){
+        if( rb_tree_get_key(temp_node_parent) < rb_tree_get_key(in_node)){
             temp_node_parent->right = in_node; 
         } else {
             temp_node_parent->left = in_node; 
@@ -479,7 +479,7 @@ struct rb_tree * fix_remove(struct rb_tree * root, struct rb_tree * x_node){
                 //x是黑色节点，x的兄弟节点是黑色；x的兄弟节点的右孩子是红色的，x的兄弟节点的左孩子任意颜色。
                 d_node->color = b_node->color;
                 d_node->color = BLACK;
-                d_node->right->right == BLACK;
+                d_node->right->color == BLACK;
                 left_roate(d_node);
                 if(d_node->parent==NULL)
                     root = d_node;
@@ -487,6 +487,53 @@ struct rb_tree * fix_remove(struct rb_tree * root, struct rb_tree * x_node){
             }
         // left end
         } else {
+            if(d_node->color==RED){
+                //情形1
+                //x是黑色节点，x的兄弟节点是红色。(此时x的父节点和x的兄弟节点的子节点都是黑节点)。
+                d_node->color = BLACK;
+                b_node->color = RED;
+                right_roate(b_node);
+                if(d_node->parent==NULL)
+                    root = d_node;
+                
+                //每次旋转之后，更新节点位置
+                b_node = x_node->parent;
+                if(x_node == b_node->left)
+                    d_node = b_node->right;
+                else
+                    d_node = b_node->left;
+                
+            } 
+            if( (d_node->left==NULL || d_node->left->color==BLACK) && (d_node->right==NULL || d_node->right->color==BLACK) ){
+                //情形2
+                if(b_node->color==RED){
+                    b_node->color==BLACK;
+                } else {
+                    x_node = b_node;
+                }
+            } else {
+                if( (d_node->right!=NULL || d_node->right->color==RED) && (d_node->left==NULL || d_node->left->color==BLACK) ){
+                    //情形3
+                    d_node->right->color = BLACK;
+                    d_node->color = RED;
+                    left_roate(d_node);
+
+                    //每次旋转之后，更新节点位置
+                    b_node = x_node->parent;
+                    if(x_node == b_node->left)
+                        d_node = b_node->right;
+                    else
+                        d_node = b_node->left;
+                }
+                //情形4
+                d_node->color = b_node->color;
+                d_node->color = BLACK;
+                d_node->left->color == BLACK;
+                right_roate(d_node);
+                if(d_node->parent==NULL)
+                    root = d_node;
+                //这次旋转之后的节点更新，放在循环开头进行
+            }
 
         } //right end
         
@@ -567,24 +614,41 @@ struct rb_tree * rb_tree_remove(struct rb_tree * root, struct rb_tree * z_node){
 // 红黑树中序遍历
 void rb_traversal_inorder(struct rb_tree * root){
     if(root->left){
-        rb_traversal_inorder(root->left)
+        rb_traversal_inorder(root->left);
     }
 
-    //使用lib的人自己定义 show_rb_tree
-    
-
+    //使用lib的人自己实现 show_rb_tree
+    rb_tree_show(root);
 
     if(root->right){
-        rb_traversal_inorder(root->right)
+        rb_traversal_inorder(root->right);
     }
 }
 
 // 红黑树前序遍历
 void rb_traversal_preorder(struct rb_tree * root){
+    //使用lib的人自己实现 show_rb_tree
+    rb_tree_show(root);
 
+    if(root->left){
+        rb_traversal_inorder(root->left);
+    }
+
+    if(root->right){
+        rb_traversal_inorder(root->right);
+    }
 }
 
 // 红黑树后序遍历
 void rb_traversal_postorder(struct rb_tree * root){
+    if(root->left){
+        rb_traversal_inorder(root->left);
+    }
 
+    if(root->right){
+        rb_traversal_inorder(root->right);
+    }
+
+    //使用lib的人自己实现 show_rb_tree
+    rb_tree_show(root);
 }

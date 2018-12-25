@@ -4,6 +4,7 @@
 /**
  * 红黑树是平衡二叉树，left小于root，root小于right
  * 
+ * 
  * 红黑树的特性:
  * 1）每个节点或者是黑色，或者是红色。
  * 2）根节点是黑色。
@@ -59,13 +60,17 @@ struct rb_tree{
  * 
 */
 
-// 获取rb_tree所在结构的基地址
+// 获取rb_tree所在结构的基地址, ->的优先级 比 类型转换 要高
 #define RB_TREE_ENTRY(TYPE, RB_TREE_ADDR ,RB_TREE_MEMBER) \
-    (TYPE*)((uint32_t)RB_TREE_ADDR - (uint32_t)&((TYPE*)0->RB_TREE_MEMBER))
+    ((TYPE*)((unsigned int)RB_TREE_ADDR - (unsigned int)(&(((TYPE*)0)->RB_TREE_MEMBER))))
 
-// 获取rb_tree所在结构的key, KEY表示key的名字
-#define GET_KEY(TYPE, RB_TREE_ADDR, RB_TREE_MEMBER, KEY) \
-    RB_TREE_ENTRY(TYPE, RB_TREE_ADDR ,RB_TREE_MEMBER)->KEY
+// 功能：获取rb_tree所在结构的key
+// TYPE: rb_tree所在结构
+// RB_TREE_ADDR: rb_tree基地址
+// RB_TREE_MEMBER: rb_tree成员名
+// KEY: KEY表示key的名字
+#define RB_GET_KEY(TYPE, RB_TREE_ADDR, RB_TREE_MEMBER, KEY) \
+    (RB_TREE_ENTRY(TYPE, RB_TREE_ADDR ,RB_TREE_MEMBER)->KEY)
 
 // 初始化
 void rb_tree_init(struct rb_tree * tree);
@@ -76,8 +81,13 @@ struct rb_tree * rb_tree_remove(struct rb_tree * root, struct rb_tree * z_node);
 
 //=======================================
 // 使用者需要实现的函数
+// 为了将key从struct rb_tree结构中解放出来
 //======================================
-void show_rb_tree(struct rb_tree * root);
-void get_key(struct rb_tree * root);
+//key是32位整数
+int rb_tree_get_key(struct rb_tree * node);
 
-#endif
+void rb_tree_show(struct rb_tree * node);
+
+
+
+#endif 

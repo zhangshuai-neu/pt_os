@@ -4,6 +4,7 @@
         "semaphore.h": "c",
         "tm.h": "c",
         "queue.h": "c",
-        "rb_tree.h": "c"
+        "rb_tree.h": "c",
+        "stdio.h": "c"
     }
 }
