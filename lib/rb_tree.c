@@ -30,7 +30,7 @@ f   g               e   i
 
 代码按照上图进行编写
 */
-void left_roate(struct rb_tree * e_node){
+void left_rotate(struct rb_tree * e_node){
     //e节点没有右儿子，直接结束
     if(e_node->right==NULL)
         return;
@@ -62,7 +62,7 @@ void left_roate(struct rb_tree * e_node){
 
 代码按照上图进行编写
 */
-void right_roate(struct rb_tree * g_node){
+void right_rotate(struct rb_tree * g_node){
     //g节点没有左儿子，直接结束
     if(g_node->left==NULL)
         return;
@@ -197,7 +197,7 @@ struct rb_tree * fix_insert(struct rb_tree * root, struct rb_tree * node){
                 } else {
                     if( node == f_node->right){
                         // 性质4-情形2: node的叔节点为黑，且node为右孩子
-                        left_roate(f_node);     //f_node和node进行左旋
+                        left_rotate(f_node);     //f_node和node进行左旋
                         node = f_node;
                     }
                     // 性质4-情形3: node的叔节点为黑，且node为左孩子
@@ -206,12 +206,13 @@ struct rb_tree * fix_insert(struct rb_tree * root, struct rb_tree * node){
 
                     node->parent->color = BLACK;
                     node->parent->parent->color = RED;
-                    right_roate(g_node);    //f_node和node进行右旋
+                    right_rotate(g_node);    //g_node进行右旋
+                    
                 }
             } else {
             // 父节点是祖父节点的右儿子
                 u_node = g_node->left;
-                // 性质4-情形1: node的叔节点是红色, 修改颜色避免违反性质5
+                // 性质4-情形1
                 // node的叔节点不存在，相当于黑色
                 if(u_node && u_node->color==RED){
                     f_node->color = BLACK;
@@ -222,26 +223,23 @@ struct rb_tree * fix_insert(struct rb_tree * root, struct rb_tree * node){
                     // 图中，g_node及其父节点，再次违反性质4
                 } else {
                     if( node == f_node->left){
-                        // 性质4-情形2: node的叔节点为黑，且node为左孩子
-                        right_roate(f_node);    //f_node和node进行左旋
+                        // 性质4-情形2
+                        right_rotate(f_node);
                         node = f_node;
                     }
-                    // 性质4-情形3: node的叔节点为黑，且node为左孩子
+                    // 性质4-情形3
                     f_node = node->parent;      //因为可能是从情形2过来，所以需要更新
                     g_node = f_node->parent;    //因为可能是从情形2过来，所以需要更新
 
                     node->parent->color = BLACK;
                     node->parent->parent->color = RED;
-                    left_roate(g_node);    //f_node和node进行右旋
+                    left_rotate(g_node);
                     //这次旋转的节点更新，在下次循环开头进行
                 }
             }
         }
     }
-    // 性质2-情形0: node为根节点，上面的调整也可能会造成
-    if(f_node->parent==NULL)
-        //更新root，情形3处理完成后，f_node会成为最接近root的节点
-        root = f_node;  
+    //性质2
     root->color = BLACK;
     return root;
 }
@@ -440,7 +438,7 @@ struct rb_tree * fix_remove(struct rb_tree * root, struct rb_tree * x_node){
                 //x是黑色节点，x的兄弟节点是红色。(此时x的父节点和x的兄弟节点的子节点都是黑节点)。
                 d_node->color = BLACK;
                 b_node->color = RED;
-                left_roate(b_node);
+                left_rotate(b_node);
                 if(d_node->parent==NULL)
                     root = d_node;
                 
@@ -466,7 +464,7 @@ struct rb_tree * fix_remove(struct rb_tree * root, struct rb_tree * x_node){
                     //x是黑色节点，x的兄弟节点是黑色；x的兄弟节点的左孩子是红色，右孩子是黑色的。
                     d_node->left->color = BLACK;
                     d_node->color = RED;
-                    right_roate(d_node);
+                    right_rotate(d_node);
 
                     //每次旋转之后，更新节点位置
                     b_node = x_node->parent;
@@ -480,7 +478,7 @@ struct rb_tree * fix_remove(struct rb_tree * root, struct rb_tree * x_node){
                 d_node->color = b_node->color;
                 d_node->color = BLACK;
                 d_node->right->color == BLACK;
-                left_roate(d_node);
+                left_rotate(d_node);
                 if(d_node->parent==NULL)
                     root = d_node;
                 //这次旋转之后的节点更新，放在循环开头进行
@@ -492,7 +490,7 @@ struct rb_tree * fix_remove(struct rb_tree * root, struct rb_tree * x_node){
                 //x是黑色节点，x的兄弟节点是红色。(此时x的父节点和x的兄弟节点的子节点都是黑节点)。
                 d_node->color = BLACK;
                 b_node->color = RED;
-                right_roate(b_node);
+                right_rotate(b_node);
                 if(d_node->parent==NULL)
                     root = d_node;
                 
@@ -516,7 +514,7 @@ struct rb_tree * fix_remove(struct rb_tree * root, struct rb_tree * x_node){
                     //情形3
                     d_node->right->color = BLACK;
                     d_node->color = RED;
-                    left_roate(d_node);
+                    left_rotate(d_node);
 
                     //每次旋转之后，更新节点位置
                     b_node = x_node->parent;
@@ -529,7 +527,7 @@ struct rb_tree * fix_remove(struct rb_tree * root, struct rb_tree * x_node){
                 d_node->color = b_node->color;
                 d_node->color = BLACK;
                 d_node->left->color == BLACK;
-                right_roate(d_node);
+                right_rotate(d_node);
                 if(d_node->parent==NULL)
                     root = d_node;
                 //这次旋转之后的节点更新，放在循环开头进行

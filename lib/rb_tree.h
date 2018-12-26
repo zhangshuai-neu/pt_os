@@ -79,14 +79,20 @@ struct rb_tree * rb_tree_insert(struct rb_tree * root, struct rb_tree * in_node)
 // 从rb_tree中删除节点
 struct rb_tree * rb_tree_remove(struct rb_tree * root, struct rb_tree * z_node);
 
+// 遍历，并使用 rb_tree_show 函数打印一些内容
+void rb_traversal_inorder(struct rb_tree * root);
+void rb_traversal_preorder(struct rb_tree * root);
+void rb_traversal_postorder(struct rb_tree * root);
+
 //=======================================
 // 使用者需要实现的函数
 // 为了将key从struct rb_tree结构中解放出来
 //======================================
 //key是32位整数
 int rb_tree_get_key(struct rb_tree * node);
-
 void rb_tree_show(struct rb_tree * node);
+
+
 
 
 
