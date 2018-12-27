@@ -1,3 +1,5 @@
+// 绝大部分代码来自 《操作系统真相还原》
+
 #ifndef __KERNEL_GLOBAL_H
 #define __KERNEL_GLOBAL_H
 

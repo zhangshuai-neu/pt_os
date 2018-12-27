@@ -10,7 +10,7 @@
 #include "std_type_define.h"
 
 void rb_tree_init(struct rb_tree * tree){
-    tree->color = BLACK;
+    tree->color = RED;
     tree->parent = NULL;
     tree->left = NULL;
     tree->right = NULL;
@@ -40,11 +40,15 @@ void left_rotate(struct rb_tree * e_node){
     struct rb_tree * h_node = g_node->left;
 
     e_node->right = h_node;
+    e_node->parent = g_node;
     g_node->left = e_node;
-    if(e_node == p_node->left) {
-        p_node->left = g_node;
-    } else {
-        p_node->right = g_node;
+    g_node->parent = p_node;
+    if(p_node){
+        if(e_node == p_node->left) {
+            p_node->left = g_node;
+        } else {
+            p_node->right = g_node;
+        }
     }
 }
 
@@ -72,12 +76,16 @@ void right_rotate(struct rb_tree * g_node){
     struct rb_tree * h_node = e_node->right;
     
     g_node->left = h_node;
+    g_node->parent = e_node;
     e_node->right = g_node;
-    if(g_node == p_node->left) {
-        p_node->left = e_node;
-    } else {
-        p_node->right = e_node;
-    }
+    e_node->parent = p_node;
+    if(p_node){
+        if(g_node == p_node->left) {
+            p_node->left = e_node;
+        } else {
+            p_node->right = e_node;
+        }
+    }  
 }
 
 /*
@@ -178,7 +186,9 @@ struct rb_tree * fix_insert(struct rb_tree * root, struct rb_tree * node){
     struct rb_tree * g_node = NULL; //祖父节点
     struct rb_tree * f_node = NULL; //父节点
     struct rb_tree * u_node = NULL; //叔节点
-    while( node->parent && node->parent->color == RED ){
+
+
+    while(node && node->parent && node->parent->color == RED){
         f_node = node->parent;
         if(f_node->parent){
             g_node = f_node->parent;
@@ -198,6 +208,8 @@ struct rb_tree * fix_insert(struct rb_tree * root, struct rb_tree * node){
                     if( node == f_node->right){
                         // 性质4-情形2: node的叔节点为黑，且node为右孩子
                         left_rotate(f_node);     //f_node和node进行左旋
+                        if(node->parent==NULL)
+                            root=node;
                         node = f_node;
                     }
                     // 性质4-情形3: node的叔节点为黑，且node为左孩子
@@ -207,7 +219,8 @@ struct rb_tree * fix_insert(struct rb_tree * root, struct rb_tree * node){
                     node->parent->color = BLACK;
                     node->parent->parent->color = RED;
                     right_rotate(g_node);    //g_node进行右旋
-                    
+                    if(f_node->parent==NULL)
+                        root=f_node;
                 }
             } else {
             // 父节点是祖父节点的右儿子
@@ -225,6 +238,8 @@ struct rb_tree * fix_insert(struct rb_tree * root, struct rb_tree * node){
                     if( node == f_node->left){
                         // 性质4-情形2
                         right_rotate(f_node);
+                        if(node->parent==NULL)
+                            root=node;
                         node = f_node;
                     }
                     // 性质4-情形3
@@ -234,6 +249,8 @@ struct rb_tree * fix_insert(struct rb_tree * root, struct rb_tree * node){
                     node->parent->color = BLACK;
                     node->parent->parent->color = RED;
                     left_rotate(g_node);
+                    if(f_node->parent==NULL)
+                        root=f_node;
                     //这次旋转的节点更新，在下次循环开头进行
                 }
             }
@@ -258,9 +275,9 @@ struct rb_tree * rb_tree_insert(struct rb_tree * root, struct rb_tree * in_node)
         while (temp_node){
             temp_node_parent = temp_node;
             if( rb_tree_get_key(temp_node) < rb_tree_get_key(in_node) ){
-                temp_node = temp_node->left; 
+                temp_node = temp_node->right; 
             } else {
-                temp_node = temp_node->right;
+                temp_node = temp_node->left;
             }
         }
         if( rb_tree_get_key(temp_node_parent) < rb_tree_get_key(in_node)){
@@ -305,7 +322,7 @@ struct rb_tree * rb_successor(struct rb_tree * x){
         y=x->parent;
     }
     return y;
-} 
+}
 
 // 移植，将树v替换树u
 // u_node必须存在
@@ -423,13 +440,15 @@ struct rb_tree * fix_remove(struct rb_tree * root, struct rb_tree * x_node){
     struct rb_tree * b_node = NULL;
     struct rb_tree * d_node = NULL;
 
-    while(x_node!=root && x_node!=BLACK){
+    while(x_node->parent && x_node!=root && x_node!=BLACK){
         // 获取b和d节点
         b_node = x_node->parent;
         if(x_node == b_node->left)
             d_node = b_node->right;
         else
             d_node = b_node->left;
+        if(!d_node)
+            break;
 
         if(x_node == b_node->left){
             //x节点是父亲节点的左
@@ -448,6 +467,8 @@ struct rb_tree * fix_remove(struct rb_tree * root, struct rb_tree * x_node){
                     d_node = b_node->right;
                 else
                     d_node = b_node->left;
+                if(!d_node)
+                    break;
                 
             } 
             if( (d_node->left==NULL || d_node->left->color==BLACK) && (d_node->right==NULL || d_node->right->color==BLACK) ){
@@ -472,6 +493,8 @@ struct rb_tree * fix_remove(struct rb_tree * root, struct rb_tree * x_node){
                         d_node = b_node->right;
                     else
                         d_node = b_node->left;
+                    if(!d_node)
+                        break;
                 }
                 //情形4
                 //x是黑色节点，x的兄弟节点是黑色；x的兄弟节点的右孩子是红色的，x的兄弟节点的左孩子任意颜色。
@@ -611,6 +634,9 @@ struct rb_tree * rb_tree_remove(struct rb_tree * root, struct rb_tree * z_node){
 
 // 红黑树中序遍历
 void rb_traversal_inorder(struct rb_tree * root){
+    if(!root)
+        return;
+
     if(root->left){
         rb_traversal_inorder(root->left);
     }
@@ -625,6 +651,9 @@ void rb_traversal_inorder(struct rb_tree * root){
 
 // 红黑树前序遍历
 void rb_traversal_preorder(struct rb_tree * root){
+    if(!root)
+        return;
+
     //使用lib的人自己实现 show_rb_tree
     rb_tree_show(root);
 
@@ -639,6 +668,9 @@ void rb_traversal_preorder(struct rb_tree * root){
 
 // 红黑树后序遍历
 void rb_traversal_postorder(struct rb_tree * root){
+    if(!root)
+        return;
+
     if(root->left){
         rb_traversal_inorder(root->left);
     }
@@ -650,3 +682,26 @@ void rb_traversal_postorder(struct rb_tree * root){
     //使用lib的人自己实现 show_rb_tree
     rb_tree_show(root);
 }
+
+// 获取最小节点
+void rb_min_node(struct rb_tree * root){
+    if(!root)
+        return ;
+
+    while(root->left)
+        root = root->left;
+    
+    rb_tree_show(root);
+}
+
+// 获取最大节点
+void rb_max_node(struct rb_tree * root){
+    if(!root)
+        return ;
+
+    while(root->right)
+        root = root->right;
+    
+    rb_tree_show(root);
+}
+

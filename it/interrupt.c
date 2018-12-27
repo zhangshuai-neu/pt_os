@@ -5,7 +5,7 @@
  * 初始化IDT和中断向量表
  * 初始化中断处理函数
  *
- * author:Shuai Zhang (zhangshuaiisme@gmail.com)
+ * author: 绝大部分代码来自 《操作系统真相还原》
  */
 
 #include "std_type_define.h"

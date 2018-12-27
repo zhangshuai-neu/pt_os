@@ -78,11 +78,13 @@ void rb_tree_init(struct rb_tree * tree);
 struct rb_tree * rb_tree_insert(struct rb_tree * root, struct rb_tree * in_node);
 // 从rb_tree中删除节点
 struct rb_tree * rb_tree_remove(struct rb_tree * root, struct rb_tree * z_node);
-
 // 遍历，并使用 rb_tree_show 函数打印一些内容
 void rb_traversal_inorder(struct rb_tree * root);
 void rb_traversal_preorder(struct rb_tree * root);
 void rb_traversal_postorder(struct rb_tree * root);
+// 最大、最小节点
+void rb_min_node(struct rb_tree * root);
+void rb_max_node(struct rb_tree * root);
 
 //=======================================
 // 使用者需要实现的函数
@@ -91,9 +93,5 @@ void rb_traversal_postorder(struct rb_tree * root);
 //key是32位整数
 int rb_tree_get_key(struct rb_tree * node);
 void rb_tree_show(struct rb_tree * node);
-
-
-
-
 
 #endif 

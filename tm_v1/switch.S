@@ -1,3 +1,7 @@
+; 任务切换的汇编代码
+; 该部分代码全部来自《操作系统真相还原》
+; author: 《操作系统真相还原》
+
 [bits 32]
 section .text
 global thread_switch_to
@@ -24,3 +28,5 @@ thread_switch_to:
    pop esi
    ret				 ; 返回到上面switch_to下面的那句注释的返回地址,
                      ; 未由中断进入,第一次执行时会返回到kernel_thread
+
+

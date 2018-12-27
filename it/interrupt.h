@@ -3,7 +3,7 @@
  *
  * 中断相关,类型定义,函数声明
  *
- * author:Shuai Zhang (zhangshuaiisme@gmail.com)
+ * author:// 绝大部分代码来自 《操作系统真相还原》
  */
 
 #ifndef __INTERRUPT_H

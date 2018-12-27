@@ -1,7 +1,7 @@
 /*
  * 磁盘接口 实现
  *
- * Author:Shuai Zhang <zhangshuaiisme@gmail.com>
+ * Author:《操作系统真相还原》
  */
 
 #include "disk_interface.h"

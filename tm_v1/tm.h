@@ -1,5 +1,8 @@
 /*
  * 任务管理 头文件
+ * 
+ * 该部分代码大量参考了《操作系统真相还原》
+ * 
  * author:Shuai Zhang <zhangshuaiisme@gmail.com>
  */
 

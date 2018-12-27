@@ -3,8 +3,7 @@
  *
  * 8253定时器(计数器)的初始化
  *
- * author:Shuai Zhang
- * email:zhangshuaiisme@gmail.com
+ * author:《操作系统真相还原》
  */
 
 #include "timer.h"

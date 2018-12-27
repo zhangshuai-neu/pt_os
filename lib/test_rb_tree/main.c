@@ -22,7 +22,12 @@ int rb_tree_get_key(struct rb_tree * node){
 
 void rb_tree_show(struct rb_tree * node){
     int key = rb_tree_get_key(node);
-    printf("%d ",key);
+    printf("%d",key);
+    if(node->color==RED){
+        printf("-r ");
+    } else {
+        printf("-b ");
+    }
 }
 //================================================
 
@@ -31,23 +36,35 @@ int main(){
     struct task t[20];
     struct rb_tree * root=NULL;
 
+    printf("\n=======test insert ============\n");
     int i=0;
     for(i=0;i<10;i++){
         t[i].val = rand()%100;
         rb_tree_init( &(t[i].rb_node) );
+        
         root = rb_tree_insert( root, &(t[i].rb_node) );
         printf("%d ",t[i].val);
     }
-
-    printf("\n rb_traversal_inorder: \n");
+    printf("\nrb_traversal_inorder: \n");
     rb_traversal_inorder(root);
-    printf("\n rb_traversal_preorder: \n");
+    printf("\nrb_traversal_preorder: \n");
     rb_traversal_preorder(root);
-    printf("\n rb_traversal_postorder: \n");
+    printf("\nrb_traversal_postorder: \n");
     rb_traversal_postorder(root);
-/*
+    printf("\n");
+    printf("min:");
+    rb_min_node(root);
+    printf(" max:");
+    rb_max_node(root);
+    printf("\n");
+
+
+    printf("\n=======test remove ============\n");
     for(i=0;i<5;i++){
         root = rb_tree_remove( root, &(t[i].rb_node) );
+    }
+    for(i=5;i<10;i++){
+        printf("%d ",t[i].val);
     }
     printf("\n rb_traversal_inorder: \n");
     rb_traversal_inorder(root);
@@ -55,6 +72,12 @@ int main(){
     rb_traversal_preorder(root);
     printf("\n rb_traversal_postorder: \n");
     rb_traversal_postorder(root);
-*/
+    printf("\n");
+    printf("min:");
+    rb_min_node(root);
+    printf(" max:");
+    rb_max_node(root);
+    printf("\n");
+
     return 0;
 }
