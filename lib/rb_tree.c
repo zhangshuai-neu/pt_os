@@ -187,7 +187,6 @@ struct rb_tree * fix_insert(struct rb_tree * root, struct rb_tree * node){
     struct rb_tree * f_node = NULL; //父节点
     struct rb_tree * u_node = NULL; //叔节点
 
-
     while(node && node->parent && node->parent->color == RED){
         f_node = node->parent;
         if(f_node->parent){
@@ -338,6 +337,7 @@ struct rb_tree * rb_transplant(struct rb_tree * root, struct rb_tree * u_node, s
     }
     if(v_node)
         v_node->parent =  u_node->parent;
+        u_node->parent = NULL;
     return root;
 }
 
@@ -351,6 +351,27 @@ struct rb_tree * rb_transplant(struct rb_tree * root, struct rb_tree * u_node, s
                     x节点侧由于删除节点时，删除的y为黑色，所以a侧的黑高比另一侧黑高低
                     直接讲x置位黑色，就能实现黑高的加1，最终达到平衡
                 */
+// 修复删除的影响
+// 代码按照图中示例进行编写
+struct rb_tree * fix_remove(struct rb_tree * root, struct rb_tree * x_node){
+    struct rb_tree * b_node = NULL;
+    struct rb_tree * d_node = NULL;
+
+    while(x_node && x_node->parent && x_node!=root && x_node==BLACK){
+        // 获取b和d节点
+        b_node = x_node->parent;
+        if(x_node == b_node->left)
+            d_node = b_node->right;
+        else
+            d_node = b_node->left;
+        if(!d_node)
+            break;
+
+        if(x_node == b_node->left){
+            //x节点是父亲节点的左
+            if(d_node->color==RED){
+                //情形1
+                //x是黑色节点，x的兄弟节点是红色。(此时x的父节点和x的兄弟节点的子节点都是黑节点)。
                 /*  
                     // notice: 代码图中[]为x节点，-r表示红色，-b表示黑色,-*表示不确定
                     情形1: x是黑色节点，x的兄弟节点是红色。(此时x的父节点和x的兄弟节点的子节点都是黑节点)。
@@ -363,14 +384,32 @@ struct rb_tree * rb_transplant(struct rb_tree * root, struct rb_tree * u_node, s
                     因为d为红色，d的子节点全为黑色
                     该种情形一定会转化为2,3,4中的一种
                     只有a，c节点都为黑色，才有可能使用左旋来增加，a节点一侧的黑高
-                        ...                    ...
-                         |                      |   
-                        b-b                    d-b
+                         ...                    ...
+                          |                      |   
+                         b-b                    d-b
                         /   \                  /   \ 
                     [a-b]    d-r    ->      b-r    e-b   -> 变成情形2,3,4中的一种
                             /    \         /   \  
-                        c-b   e-b     [a-b]  c-b   
+                          c-b   e-b     [a-b]  c-b   
                 */
+                d_node->color = BLACK;
+                b_node->color = RED;
+                left_rotate(b_node);
+                if(d_node->parent==NULL)
+                    root = d_node;
+                //每次旋转之后，更新节点位置
+                b_node = x_node->parent;
+                if(x_node == b_node->left)
+                    d_node = b_node->right;
+                else
+                    d_node = b_node->left;
+                if(!d_node)
+                    break;
+            }
+            //情形1的处理，导致d节点一定是黑色的
+            if( (d_node->left==NULL || d_node->left->color==BLACK) && (d_node->right==NULL || d_node->right->color==BLACK) ){
+                //情形2
+                //x是黑色节点，x的兄弟节点是黑色，x的兄弟节点的两个孩子都是黑色。
                 /*
                     // notice: 代码图中[]为x节点，-r表示红色，-b表示黑色,-*表示不确定
                     情形2: x是黑色节点，x的兄弟节点是黑色，x的兄弟节点的两个孩子都是黑色。
@@ -383,7 +422,7 @@ struct rb_tree * rb_transplant(struct rb_tree * root, struct rb_tree * u_node, s
                     但是b节点相对其兄弟节点，黑高还是少了1
                     如果b是红色，将其置为黑色，则b节点相对其兄弟节点黑高一致，全树平衡
                     如果b是黑色，将b当做x继续处理
-                        ...                    ...
+                        ...                     ...
                          |                       |          
                         b-*                    [b-*]
                         /   \                  /    \       ->     如果b为红色(b相对其兄弟节点，少一个黑色节点)，将其改为黑色，则全树平衡
@@ -391,7 +430,18 @@ struct rb_tree * rb_transplant(struct rb_tree * root, struct rb_tree * u_node, s
                             /    \                   /    \   
                            c-b   e-b               c-b   e-b  
                 */
-                /*
+                d_node->color = RED;
+                if(b_node->color==RED){
+                    b_node->color==BLACK;
+                    break;
+                } else {
+                    x_node = b_node;
+                }
+            } else {
+                if( (d_node->left!=NULL || d_node->left->color==RED) && (d_node->right==NULL || d_node->right->color==BLACK) ){
+                    //情形3
+                    //x是黑色节点，x的兄弟节点是黑色；x的兄弟节点的左孩子是红色，右孩子是黑色的。
+                    /*
                     // notice: 代码图中[]为x节点，-r表示红色，-b表示黑色,-*表示不确定
                     情形3: x是黑色节点，x的兄弟节点是黑色；x的兄弟节点的左孩子是红色，右孩子是黑色的。
                     (01) 将x兄弟节点的左孩子设为“黑色”。
@@ -412,77 +462,7 @@ struct rb_tree * rb_transplant(struct rb_tree * root, struct rb_tree * u_node, s
                                                         \
                                                         e-b
                         情形3处理的目的是为了增加右子树的黑高
-                */
-                /*
-                    情形4: x是黑色节点，x的兄弟节点是黑色；x的兄弟节点的右孩子是红色的，x的兄弟节点的左孩子任意颜色。
-                    (01) 将x父节点颜色 赋值给 x的兄弟节点。
-                    (02) 将x父节点设为“黑色”。
-                    (03) 将x兄弟节点的右子节设为“黑色”。
-                    (04) 对x的父节点进行左旋。
-                    (05) 设置“x”为“根节点”。
-
-                    说明：
-                    通过对b左旋，增加a节点一侧的黑高（保持e节点一侧黑高不变）
-
-                       ...                    ...
-                        |                      |
-                        b-*                   [d-*]
-                       /   \                 /     \
-                    [a-b]    d-b    ->     b-b     e-b
-                            /    \        /   \
-                           c-r/b e-r    a-b  c-r/b
-                            
-                        情形4处理的目的是为了增加左子树的黑高(不破坏左子树黑高的基础上)
-                */
-// 修复删除的影响
-// 代码按照图中示例进行编写
-struct rb_tree * fix_remove(struct rb_tree * root, struct rb_tree * x_node){
-    struct rb_tree * b_node = NULL;
-    struct rb_tree * d_node = NULL;
-
-    while(x_node->parent && x_node!=root && x_node!=BLACK){
-        // 获取b和d节点
-        b_node = x_node->parent;
-        if(x_node == b_node->left)
-            d_node = b_node->right;
-        else
-            d_node = b_node->left;
-        if(!d_node)
-            break;
-
-        if(x_node == b_node->left){
-            //x节点是父亲节点的左
-            if(d_node->color==RED){
-                //情形1
-                //x是黑色节点，x的兄弟节点是红色。(此时x的父节点和x的兄弟节点的子节点都是黑节点)。
-                d_node->color = BLACK;
-                b_node->color = RED;
-                left_rotate(b_node);
-                if(d_node->parent==NULL)
-                    root = d_node;
-                
-                //每次旋转之后，更新节点位置
-                b_node = x_node->parent;
-                if(x_node == b_node->left)
-                    d_node = b_node->right;
-                else
-                    d_node = b_node->left;
-                if(!d_node)
-                    break;
-                
-            } 
-            if( (d_node->left==NULL || d_node->left->color==BLACK) && (d_node->right==NULL || d_node->right->color==BLACK) ){
-                //情形2
-                //x是黑色节点，x的兄弟节点是黑色，x的兄弟节点的两个孩子都是黑色。
-                if(b_node->color==RED){
-                    b_node->color==BLACK;
-                } else {
-                    x_node = b_node;
-                }
-            } else {
-                if( (d_node->left!=NULL || d_node->left->color==RED) && (d_node->right==NULL || d_node->right->color==BLACK) ){
-                    //情形3
-                    //x是黑色节点，x的兄弟节点是黑色；x的兄弟节点的左孩子是红色，右孩子是黑色的。
+                    */
                     d_node->left->color = BLACK;
                     d_node->color = RED;
                     right_rotate(d_node);
@@ -498,12 +478,41 @@ struct rb_tree * fix_remove(struct rb_tree * root, struct rb_tree * x_node){
                 }
                 //情形4
                 //x是黑色节点，x的兄弟节点是黑色；x的兄弟节点的右孩子是红色的，x的兄弟节点的左孩子任意颜色。
+                /*
+                    情形4: x是黑色节点，x的兄弟节点是黑色；x的兄弟节点的右孩子是红色的，x的兄弟节点的左孩子任意颜色。
+                    (01) 将x父节点颜色 赋值给 x的兄弟节点。
+                    (02) 将x父节点设为“黑色”。
+                    (03) 将x兄弟节点的右子节设为“黑色”。
+                    (04) 对x的父节点进行左旋。
+                    (05) 设置“x”为“根节点”。
+
+                    说明：
+                    通过对b左旋，增加a节点一侧的黑高（保持e节点一侧黑高不变）
+
+                        ...                    ...
+                         |                      |
+                        b-*                   [d-*]
+                       /   \                 /     \
+                    [a-b]    d-b    ->     b-b     e-b
+                            /    \        /   \
+                           c-*   e-r     a-b  c-*
+                            
+                        情形4处理的目的是为了增加左子树的黑高(不破坏左子树黑高的基础上)
+                */
                 d_node->color = b_node->color;
                 d_node->color = BLACK;
                 d_node->right->color == BLACK;
                 left_rotate(d_node);
                 if(d_node->parent==NULL)
                     root = d_node;
+                
+                b_node = x_node->parent;
+                if(x_node == b_node->left)
+                    d_node = b_node->right;
+                else
+                    d_node = b_node->left;
+                if(!d_node)
+                    break;
                 //这次旋转之后的节点更新，放在循环开头进行
             }
         // left end
@@ -523,17 +532,21 @@ struct rb_tree * fix_remove(struct rb_tree * root, struct rb_tree * x_node){
                     d_node = b_node->right;
                 else
                     d_node = b_node->left;
+                if(!d_node)
+                    break;
                 
             } 
             if( (d_node->left==NULL || d_node->left->color==BLACK) && (d_node->right==NULL || d_node->right->color==BLACK) ){
                 //情形2
+                d_node->color = RED;
                 if(b_node->color==RED){
                     b_node->color==BLACK;
+                    break;
                 } else {
                     x_node = b_node;
                 }
             } else {
-                if( (d_node->right!=NULL || d_node->right->color==RED) && (d_node->left==NULL || d_node->left->color==BLACK) ){
+                if( (d_node->right && d_node->right->color==RED) && (d_node->left==NULL || d_node->left->color==BLACK) ){
                     //情形3
                     d_node->right->color = BLACK;
                     d_node->color = RED;
@@ -545,6 +558,8 @@ struct rb_tree * fix_remove(struct rb_tree * root, struct rb_tree * x_node){
                         d_node = b_node->right;
                     else
                         d_node = b_node->left;
+                    if(!d_node)
+                        break;
                 }
                 //情形4
                 d_node->color = b_node->color;
@@ -553,15 +568,22 @@ struct rb_tree * fix_remove(struct rb_tree * root, struct rb_tree * x_node){
                 right_rotate(d_node);
                 if(d_node->parent==NULL)
                     root = d_node;
+                
+                b_node = x_node->parent;
+                if(x_node == b_node->left)
+                    d_node = b_node->right;
+                    else
+                        d_node = b_node->left;
+                if(!d_node)
+                    break;
                 //这次旋转之后的节点更新，放在循环开头进行
             }
-
         } //right end
-        
     }   //while end
-    
     //情形0
-    x_node->color = BLACK;
+    if(x_node)
+        x_node->color = BLACK;
+    root->color = BLACK;
 
     return root;
 }
@@ -636,49 +658,28 @@ struct rb_tree * rb_tree_remove(struct rb_tree * root, struct rb_tree * z_node){
 void rb_traversal_inorder(struct rb_tree * root){
     if(!root)
         return;
-
-    if(root->left){
-        rb_traversal_inorder(root->left);
-    }
-
+    rb_traversal_inorder(root->left);
     //使用lib的人自己实现 show_rb_tree
     rb_tree_show(root);
-
-    if(root->right){
-        rb_traversal_inorder(root->right);
-    }
+    rb_traversal_inorder(root->right);
 }
 
 // 红黑树前序遍历
 void rb_traversal_preorder(struct rb_tree * root){
     if(!root)
         return;
-
     //使用lib的人自己实现 show_rb_tree
     rb_tree_show(root);
-
-    if(root->left){
-        rb_traversal_inorder(root->left);
-    }
-
-    if(root->right){
-        rb_traversal_inorder(root->right);
-    }
+    rb_traversal_preorder(root->left);
+    rb_traversal_preorder(root->right);
 }
 
 // 红黑树后序遍历
 void rb_traversal_postorder(struct rb_tree * root){
     if(!root)
         return;
-
-    if(root->left){
-        rb_traversal_inorder(root->left);
-    }
-
-    if(root->right){
-        rb_traversal_inorder(root->right);
-    }
-
+    rb_traversal_postorder(root->left);
+    rb_traversal_postorder(root->right);
     //使用lib的人自己实现 show_rb_tree
     rb_tree_show(root);
 }

@@ -31,6 +31,7 @@ void rb_tree_show(struct rb_tree * node){
 }
 //================================================
 
+#define N 10
 
 int main(){
     struct task t[20];
@@ -38,17 +39,17 @@ int main(){
 
     printf("\n=======test insert ============\n");
     int i=0;
-    for(i=0;i<10;i++){
+    for(i=0;i<N;i++){
         t[i].val = rand()%100;
         rb_tree_init( &(t[i].rb_node) );
         
         root = rb_tree_insert( root, &(t[i].rb_node) );
         printf("%d ",t[i].val);
     }
-    printf("\nrb_traversal_inorder: \n");
-    rb_traversal_inorder(root);
     printf("\nrb_traversal_preorder: \n");
     rb_traversal_preorder(root);
+    printf("\nrb_traversal_inorder: \n");
+    rb_traversal_inorder(root);
     printf("\nrb_traversal_postorder: \n");
     rb_traversal_postorder(root);
     printf("\n");
@@ -58,26 +59,14 @@ int main(){
     rb_max_node(root);
     printf("\n");
 
-
+/*
     printf("\n=======test remove ============\n");
-    for(i=0;i<5;i++){
+    for(i=0;i<(N>>1);i++){
         root = rb_tree_remove( root, &(t[i].rb_node) );
     }
-    for(i=5;i<10;i++){
+    for(i=5;i<N;i++){
         printf("%d ",t[i].val);
     }
-    printf("\n rb_traversal_inorder: \n");
-    rb_traversal_inorder(root);
-    printf("\n rb_traversal_preorder: \n");
-    rb_traversal_preorder(root);
-    printf("\n rb_traversal_postorder: \n");
-    rb_traversal_postorder(root);
-    printf("\n");
-    printf("min:");
-    rb_min_node(root);
-    printf(" max:");
-    rb_max_node(root);
-    printf("\n");
-
+*/
     return 0;
 }
