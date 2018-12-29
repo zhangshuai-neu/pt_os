@@ -299,7 +299,10 @@ struct rb_tree * rb_tree_insert(struct rb_tree * root, struct rb_tree * in_node)
 
 // tree的最小节点
 struct rb_tree * rb_minimum(struct rb_tree * root){
-    while(root && root->left)
+    if(root==NULL)
+        return NULL;
+        
+    while(root->left)
         root = root->left;
     return root;
 }
@@ -323,7 +326,7 @@ struct rb_tree * rb_successor(struct rb_tree * x){
     return y;
 }
 
-// 移植，将树v替换树u
+// 移植，将树v替换树
 // u_node必须存在
 struct rb_tree * rb_transplant(struct rb_tree * root, struct rb_tree * u_node, struct rb_tree * v_node){
     if(u_node->parent == NULL){
@@ -335,9 +338,10 @@ struct rb_tree * rb_transplant(struct rb_tree * root, struct rb_tree * u_node, s
             u_node->parent->right = v_node;
         }
     }
-    if(v_node)
+    if(v_node){
         v_node->parent =  u_node->parent;
         u_node->parent = NULL;
+    }
     return root;
 }
 
@@ -357,7 +361,7 @@ struct rb_tree * fix_remove(struct rb_tree * root, struct rb_tree * x_node){
     struct rb_tree * b_node = NULL;
     struct rb_tree * d_node = NULL;
 
-    while(x_node && x_node->parent && x_node!=root && x_node==BLACK){
+    while(x_node && x_node->parent && x_node==BLACK){
         // 获取b和d节点
         b_node = x_node->parent;
         if(x_node == b_node->left)
@@ -572,8 +576,8 @@ struct rb_tree * fix_remove(struct rb_tree * root, struct rb_tree * x_node){
                 b_node = x_node->parent;
                 if(x_node == b_node->left)
                     d_node = b_node->right;
-                    else
-                        d_node = b_node->left;
+                else
+                    d_node = b_node->left;
                 if(!d_node)
                     break;
                 //这次旋转之后的节点更新，放在循环开头进行
@@ -612,7 +616,7 @@ struct rb_tree * rb_tree_remove(struct rb_tree * root, struct rb_tree * z_node){
             // y一定没有左儿子,y可能有右儿子或者没有孩子 
             x_node = y_node->right;
 
-            if(y_node->parent = z_node){
+            if(y_node->parent == z_node){
                 // y的父亲节点是z，直接移动y替换z
                 // 不需要在z,y的值进行交换，在进行删除
                 root = rb_transplant(root, z_node, y_node);
@@ -622,6 +626,7 @@ struct rb_tree * rb_tree_remove(struct rb_tree * root, struct rb_tree * z_node){
             } else {
                 // 将y节点放置在叶子节点的位置
                 root = rb_transplant(root, y_node, x_node);
+                y_node->parent = NULL;
                 
                 // 将z的孩子节点连接到y上
                 y_node->right = z_node->right;
@@ -636,7 +641,6 @@ struct rb_tree * rb_tree_remove(struct rb_tree * root, struct rb_tree * z_node){
             // 为了减少红黑树规则的违反数量，将y节点的颜色，设置为z节点的颜色
             y_node->color = z_node->color;
          }
-
     }
 
     /* 

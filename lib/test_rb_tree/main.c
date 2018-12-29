@@ -59,14 +59,27 @@ int main(){
     rb_max_node(root);
     printf("\n");
 
-/*
     printf("\n=======test remove ============\n");
     for(i=0;i<(N>>1);i++){
         root = rb_tree_remove( root, &(t[i].rb_node) );
     }
-    for(i=5;i<N;i++){
+    for(i=(N>>1);i<N;i++){
         printf("%d ",t[i].val);
     }
-*/
+    printf("\n");
+    printf("\nrb_traversal_preorder: \n");
+    rb_traversal_preorder(root);
+    printf("\nrb_traversal_inorder: \n");
+    rb_traversal_inorder(root);
+    printf("\nrb_traversal_postorder: \n");
+    rb_traversal_postorder(root);
+    printf("\n");
+    printf("min:");
+    rb_min_node(root);
+    printf(" max:");
+    rb_max_node(root);
+    printf("\n");
+
+
     return 0;
 }
