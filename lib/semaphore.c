@@ -9,6 +9,9 @@ void bin_semaphore_init(struct bin_semaphore * bs_ptr){
     list_init(&bs_ptr->wait_list_head);
 }
 
+// 获取资源
+// 返回True 获取成功
+// 返回False 获取失败
 bool bin_semaphore_get(struct bin_semaphore * bs_ptr){
     if(bs_ptr->value == ZERO){
         return FALSE;
@@ -18,6 +21,7 @@ bool bin_semaphore_get(struct bin_semaphore * bs_ptr){
     }
 }
 
+// 释放资源
 void bin_semaphore_release(struct bin_semaphore * bs_ptr){
     bs_ptr->value = ONE;
 }

@@ -165,5 +165,11 @@ void schedule(){
         thread_switch_to(cur_task,next_task);
     }
 }
+
+// 当前运行的task,移入block列表中
+void block_thread(struct task* task_ptr, struct list_node * block_list){
+    list_insert(block_list,&(task_ptr->block_link));
+}
+
 //============ 进程部分 =====================
 // 所有函数 process开头
