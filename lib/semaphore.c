@@ -5,7 +5,7 @@
 //=====================
 
 void bin_semaphore_init(struct bin_semaphore * bs_ptr){
-    bs_ptr->value = ZERO;
+    bs_ptr->value = ONE;
     list_init(&bs_ptr->wait_list_head);
 }
 

@@ -129,6 +129,6 @@ void thread_environment_init();
 void schedule();
 
 // 阻塞本任务
-void block_thread(struct task* task_ptr, struct list_node * block_list);
+void thread_block(struct list_node * block_list);
 
 #endif

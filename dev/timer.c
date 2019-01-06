@@ -54,7 +54,7 @@ static void intr_timer_handler(void) {
     cur_thread->weight--;
     cur_thread->elapsed_ticks++; // 记录此线程占用的cpu时间嘀
     ticks++;	                 // 从内核第一次处理时间中断后开始至今的滴哒数
-                                 //内核态和用户态总共的嘀哒数
+                                 // 内核态和用户态总共的嘀哒数
     //进行调度
     schedule();
 }

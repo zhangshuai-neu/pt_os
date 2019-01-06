@@ -141,14 +141,14 @@ void schedule(){
         return;
     }
 
-    // 当前任务的时间骗是否运行完
+    // 当前任务的时间片是否运行完
     // 运行完，寻找下一个任务，并切换
     struct task * cur_task = (struct task *)thread_get_task_struct();
     struct task * next_task = NULL;
     struct list_node * ready_node =  &task_ready_list_head;
 
-    //如果当前任务weight已经执行完，则切换到下一个任务
-    if(cur_task->weight <=0){
+    //如果当前任务正在执行，并且weight已经执行完，则切换到下一个任务
+    if(cur_task->status==TASK_RUNING && cur_task->weight<=0){
         cur_task->weight=cur_task->priority*TASK_DO_TICKS;
         if(ready_node->next == ready_node){
             return ;    //ready 队列为空
@@ -167,8 +167,31 @@ void schedule(){
 }
 
 // 当前运行的task,移入block列表中
-void block_thread(struct task* task_ptr, struct list_node * block_list){
-    list_insert(block_list,&(task_ptr->block_link));
+void thread_block(struct list_node * block_list){
+    // 是否关中断
+    if(intr_get_status() != INTR_OFF){
+        return;
+    }
+
+    // 如果当前任务主动被阻塞
+    struct task * cur_task = (struct task *)thread_get_task_struct();
+    struct task * next_task = NULL;
+    struct list_node * ready_node =  &task_ready_list_head;
+
+    if(ready_node->next == ready_node){
+        return ;    //ready 队列为空
+    }
+    ready_node = ready_node->next;
+    list_remove(ready_node);
+    //获取next task结构
+    next_task = list_entry(ready_node,struct task,ready_link);
+    next_task->status=TASK_RUNING;
+    cur_task->status = TASK_BLOCKED;
+    list_insert(&task_ready_list_head, &cur_task->ready_link);
+    //任务切换
+    thread_switch_to(cur_task,next_task);
+
+    list_insert(block_list,&(cur_task->block_link));
 }
 
 //============ 进程部分 =====================

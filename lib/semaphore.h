@@ -22,10 +22,10 @@ enum bin_value {
 // 二值信号量
 // 用来进行同步，初始为0
 //=====================
-struct bin_semaphore{
+typedef struct bin_semaphore{
     enum bin_value value;
     struct list_node wait_list_head;
-};
+} bin_semaphore;
 
 //=====================
 // 计数信号量
