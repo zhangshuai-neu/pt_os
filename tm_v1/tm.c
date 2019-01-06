@@ -187,11 +187,15 @@ void thread_block(struct list_node * block_list){
     next_task = list_entry(ready_node,struct task,ready_link);
     next_task->status=TASK_RUNING;
     cur_task->status = TASK_BLOCKED;
-    list_insert(&task_ready_list_head, &cur_task->ready_link);
+    list_insert(block_list,&(cur_task->block_link));
+
     //任务切换
     thread_switch_to(cur_task,next_task);
+}
 
-    list_insert(block_list,&(cur_task->block_link));
+// 从锁持有者释放锁的等待队列中释放
+void thread_unlock(){
+
 }
 
 //============ 进程部分 =====================

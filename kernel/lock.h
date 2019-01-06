@@ -8,7 +8,7 @@
 // 互斥锁
 struct mutex_lock{
     struct mutex_semaphore ms;
-    struct list_node * wait_list_head;
+    struct task * holder;
 };
 
 #endif
