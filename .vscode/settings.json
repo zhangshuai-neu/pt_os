@@ -5,6 +5,8 @@
         "tm.h": "c",
         "queue.h": "c",
         "rb_tree.h": "c",
-        "stdio.h": "c"
+        "stdio.h": "c",
+        "stdlib.h": "c",
+        "typeinfo": "cpp"
     }
 }
