@@ -4,7 +4,7 @@
  * 获取ELF文件各段的地址
  * 为加载到内存做准备
  * 
- * NOT OK!
+ * 读取elf文件的.text .data .bss三个section
  * 
  * author:Shuai Zhang <zhangshuaiisme@gmail.com>
  */
@@ -21,17 +21,8 @@
  * 
  * */
  
-
-//读取elf header
-
-//读取 program header
-
-uint32_t get_bss_addr(elf_header * eh){
-	
-}
-
-uint32_t get_data_addr(elf_header * eh){
-	
-}
-
+ // 读取.text,.data,.bss虚拟地址和section大小
+ bool elf_get_section(void * file_mem_addr, struct ptos_elf_section_info * s_info){
+     
+ }
 

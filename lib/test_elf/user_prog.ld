@@ -5,14 +5,18 @@ notice:
 
 ENTRY(main)
 SECTIONS{
-
-	.text 0x200000:
+    /*从32M开始*/
+	.text 0x2000000:
     {
     	*.o(.text)
     }
-
+    /*从32M+4K开始*/
     .data :
     {
         *.o(.data)
+    }
+    .bss :
+    {
+        *.o(.bss)
     }
 }
