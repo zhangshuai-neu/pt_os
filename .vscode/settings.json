@@ -7,6 +7,9 @@
         "rb_tree.h": "c",
         "stdio.h": "c",
         "stdlib.h": "c",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "std_type_define.h": "c",
+        "elf.h": "c",
+        "system_call.h": "c"
     }
 }

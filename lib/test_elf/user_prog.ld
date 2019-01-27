@@ -11,7 +11,7 @@ SECTIONS{
     	*.o(.text)
     }
     /*从32M+4K开始*/
-    .data :
+    .data 0x2001000:
     {
         *.o(.data)
     }

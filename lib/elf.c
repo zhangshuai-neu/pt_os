@@ -9,8 +9,9 @@
  * author:Shuai Zhang <zhangshuaiisme@gmail.com>
  */
 
-#include "std_type_define.h"
 #include "elf.h"
+
+
 
 /*
  * 
@@ -21,8 +22,22 @@
  * 
  * */
  
- // 读取.text,.data,.bss虚拟地址和section大小
- bool elf_get_section(void * file_mem_addr, struct ptos_elf_section_info * s_info){
-     
- }
+// 读取.text,.data,.bss虚拟地址和section大小
+bool elf_get_section(void * file_mem_addr, struct ptos_elf_section_info * s_info/* 0 .text, 1 .data, 2 .bss */){
+    struct elf_header * eh_ptr = (struct elf_header *)file_mem_addr;
+    uint32_t section_addr =  (uint32_t)eh_ptr->elf_shoff;
+    uint32_t section_num = (uint32_t)eh_ptr->elf_shnum;
+    uint32_t section_h_size = (uint32_t)eh_ptr->elf_shentsize;
+
+    
+
+    /*
+    uint32_t i=0;
+    uint32_t count = 0;
+    for(;i<section_num && count<3; i++){
+        
+        section_addr += section_h_size;
+    }
+    */
+}
 
