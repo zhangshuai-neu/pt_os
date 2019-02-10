@@ -51,7 +51,8 @@ int8_t elf_strcmp(char * str_addr_a,char * str_addr_b){
 }
 
 // 读取.text,.data,.bss虚拟地址和section大小
-// s_info[0] .text, s_info[1] .data, s_info[2] .bss
+// .text.__x86.get_pc_thunk.ax
+// s_info[0] .text , s_info[1] .data, s_info[2] .bss 
 bool elf_get_section(void * file_mem_addr, struct ptos_elf_section_info s_info[3]){
     elf_h_ptr eh_ptr = (elf_h_ptr)file_mem_addr;
 
@@ -73,13 +74,19 @@ bool elf_get_section(void * file_mem_addr, struct ptos_elf_section_info s_info[3
     uint32_t count = 0;
     uint32_t temp_section_h_addr = section_h_list_addr;
     
-    for(i=0;i<section_num && count<3; i++){
+    for(i=0;i<section_num && count<SECTION_COUNT; i++){
         // 从.shsymtab中找到section的名字, 并将信息存放在ptos_elf_section_info中
         char * section_name = (char*)(shsymtab_section_addr + ((elf_sh_ptr)temp_section_h_addr)->sh_name );
         if( elf_strcmp(section_name,".text")==(int8_t)0 ){
             s_info[ TEXT_SECTION ].section_addr = ((elf_sh_ptr)temp_section_h_addr)->sh_offset + (uint32_t)file_mem_addr;
             s_info[ TEXT_SECTION ].virt_addr = ((elf_sh_ptr)temp_section_h_addr)->sh_addr;
             s_info[ TEXT_SECTION ].size = ((elf_sh_ptr)temp_section_h_addr)->sh_size;
+            count++;
+        }
+        if( elf_strcmp(section_name,".text.__x86.get_pc_thunk.ax")==(int8_t)0 ){
+            s_info[ TEXT_X86_SECTION ].section_addr = ((elf_sh_ptr)temp_section_h_addr)->sh_offset + (uint32_t)file_mem_addr;
+            s_info[ TEXT_X86_SECTION ].virt_addr = ((elf_sh_ptr)temp_section_h_addr)->sh_addr;
+            s_info[ TEXT_X86_SECTION ].size = ((elf_sh_ptr)temp_section_h_addr)->sh_size;
             count++;
         }
         if( elf_strcmp(section_name,".data")==(int8_t)0 ){
@@ -95,6 +102,7 @@ bool elf_get_section(void * file_mem_addr, struct ptos_elf_section_info s_info[3
             count++;
         }
         temp_section_h_addr += section_h_size;
+        
     }
 }
 

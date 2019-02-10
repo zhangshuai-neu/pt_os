@@ -37,11 +37,11 @@ int main(){
 	fread(file_mem_addr, file_size, 1, example_fp);
 
 	// 3)读取
-	ptos_es_info es_info_array[3];	//0 .text, 1 .data, 2 .bss
+	ptos_es_info es_info_array[4];	//0 .text, 1 .text.__x86.get_pc_thunk.ax, 2 .data, 3 .bss
 	elf_get_section(file_mem_addr, es_info_array);
 
 	// 4)打印section信息，和 size example.elf 的结果进行比较
-	for(i=0;i<3;i++)
+	for(i=0;i<4;i++)
 		show_ptos_es_info(&es_info_array[i]);
 
 	// 5)关闭文件，释放内存

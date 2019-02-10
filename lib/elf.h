@@ -75,10 +75,14 @@ typedef struct ptos_elf_section_info{
 } ptos_es_info;
 
 
-#define TEXT_SECTION 0
-#define DATA_SECTION 1
-#define BSS_SECTION  2
+#define TEXT_SECTION 0      //
+#define TEXT_X86_SECTION 1   // .text.__x86.get_pc_thunk.ax section
+#define DATA_SECTION 2
+#define BSS_SECTION  3
 
-bool elf_get_section(void * file_mem_addr, struct ptos_elf_section_info s_info[3]/* 0 .text, 1 .data, 2 .bss */);
+#define SECTION_COUNT 4     // 记录section要读取的数量
+
+bool elf_get_section(void * file_mem_addr, struct ptos_elf_section_info s_info[3] \
+                    /* 0 .text, 1 .text.__x86.get_pc_thunk.ax, 2 .data, 3 .bss */);
 
 #endif
